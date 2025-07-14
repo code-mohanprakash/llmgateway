@@ -1,0 +1,554 @@
+# Comprehensive Multi-Provider LLM Gateway Configuration
+# Supports ALL major providers with full model ranges
+
+gateway:
+  fallback_enabled: true
+  max_retries: 3
+  timeout: 60
+  auto_discovery: true
+  load_balancing: true
+  cost_optimization: true
+  performance_tracking: true
+
+providers:
+  # === CLOUD PROVIDERS ===
+  
+  # OpenAI - Full model range
+  openai:
+    enabled: true
+    priority: 1
+    api_key: ${OPENAI_API_KEY}
+    organization: ${OPENAI_ORG_ID}
+    base_url: "https://api.openai.com/v1"
+    temperature: 0.1
+    models:
+      # Small/Fast models
+      gpt-4o-mini:
+        cost_per_1k_tokens: 0.0006
+        context_length: 128000
+        category: "small"
+        speed: "fastest"
+        reasoning: "basic"
+      gpt-3.5-turbo:
+        cost_per_1k_tokens: 0.002
+        context_length: 16385
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      # Medium models
+      gpt-4o:
+        cost_per_1k_tokens: 0.015
+        context_length: 128000
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      # Large/Reasoning models
+      gpt-4-turbo:
+        cost_per_1k_tokens: 0.03
+        context_length: 128000
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+      gpt-4:
+        cost_per_1k_tokens: 0.06
+        context_length: 8192
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+
+  # Anthropic - Full Claude range
+  anthropic:
+    enabled: true
+    priority: 2
+    api_key: ${ANTHROPIC_API_KEY}
+    temperature: 0.1
+    models:
+      # Small/Fast models
+      claude-3-haiku:
+        cost_per_1k_tokens: 0.0008
+        context_length: 200000
+        category: "small"
+        speed: "fastest"
+        reasoning: "good"
+      # Medium models
+      claude-3-sonnet:
+        cost_per_1k_tokens: 0.015
+        context_length: 200000
+        category: "medium"
+        speed: "medium"
+        reasoning: "excellent"
+      # Large/Reasoning models
+      claude-3-opus:
+        cost_per_1k_tokens: 0.075
+        context_length: 200000
+        category: "large"
+        speed: "slow"
+        reasoning: "superior"
+      claude-3.5-sonnet:
+        cost_per_1k_tokens: 0.015
+        context_length: 200000
+        category: "large"
+        speed: "medium"
+        reasoning: "superior"
+
+  # Google - Full Gemini range
+  google:
+    enabled: true
+    priority: 3
+    api_key: ${GOOGLE_API_KEY}
+    temperature: 0.1
+    models:
+      # Small/Fast models
+      gemini-1.5-flash:
+        cost_per_1k_tokens: 0.0002
+        context_length: 1000000
+        category: "small"
+        speed: "fastest"
+        reasoning: "good"
+      gemini-pro:
+        cost_per_1k_tokens: 0.0005
+        context_length: 32768
+        category: "small"
+        speed: "fast"
+        reasoning: "good"
+      # Large/Reasoning models
+      gemini-1.5-pro:
+        cost_per_1k_tokens: 0.0035
+        context_length: 2000000
+        category: "large"
+        speed: "medium"
+        reasoning: "excellent"
+      gemini-ultra:
+        cost_per_1k_tokens: 0.01
+        context_length: 32768
+        category: "large"
+        speed: "slow"
+        reasoning: "superior"
+
+  # Groq - Ultra-fast inference
+  groq:
+    enabled: true
+    priority: 4
+    api_key: ${GROQ_API_KEY}
+    base_url: "https://api.groq.com/openai/v1"
+    models:
+      # Small/Fast models
+      llama3-8b-8192:
+        cost_per_1k_tokens: 0.0001
+        context_length: 8192
+        category: "small"
+        speed: "ultra_fast"
+        reasoning: "basic"
+      mixtral-8x7b-32768:
+        cost_per_1k_tokens: 0.0002
+        context_length: 32768
+        category: "medium"
+        speed: "ultra_fast"
+        reasoning: "good"
+      # Large models
+      llama3-70b-8192:
+        cost_per_1k_tokens: 0.0008
+        context_length: 8192
+        category: "large"
+        speed: "fast"
+        reasoning: "excellent"
+
+  # Together AI - Open source models
+  together:
+    enabled: true
+    priority: 5
+    api_key: ${TOGETHER_API_KEY}
+    base_url: "https://api.together.xyz/v1"
+    models:
+      # Small models
+      llama-3-8b-chat:
+        cost_per_1k_tokens: 0.0002
+        context_length: 8192
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      mistral-7b-instruct:
+        cost_per_1k_tokens: 0.0002
+        context_length: 8192
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      # Medium models
+      llama-3-13b-chat:
+        cost_per_1k_tokens: 0.0003
+        context_length: 8192
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      # Large models
+      llama-3-70b-chat:
+        cost_per_1k_tokens: 0.0009
+        context_length: 8192
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+      mixtral-8x22b-instruct:
+        cost_per_1k_tokens: 0.0012
+        context_length: 65536
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+
+  # Mistral AI - Official models
+  mistral:
+    enabled: true
+    priority: 6
+    api_key: ${MISTRAL_API_KEY}
+    models:
+      # Small models
+      mistral-tiny:
+        cost_per_1k_tokens: 0.00025
+        context_length: 32768
+        category: "small"
+        speed: "fastest"
+        reasoning: "basic"
+      mistral-small:
+        cost_per_1k_tokens: 0.002
+        context_length: 32768
+        category: "small"
+        speed: "fast"
+        reasoning: "good"
+      # Medium models
+      mistral-medium:
+        cost_per_1k_tokens: 0.0027
+        context_length: 32768
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      # Large models
+      mistral-large:
+        cost_per_1k_tokens: 0.008
+        context_length: 32768
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+
+  # Cohere - Command models
+  cohere:
+    enabled: true
+    priority: 7
+    api_key: ${COHERE_API_KEY}
+    models:
+      # Small models
+      command:
+        cost_per_1k_tokens: 0.0015
+        context_length: 4096
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      command-light:
+        cost_per_1k_tokens: 0.0003
+        context_length: 4096
+        category: "small"
+        speed: "fastest"
+        reasoning: "basic"
+      # Large models
+      command-r:
+        cost_per_1k_tokens: 0.0005
+        context_length: 128000
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      command-r-plus:
+        cost_per_1k_tokens: 0.003
+        context_length: 128000
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+
+  # Perplexity - Reasoning models
+  perplexity:
+    enabled: true
+    priority: 8
+    api_key: ${PERPLEXITY_API_KEY}
+    base_url: "https://api.perplexity.ai"
+    models:
+      # Small models
+      pplx-7b-online:
+        cost_per_1k_tokens: 0.0002
+        context_length: 8192
+        category: "small"
+        speed: "fast"
+        reasoning: "good"
+      pplx-7b-chat:
+        cost_per_1k_tokens: 0.0002
+        context_length: 8192
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      # Large models
+      pplx-70b-online:
+        cost_per_1k_tokens: 0.001
+        context_length: 8192
+        category: "large"
+        speed: "medium"
+        reasoning: "excellent"
+      pplx-70b-chat:
+        cost_per_1k_tokens: 0.001
+        context_length: 8192
+        category: "large"
+        speed: "medium"
+        reasoning: "excellent"
+
+  # === LOCAL PROVIDERS ===
+
+  # Ollama - Local models
+  ollama:
+    enabled: true
+    priority: 10
+    base_url: "http://localhost:11434"
+    auto_pull: true
+    models:
+      # Small models
+      llama3:8b:
+        cost_per_1k_tokens: 0.0
+        context_length: 8192
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      mistral:7b:
+        cost_per_1k_tokens: 0.0
+        context_length: 8192
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      phi3:mini:
+        cost_per_1k_tokens: 0.0
+        context_length: 4096
+        category: "small"
+        speed: "fastest"
+        reasoning: "basic"
+      qwen2:7b:
+        cost_per_1k_tokens: 0.0
+        context_length: 32768
+        category: "small"
+        speed: "fast"
+        reasoning: "good"
+      # Medium models
+      llama3:13b:
+        cost_per_1k_tokens: 0.0
+        context_length: 8192
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      mistral:8x7b:
+        cost_per_1k_tokens: 0.0
+        context_length: 32768
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      qwen2:14b:
+        cost_per_1k_tokens: 0.0
+        context_length: 32768
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      # Large models
+      llama3:70b:
+        cost_per_1k_tokens: 0.0
+        context_length: 8192
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+      qwen2:72b:
+        cost_per_1k_tokens: 0.0
+        context_length: 32768
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+      deepseek-coder:33b:
+        cost_per_1k_tokens: 0.0
+        context_length: 16384
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+      # Specialized models
+      codellama:13b:
+        cost_per_1k_tokens: 0.0
+        context_length: 16384
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+        specialty: "coding"
+      codellama:34b:
+        cost_per_1k_tokens: 0.0
+        context_length: 16384
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+        specialty: "coding"
+
+  # Hugging Face - Inference API
+  huggingface:
+    enabled: true
+    priority: 11
+    api_key: ${HUGGINGFACE_API_KEY}
+    base_url: "https://api-inference.huggingface.co"
+    models:
+      # Small models
+      microsoft/DialoGPT-medium:
+        cost_per_1k_tokens: 0.0001
+        context_length: 1024
+        category: "small"
+        speed: "fast"
+        reasoning: "basic"
+      # Medium models
+      microsoft/DialoGPT-large:
+        cost_per_1k_tokens: 0.0002
+        context_length: 1024
+        category: "medium"
+        speed: "medium"
+        reasoning: "good"
+      # Large models
+      meta-llama/Llama-2-70b-chat-hf:
+        cost_per_1k_tokens: 0.0005
+        context_length: 4096
+        category: "large"
+        speed: "slow"
+        reasoning: "excellent"
+
+  # DeepSeek - Reasoning models via Hugging Face
+  deepseek:
+    enabled: true
+    priority: 5
+    api_key: ${HUGGINGFACE_API_KEY}
+    base_url: "https://api-inference.huggingface.co"
+    models:
+      # DeepSeek R1 - Reasoning powerhouse
+      deepseek-ai/DeepSeek-R1-Distill-Llama-70B:
+        cost_per_1k_tokens: 0.0001
+        context_length: 32768
+        category: "large"
+        speed: "medium"
+        reasoning: "superior"
+        specialty: "reasoning"
+
+# === SMART MODEL ALIASES ===
+model_aliases:
+  # Speed-optimized routing
+  fastest:
+    - {provider: groq, model_id: llama3-8b-8192, priority: 1}
+    - {provider: ollama, model_id: phi3:mini, priority: 2}
+    - {provider: google, model_id: gemini-1.5-flash, priority: 3}
+    - {provider: openai, model_id: gpt-4o-mini, priority: 4}
+
+  # Cost-optimized routing
+  cheapest:
+    - {provider: ollama, model_id: llama3:8b, priority: 1}
+    - {provider: ollama, model_id: mistral:7b, priority: 2}
+    - {provider: google, model_id: gemini-1.5-flash, priority: 3}
+    - {provider: together, model_id: llama-3-8b-chat, priority: 4}
+    - {provider: openai, model_id: gpt-4o-mini, priority: 5}
+
+  # Quality-optimized routing
+  best:
+    - {provider: anthropic, model_id: claude-3-opus, priority: 1}
+    - {provider: anthropic, model_id: claude-3.5-sonnet, priority: 2}
+    - {provider: openai, model_id: gpt-4-turbo, priority: 3}
+    - {provider: google, model_id: gemini-1.5-pro, priority: 4}
+
+  # Balanced routing
+  balanced:
+    - {provider: anthropic, model_id: claude-3-sonnet, priority: 1}
+    - {provider: openai, model_id: gpt-4o, priority: 2}
+    - {provider: google, model_id: gemini-1.5-flash, priority: 3}
+    - {provider: ollama, model_id: llama3:13b, priority: 4}
+
+  # Reasoning-optimized
+  reasoning:
+    - {provider: deepseek, model_id: deepseek-ai/DeepSeek-R1-Distill-Llama-70B, priority: 1}
+    - {provider: anthropic, model_id: claude-3-opus, priority: 2}
+    - {provider: openai, model_id: gpt-4-turbo, priority: 3}
+    - {provider: google, model_id: gemini-1.5-pro, priority: 4}
+    - {provider: ollama, model_id: llama3:70b, priority: 5}
+
+  # Coding-optimized
+  coding:
+    - {provider: anthropic, model_id: claude-3.5-sonnet, priority: 1}
+    - {provider: openai, model_id: gpt-4-turbo, priority: 2}
+    - {provider: ollama, model_id: codellama:34b, priority: 3}
+    - {provider: ollama, model_id: deepseek-coder:33b, priority: 4}
+
+  # Creative writing
+  creative:
+    - {provider: anthropic, model_id: claude-3-opus, priority: 1}
+    - {provider: openai, model_id: gpt-4-turbo, priority: 2}
+    - {provider: ollama, model_id: llama3:70b, priority: 3}
+
+  # Analysis tasks
+  analytical:
+    - {provider: anthropic, model_id: claude-3-sonnet, priority: 1}
+    - {provider: openai, model_id: gpt-4o, priority: 2}
+    - {provider: google, model_id: gemini-1.5-pro, priority: 3}
+
+  # Long context tasks
+  long_context:
+    - {provider: google, model_id: gemini-1.5-pro, priority: 1}
+    - {provider: anthropic, model_id: claude-3-sonnet, priority: 2}
+    - {provider: openai, model_id: gpt-4-turbo, priority: 3}
+
+  # Small tasks
+  small:
+    - {provider: groq, model_id: llama3-8b-8192, priority: 1}
+    - {provider: openai, model_id: gpt-4o-mini, priority: 2}
+    - {provider: anthropic, model_id: claude-3-haiku, priority: 3}
+    - {provider: ollama, model_id: llama3:8b, priority: 4}
+
+  # Medium tasks
+  medium:
+    - {provider: anthropic, model_id: claude-3-sonnet, priority: 1}
+    - {provider: openai, model_id: gpt-4o, priority: 2}
+    - {provider: ollama, model_id: llama3:13b, priority: 3}
+
+  # Large tasks
+  large:
+    - {provider: anthropic, model_id: claude-3-opus, priority: 1}
+    - {provider: openai, model_id: gpt-4-turbo, priority: 2}
+    - {provider: ollama, model_id: llama3:70b, priority: 3}
+
+# === TASK-SPECIFIC ROUTING ===
+task_routing:
+  conversation_analysis:
+    complexity_simple: "small"
+    complexity_medium: "analytical"
+    complexity_complex: "reasoning"
+  
+  sentiment_analysis:
+    complexity_simple: "fastest"
+    complexity_medium: "balanced"
+    complexity_complex: "analytical"
+  
+  competitor_extraction:
+    complexity_simple: "small"
+    complexity_medium: "balanced"
+    complexity_complex: "analytical"
+  
+  product_feedback:
+    complexity_simple: "small"
+    complexity_medium: "analytical"
+    complexity_complex: "reasoning"
+  
+  action_items:
+    complexity_simple: "fastest"
+    complexity_medium: "small"
+    complexity_complex: "balanced"
+  
+  summarization:
+    complexity_simple: "fastest"
+    complexity_medium: "small"
+    complexity_complex: "balanced"
+  
+  code_generation:
+    complexity_simple: "coding"
+    complexity_medium: "coding"
+    complexity_complex: "coding"
+  
+  creative_writing:
+    complexity_simple: "creative"
+    complexity_medium: "creative"
+    complexity_complex: "creative"
