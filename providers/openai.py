@@ -10,7 +10,11 @@ from typing import Dict, Any, List, Optional
 from openai import AsyncOpenAI
 
 from .base import BaseModelProvider, GenerationRequest, GenerationResponse, ModelMetadata, ModelCapability
-from utils.logging_setup import get_logger
+try:
+    from utils.logging_setup import get_logger
+except ImportError:
+    import logging
+    def get_logger(name): return logging.getLogger(name)
 
 logger = get_logger(__name__)
 
@@ -27,9 +31,34 @@ class OpenAIProvider(BaseModelProvider):
         self.default_temperature = provider_config.get("temperature", 0.1)
         self.timeout = provider_config.get("timeout", 60)
         
-        # Load models from config
-        self.model_configs = provider_config.get("models", {})
+        # Load models from config with defaults
+        self.model_configs = provider_config.get("models", self._get_default_models())
         self._setup_models_metadata()
+    
+    def _get_default_models(self) -> Dict[str, Any]:
+        """Get default OpenAI model configurations"""
+        return {
+            "gpt-4o": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.015,
+                "max_output_tokens": 4096
+            },
+            "gpt-4o-mini": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.00015,
+                "max_output_tokens": 16384
+            },
+            "gpt-4-turbo": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.01,
+                "max_output_tokens": 4096
+            },
+            "gpt-3.5-turbo": {
+                "context_length": 16385,
+                "cost_per_1k_tokens": 0.002,
+                "max_output_tokens": 4096
+            }
+        }
     
     def _setup_models_metadata(self):
         """Setup metadata for all available models"""

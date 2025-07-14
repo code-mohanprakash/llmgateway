@@ -1,186 +1,199 @@
 """
-Anthropic Claude Provider for Unified LLM Gateway
-Handles Claude-3 models (Haiku, Sonnet, Opus)
+Anthropic Provider for Unified LLM Gateway
+Supports Claude 3 models with latest Anthropic SDK
 """
-import os
-import time
+import asyncio
 import json
+import time
+import os
 from typing import Dict, Any, List, Optional
-import aiohttp
 
-from .base import (
-    BaseModelProvider, 
-    GenerationRequest, 
-    GenerationResponse, 
-    ModelMetadata, 
-    ModelCapability
-)
-from utils.logging_setup import get_logger
+try:
+    from anthropic import AsyncAnthropic
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
+    AsyncAnthropic = None
+
+from .base import BaseModelProvider, GenerationRequest, GenerationResponse, ModelMetadata, ModelCapability
+try:
+    from utils.logging_setup import get_logger
+except ImportError:
+    import logging
+    def get_logger(name): return logging.getLogger(name)
 
 logger = get_logger(__name__)
 
 
 class AnthropicProvider(BaseModelProvider):
-    """Anthropic Claude provider implementation"""
+    """Anthropic Claude provider with proper error handling and standard patterns"""
     
     def __init__(self, provider_config: Dict[str, Any]):
-        self.provider_name = "anthropic"
-        self.provider_config = provider_config
+        super().__init__(provider_config)
+        self.client: Optional[AsyncAnthropic] = None
         self.api_key = provider_config.get("api_key") or os.getenv("ANTHROPIC_API_KEY")
-        self.base_url = "https://api.anthropic.com/v1/messages"
-        self._initialized = False
-        self._models_metadata = {}
+        self.base_url = provider_config.get("base_url", "https://api.anthropic.com")
+        self.default_temperature = provider_config.get("temperature", 0.1)
+        self.timeout = provider_config.get("timeout", 60)
+        self.max_retries = provider_config.get("max_retries", 3)
+        
+        # Load models from config with defaults
+        self.model_configs = provider_config.get("models", self._get_default_models())
+        self._setup_models_metadata()
+    
+    def _get_default_models(self) -> Dict[str, Any]:
+        """Get default Anthropic model configurations"""
+        return {
+            "claude-3-5-sonnet-20241022": {
+                "context_length": 200000,
+                "cost_per_1k_tokens": 0.003,
+                "max_output_tokens": 8192
+            },
+            "claude-3-opus-20240229": {
+                "context_length": 200000,
+                "cost_per_1k_tokens": 0.015,
+                "max_output_tokens": 4096
+            },
+            "claude-3-sonnet-20240229": {
+                "context_length": 200000,
+                "cost_per_1k_tokens": 0.003,
+                "max_output_tokens": 4096
+            },
+            "claude-3-haiku-20240307": {
+                "context_length": 200000,
+                "cost_per_1k_tokens": 0.00025,
+                "max_output_tokens": 4096
+            }
+        }
+    
+    def _setup_models_metadata(self):
+        """Setup metadata for all available models"""
+        for model_id, config in self.model_configs.items():
+            capabilities = [
+                ModelCapability.TEXT_GENERATION,
+                ModelCapability.STRUCTURED_OUTPUT,
+                ModelCapability.FUNCTION_CALLING
+            ]
+            
+            # Add vision for newer Claude models
+            if "claude-3" in model_id and model_id != "claude-3-haiku-20240307":
+                capabilities.append(ModelCapability.VISION)
+            
+            self._models_metadata[model_id] = ModelMetadata(
+                model_id=model_id,
+                provider_name=self.provider_name,
+                model_name=f"Anthropic {model_id}",
+                capabilities=capabilities,
+                context_length=config.get("context_length", 200000),
+                cost_per_1k_tokens=config.get("cost_per_1k_tokens", 0.003),
+                max_output_tokens=config.get("max_output_tokens", 4096),
+                supports_system_messages=True,
+                supports_temperature=True
+            )
     
     async def initialize(self) -> bool:
-        """Initialize Anthropic provider"""
+        """Initialize Anthropic client"""
         try:
-            if not self.api_key:
-                logger.error("Anthropic API key not found. Set ANTHROPIC_API_KEY environment variable.")
+            if not ANTHROPIC_AVAILABLE:
+                logger.warning("Anthropic SDK not available, install with: pip install anthropic")
                 return False
             
-            # Define available Claude models
-            self._models_metadata = {
-                "claude-3-haiku": ModelMetadata(
-                    model_id="claude-3-haiku",
-                    model_name="claude-3-haiku-20240307",
-                    provider_name=self.provider_name,
-                    capabilities=[
-                        ModelCapability.TEXT_GENERATION,
-                        ModelCapability.STRUCTURED_OUTPUT
-                    ],
-                    context_length=200000,
-                    cost_per_1k_tokens=0.00025,  # Very cheap
-                    max_output_tokens=4096,
-                    supports_system_messages=True,
-                    supports_temperature=True
-                ),
-                "claude-3-sonnet": ModelMetadata(
-                    model_id="claude-3-sonnet",
-                    model_name="claude-3-sonnet-20240229",
-                    provider_name=self.provider_name,
-                    capabilities=[
-                        ModelCapability.TEXT_GENERATION,
-                        ModelCapability.STRUCTURED_OUTPUT,
-                        ModelCapability.CODE_GENERATION
-                    ],
-                    context_length=200000,
-                    cost_per_1k_tokens=0.003,  # Balanced
-                    max_output_tokens=4096,
-                    supports_system_messages=True,
-                    supports_temperature=True
-                ),
-                "claude-3-opus": ModelMetadata(
-                    model_id="claude-3-opus",
-                    model_name="claude-3-opus-20240229",
-                    provider_name=self.provider_name,
-                    capabilities=[
-                        ModelCapability.TEXT_GENERATION,
-                        ModelCapability.STRUCTURED_OUTPUT,
-                        ModelCapability.CODE_GENERATION,
-                        ModelCapability.FUNCTION_CALLING
-                    ],
-                    context_length=200000,
-                    cost_per_1k_tokens=0.015,  # Most powerful
-                    max_output_tokens=4096,
-                    supports_system_messages=True,
-                    supports_temperature=True
-                )
-            }
+            if not self.api_key:
+                logger.warning("Anthropic API key not provided, provider will be disabled")
+                return False
             
-            self._initialized = True
-            logger.info(f"Anthropic provider initialized with {len(self._models_metadata)} models")
-            return True
+            self.client = AsyncAnthropic(
+                api_key=self.api_key,
+                base_url=self.base_url,
+                timeout=self.timeout,
+                max_retries=self.max_retries
+            )
+            
+            # Test connection
+            test_response = await self.health_check()
+            if test_response["status"] == "healthy":
+                logger.info("Anthropic provider initialized successfully")
+                return True
+            else:
+                logger.error(f"Anthropic provider health check failed: {test_response.get('error')}")
+                return False
             
         except Exception as e:
             logger.error(f"Failed to initialize Anthropic provider: {str(e)}")
             return False
     
     async def generate_text(self, request: GenerationRequest, model_id: str) -> GenerationResponse:
-        """Generate text using Claude"""
+        """Generate text using Anthropic Claude models"""
         start_time = time.time()
         
         try:
-            if not self._initialized:
-                await self.initialize()
-            
-            if model_id not in self._models_metadata:
+            if not self.client:
                 return GenerationResponse(
                     content="",
                     model_id=model_id,
                     provider_name=self.provider_name,
-                    error=f"Model {model_id} not available"
+                    error="Provider not initialized"
                 )
             
-            # Prepare messages for Claude API
-            messages = [{"role": "user", "content": request.prompt}]
-            
-            payload = {
-                "model": self._models_metadata[model_id].model_name,
+            # Prepare parameters following Anthropic's API format
+            params = {
+                "model": model_id,
                 "max_tokens": request.max_tokens or 4096,
-                "messages": messages,
-                "temperature": request.temperature or 0.1
+                "temperature": request.temperature if request.temperature is not None else self.default_temperature,
+                "messages": [{"role": "user", "content": request.prompt}]
             }
             
+            # Add system message if provided
             if request.system_message:
-                payload["system"] = request.system_message
+                params["system"] = request.system_message
             
-            headers = {
-                "x-api-key": self.api_key,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
-            }
+            # Add stop sequences if provided
+            if request.stop_sequences:
+                params["stop_sequences"] = request.stop_sequences
             
-            # Make request to Claude API
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    self.base_url,
-                    json=payload,
-                    headers=headers,
-                    timeout=aiohttp.ClientTimeout(total=60)
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        content = data.get("content", [{}])[0].get("text", "")
-                        
-                        response_time = time.time() - start_time
-                        
-                        # Estimate tokens
-                        prompt_tokens = self._estimate_tokens(request.prompt + (request.system_message or ""))
-                        completion_tokens = self._estimate_tokens(content)
-                        
-                        # Calculate cost
-                        cost = self.calculate_cost(prompt_tokens, completion_tokens, model_id)
-                        
-                        return GenerationResponse(
-                            content=content,
-                            model_id=model_id,
-                            provider_name=self.provider_name,
-                            prompt_tokens=prompt_tokens,
-                            completion_tokens=completion_tokens,
-                            total_tokens=prompt_tokens + completion_tokens,
-                            cost=cost,
-                            response_time=response_time,
-                            raw_response=data
-                        )
-                    else:
-                        error_text = await response.text()
-                        return GenerationResponse(
-                            content="",
-                            model_id=model_id,
-                            provider_name=self.provider_name,
-                            response_time=time.time() - start_time,
-                            error=f"Claude API error: {error_text}"
-                        )
-                        
+            # Add extra parameters
+            if request.extra_params:
+                # Filter out parameters that Anthropic doesn't support
+                allowed_params = ["top_p", "top_k", "metadata"]
+                for key, value in request.extra_params.items():
+                    if key in allowed_params:
+                        params[key] = value
+            
+            # Make API call
+            response = await self.client.messages.create(**params)
+            
+            # Extract response data
+            content = ""
+            if response.content and len(response.content) > 0:
+                content = response.content[0].text
+            
+            # Calculate cost
+            cost = self.calculate_cost(
+                response.usage.input_tokens,
+                response.usage.output_tokens,
+                model_id
+            )
+            
+            return GenerationResponse(
+                content=content,
+                model_id=model_id,
+                provider_name=self.provider_name,
+                prompt_tokens=response.usage.input_tokens,
+                completion_tokens=response.usage.output_tokens,
+                total_tokens=response.usage.input_tokens + response.usage.output_tokens,
+                cost=cost,
+                response_time=time.time() - start_time,
+                raw_response=response
+            )
+            
         except Exception as e:
-            response_time = time.time() - start_time
-            logger.error(f"Claude text generation failed: {str(e)}")
+            logger.error(f"Anthropic generation error: {str(e)}")
             return GenerationResponse(
                 content="",
                 model_id=model_id,
                 provider_name=self.provider_name,
-                response_time=response_time,
-                error=str(e)
+                error=str(e),
+                response_time=time.time() - start_time
             )
     
     async def generate_structured_output(
@@ -188,113 +201,106 @@ class AnthropicProvider(BaseModelProvider):
         request: GenerationRequest, 
         model_id: str
     ) -> GenerationResponse:
-        """Generate structured JSON output using Claude"""
-        try:
-            if not request.output_schema:
-                return GenerationResponse(
-                    content="",
-                    model_id=model_id,
-                    provider_name=self.provider_name,
-                    error="output_schema is required for structured output"
-                )
-            
-            # Create structured prompt
-            schema_str = json.dumps(request.output_schema, indent=2)
-            structured_prompt = f"""
-            {request.prompt}
-            
-            Please respond with valid JSON that matches this exact schema:
-            {schema_str}
-            
-            Return only the JSON response, no additional text.
-            """
-            
-            # Create new request with structured prompt
-            structured_request = GenerationRequest(
-                prompt=structured_prompt,
-                system_message=request.system_message,
-                temperature=request.temperature,
-                max_tokens=request.max_tokens,
-                extra_params=request.extra_params
-            )
-            
-            # Generate response
-            response = await self.generate_text(structured_request, model_id)
-            
-            if response.error:
-                return response
-            
-            # Parse JSON response
-            try:
-                parsed_content = json.loads(response.content)
-                response.content = json.dumps(parsed_content)
-                return response
-            except json.JSONDecodeError as e:
-                # Try to extract JSON from response
-                import re
-                json_match = re.search(r'\{.*\}', response.content, re.DOTALL)
-                if json_match:
-                    try:
-                        parsed_content = json.loads(json_match.group())
-                        response.content = json.dumps(parsed_content)
-                        return response
-                    except json.JSONDecodeError:
-                        pass
-                
-                response.error = f"Invalid JSON response: {str(e)}"
-                return response
-            
-        except Exception as e:
-            logger.error(f"Claude structured output failed: {str(e)}")
+        """Generate structured JSON output using Anthropic models"""
+        if not request.output_schema:
             return GenerationResponse(
                 content="",
                 model_id=model_id,
                 provider_name=self.provider_name,
-                error=str(e)
+                error="No output schema provided for structured output"
             )
+        
+        # For Anthropic, we use prompt engineering for structured output
+        schema_str = json.dumps(request.output_schema, indent=2)
+        structured_prompt = f"""{request.prompt}
+
+Please respond with a valid JSON object that matches this exact schema:
+{schema_str}
+
+Your response should contain ONLY the JSON object, no additional text or formatting."""
+        
+        enhanced_request = GenerationRequest(
+            prompt=structured_prompt,
+            system_message=request.system_message,
+            temperature=request.temperature,
+            max_tokens=request.max_tokens,
+            stop_sequences=request.stop_sequences,
+            stream=False
+        )
+        
+        response = await self.generate_text(enhanced_request, model_id)
+        
+        if response.error:
+            return response
+        
+        try:
+            # Validate that the response is valid JSON
+            parsed_json = json.loads(response.content)
+            # Ensure it's formatted as a string
+            response.content = json.dumps(parsed_json)
+            
+        except json.JSONDecodeError as e:
+            # Try to extract JSON from the response
+            import re
+            json_match = re.search(r'\{.*\}', response.content, re.DOTALL)
+            if json_match:
+                try:
+                    json_str = json_match.group()
+                    parsed_json = json.loads(json_str)
+                    response.content = json.dumps(parsed_json)
+                except json.JSONDecodeError:
+                    response.error = f"Invalid JSON in structured output: {str(e)}"
+            else:
+                response.error = f"No valid JSON found in response: {str(e)}"
+        except Exception as e:
+            response.error = f"Error processing structured output: {str(e)}"
+        
+        return response
     
     def get_available_models(self) -> List[ModelMetadata]:
-        """Get list of available Claude models"""
+        """Get list of available Anthropic models"""
         return list(self._models_metadata.values())
     
     async def health_check(self) -> Dict[str, Any]:
         """Check Anthropic provider health"""
         try:
-            # Simple test request
-            test_request = GenerationRequest(
-                prompt="Say 'OK' if you can hear me.",
-                temperature=0.1,
-                max_tokens=10
+            if not self.client:
+                return {
+                    "status": "unhealthy",
+                    "error": "Client not initialized",
+                    "provider": self.provider_name
+                }
+            
+            # Test with a simple request
+            response = await self.client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=10,
+                messages=[{"role": "user", "content": "Hello"}]
             )
             
-            response = await self.generate_text(test_request, "claude-3-haiku")
+            content = ""
+            if response.content and len(response.content) > 0:
+                content = response.content[0].text[:50]
             
             return {
+                "status": "healthy",
                 "provider": self.provider_name,
-                "status": "healthy" if response.is_success() else "unhealthy",
-                "available_models": len(self._models_metadata),
-                "initialized": self._initialized,
-                "test_response": response.content if response.is_success() else response.error,
-                "response_time": response.response_time
+                "models_available": len(self._models_metadata),
+                "test_response": content
             }
             
         except Exception as e:
             return {
-                "provider": self.provider_name,
                 "status": "unhealthy",
                 "error": str(e),
-                "initialized": self._initialized
+                "provider": self.provider_name
             }
     
     def get_recommended_model(self, capability: ModelCapability, complexity: str = "medium") -> Optional[str]:
-        """Get recommended Claude model based on capability and complexity"""
+        """Get recommended Anthropic model for specific use case"""
         if complexity == "simple":
-            return "claude-3-haiku"   # Fastest and cheapest
+            return "claude-3-haiku-20240307"  # Fastest and cheapest
         elif complexity == "complex":
-            return "claude-3-opus"    # Most capable
+            return "claude-3-opus-20240229"  # Most capable
         else:
-            return "claude-3-sonnet"  # Balanced option
-    
-    def _estimate_tokens(self, text: str) -> int:
-        """Rough estimation of token count (4 chars per token average)"""
-        return max(1, len(text) // 4)
+            return "claude-3-5-sonnet-20241022"  # Best balance
