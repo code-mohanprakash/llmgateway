@@ -26,9 +26,27 @@ router = APIRouter()
 
 class UserCreate(BaseModel):
     email: EmailStr
-    full_name: str
     password: str
-    organization_name: str
+    # Backend format
+    full_name: Optional[str] = None
+    organization_name: Optional[str] = None
+    # Frontend format
+    firstName: Optional[str] = None
+    lastName: Optional[str] = None
+    organizationName: Optional[str] = None
+    
+    def model_post_init(self, __context):
+        # Convert frontend field names to backend format
+        if self.firstName and self.lastName and not self.full_name:
+            self.full_name = f"{self.firstName} {self.lastName}"
+        if self.organizationName and not self.organization_name:
+            self.organization_name = self.organizationName
+            
+        # Validate required fields
+        if not self.full_name:
+            raise ValueError("full_name or firstName+lastName is required")
+        if not self.organization_name:
+            raise ValueError("organization_name or organizationName is required")
 
 
 class UserLogin(BaseModel):
@@ -60,6 +78,39 @@ class APIKeyResponse(BaseModel):
     created_at: datetime
     last_used_at: Optional[str]
     usage_count: int
+
+
+# User Management Models
+class UserInvite(BaseModel):
+    email: EmailStr
+    full_name: str
+    role: UserRole = UserRole.MEMBER
+
+
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    role: Optional[UserRole] = None
+    is_active: Optional[bool] = None
+
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    role: str
+    is_active: bool
+    is_verified: bool
+    created_at: datetime
+    last_login_at: Optional[datetime] = None
+
+
+class OrganizationResponse(BaseModel):
+    id: str
+    name: str
+    slug: str
+    plan_type: str
+    user_count: int
+    created_at: datetime
 
 
 @router.post("/register", response_model=Token)
@@ -148,6 +199,216 @@ async def get_me(current_user: User = Depends(get_current_user)):
         "is_verified": current_user.is_verified,
         "created_at": current_user.created_at
     }
+
+
+# User Management Endpoints
+@router.get("/users", response_model=list[UserResponse])
+async def list_organization_users(
+    current_user: User = Depends(require_role("admin")),
+    db: AsyncSession = Depends(get_db)
+):
+    """List all users in the organization"""
+    
+    result = await db.execute(
+        select(User).where(
+            User.organization_id == current_user.organization_id,
+            User.is_deleted == False
+        )
+    )
+    users = result.scalars().all()
+    
+    return [
+        UserResponse(
+            id=str(user.id),
+            email=user.email,
+            full_name=user.full_name,
+            role=user.role.value,
+            is_active=user.is_active,
+            is_verified=user.is_verified,
+            created_at=user.created_at,
+            last_login_at=user.last_login_at
+        )
+        for user in users
+    ]
+
+
+@router.post("/users/invite", response_model=UserResponse)
+async def invite_user(
+    invite_data: UserInvite,
+    current_user: User = Depends(require_role("admin")),
+    db: AsyncSession = Depends(get_db)
+):
+    """Invite a new user to the organization"""
+    
+    # Check if user already exists
+    result = await db.execute(select(User).where(User.email == invite_data.email))
+    existing_user = result.scalar_one_or_none()
+    
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exists"
+        )
+    
+    # Create user with temporary password
+    temp_password = secrets.token_urlsafe(12)
+    hashed_password = get_password_hash(temp_password)
+    
+    user = User(
+        email=invite_data.email,
+        full_name=invite_data.full_name,
+        hashed_password=hashed_password,
+        organization_id=current_user.organization_id,
+        role=invite_data.role,
+        is_verified=False,
+        is_active=True
+    )
+    
+    db.add(user)
+    await db.commit()
+    
+    # TODO: Send invitation email with temp password
+    
+    return UserResponse(
+        id=str(user.id),
+        email=user.email,
+        full_name=user.full_name,
+        role=user.role.value,
+        is_active=user.is_active,
+        is_verified=user.is_verified,
+        created_at=user.created_at,
+        last_login_at=user.last_login_at
+    )
+
+
+@router.put("/users/{user_id}", response_model=UserResponse)
+async def update_user(
+    user_id: str,
+    user_data: UserUpdate,
+    current_user: User = Depends(require_role("admin")),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update user information"""
+    
+    # Get user to update
+    result = await db.execute(
+        select(User).where(
+            User.id == user_id,
+            User.organization_id == current_user.organization_id,
+            User.is_deleted == False
+        )
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Prevent changing owner role
+    if user.role == UserRole.OWNER and user_data.role and user_data.role != UserRole.OWNER:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot change owner role"
+        )
+    
+    # Update user fields
+    if user_data.full_name is not None:
+        user.full_name = user_data.full_name
+    if user_data.role is not None:
+        user.role = user_data.role
+    if user_data.is_active is not None:
+        user.is_active = user_data.is_active
+    
+    await db.commit()
+    
+    return UserResponse(
+        id=str(user.id),
+        email=user.email,
+        full_name=user.full_name,
+        role=user.role.value,
+        is_active=user.is_active,
+        is_verified=user.is_verified,
+        created_at=user.created_at,
+        last_login_at=user.last_login_at
+    )
+
+
+@router.delete("/users/{user_id}")
+async def remove_user(
+    user_id: str,
+    current_user: User = Depends(require_role("admin")),
+    db: AsyncSession = Depends(get_db)
+):
+    """Remove user from organization"""
+    
+    # Get user to remove
+    result = await db.execute(
+        select(User).where(
+            User.id == user_id,
+            User.organization_id == current_user.organization_id,
+            User.is_deleted == False
+        )
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Prevent removing owner
+    if user.role == UserRole.OWNER:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot remove organization owner"
+        )
+    
+    # Soft delete user
+    user.is_deleted = True
+    user.deleted_at = datetime.utcnow()
+    await db.commit()
+    
+    return {"message": "User removed successfully"}
+
+
+@router.get("/organization", response_model=OrganizationResponse)
+async def get_organization_info(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get organization information"""
+    
+    result = await db.execute(
+        select(Organization).where(Organization.id == current_user.organization_id)
+    )
+    organization = result.scalar_one_or_none()
+    
+    if not organization:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Organization not found"
+        )
+    
+    # Count users in organization
+    user_count_result = await db.execute(
+        select(User).where(
+            User.organization_id == current_user.organization_id,
+            User.is_deleted == False
+        )
+    )
+    user_count = len(user_count_result.scalars().all())
+    
+    return OrganizationResponse(
+        id=str(organization.id),
+        name=organization.name,
+        slug=organization.slug,
+        plan_type=organization.plan_type.value,
+        user_count=user_count,
+        created_at=organization.created_at
+    )
 
 
 @router.post("/api-keys", response_model=APIKeyResponse)

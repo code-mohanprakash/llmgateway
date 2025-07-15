@@ -18,9 +18,6 @@ mistralai>=0.4.0
 cohere>=4.0.0
 huggingface-hub>=0.16.0
 
-# Async support
-asyncio-compat>=0.1.0
-
 # Logging and monitoring
 structlog>=23.0.0
 rich>=13.0.0

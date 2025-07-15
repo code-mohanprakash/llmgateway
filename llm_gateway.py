@@ -6,11 +6,13 @@ import asyncio
 import json
 import yaml
 import os
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional, Union, Tuple
 from pathlib import Path
 from dataclasses import asdict
 import time
 import logging
+import uuid
+from datetime import datetime, timedelta
 
 from providers.base import (
     BaseModelProvider, 
@@ -89,10 +91,209 @@ except ImportError:
     DeepSeekProvider = None
     DEEPSEEK_AVAILABLE = False
 
+try:
+    from providers.mock import MockProvider
+    MOCK_AVAILABLE = True
+except ImportError:
+    MockProvider = None
+    MOCK_AVAILABLE = False
+
 from utils.config import Config
 from utils.logging_setup import get_logger
 
 logger = get_logger(__name__)
+
+
+class IntelligentRouter:
+    """Enhanced intelligent router for smart provider selection"""
+    
+    def __init__(self):
+        self.performance_history = {}
+        self.cost_predictions = {}
+        self.user_preferences = {}
+        self.provider_health_cache = {}
+        self.last_health_check = None
+        self.health_check_interval = 300  # 5 minutes
+        
+    def analyze_request_characteristics(self, request: GenerationRequest) -> Dict[str, Any]:
+        """Analyze request to determine optimal routing strategy"""
+        characteristics = {
+            "complexity": "medium",
+            "urgency": "normal",
+            "cost_sensitivity": "medium",
+            "quality_requirement": "medium",
+            "task_type": getattr(request, 'task_type', None) or "general"
+        }
+        
+        # Analyze prompt length and complexity
+        prompt_length = len(request.prompt)
+        if prompt_length < 100:
+            characteristics["complexity"] = "simple"
+        elif prompt_length > 1000:
+            characteristics["complexity"] = "complex"
+        
+        # Analyze task type for routing
+        task_type = getattr(request, 'task_type', None)
+        if task_type:
+            if task_type in ["sentiment_analysis", "triage", "outcome_detection"]:
+                characteristics["urgency"] = "high"
+                characteristics["cost_sensitivity"] = "high"
+            elif task_type in ["critique", "refinement", "initial_analysis_complex"]:
+                characteristics["quality_requirement"] = "high"
+                characteristics["cost_sensitivity"] = "low"
+        
+        # Override with explicit complexity
+        complexity = getattr(request, 'complexity', None)
+        if complexity:
+            characteristics["complexity"] = complexity
+        
+        return characteristics
+    
+    def get_provider_ranking(self, characteristics: Dict[str, Any], available_providers: Dict[str, BaseModelProvider]) -> List[Tuple[str, float]]:
+        """Rank providers based on request characteristics and performance history"""
+        rankings = []
+        
+        for provider_name, provider in available_providers.items():
+            score = self._calculate_provider_score(provider_name, characteristics)
+            rankings.append((provider_name, score))
+        
+        # Sort by score (higher is better)
+        rankings.sort(key=lambda x: x[1], reverse=True)
+        return rankings
+    
+    def _calculate_provider_score(self, provider_name: str, characteristics: Dict[str, Any]) -> float:
+        """Calculate provider score based on characteristics and performance"""
+        score = 0.0
+        
+        # Base score
+        score += 50.0
+        
+        # Performance-based scoring
+        if provider_name in self.performance_history:
+            perf = self.performance_history[provider_name]
+            success_rate = perf.get("success_rate", 0.5)
+            avg_response_time = perf.get("avg_response_time", 5.0)
+            avg_cost = perf.get("avg_cost", 0.01)
+            
+            # Success rate bonus (0-20 points)
+            score += success_rate * 20
+            
+            # Response time bonus (0-15 points)
+            if avg_response_time < 2.0:
+                score += 15
+            elif avg_response_time < 5.0:
+                score += 10
+            elif avg_response_time < 10.0:
+                score += 5
+            
+            # Cost optimization (0-15 points)
+            if characteristics["cost_sensitivity"] == "high":
+                if avg_cost < 0.001:
+                    score += 15
+                elif avg_cost < 0.01:
+                    score += 10
+                elif avg_cost < 0.05:
+                    score += 5
+            elif characteristics["cost_sensitivity"] == "low":
+                # Prefer higher quality (cost) for complex tasks
+                if avg_cost > 0.01:
+                    score += 10
+        
+        # Characteristic-based scoring
+        if characteristics["urgency"] == "high":
+            # Prefer fast providers
+            if provider_name in ["groq", "openai", "google"]:
+                score += 10
+        elif characteristics["quality_requirement"] == "high":
+            # Prefer high-quality providers
+            if provider_name in ["anthropic", "openai"]:
+                score += 15
+        
+        # Health check penalty
+        if provider_name in self.provider_health_cache:
+            health = self.provider_health_cache[provider_name]
+            if health.get("status") != "healthy":
+                score -= 50  # Heavy penalty for unhealthy providers
+        
+        return max(0.0, score)  # Ensure non-negative score
+    
+    async def update_performance_history(self, provider_name: str, response_time: float, cost: float, success: bool):
+        """Update performance history for a provider"""
+        if provider_name not in self.performance_history:
+            self.performance_history[provider_name] = {
+                "total_requests": 0,
+                "successful_requests": 0,
+                "total_response_time": 0,
+                "total_cost": 0,
+                "avg_response_time": 0,
+                "avg_cost": 0,
+                "success_rate": 0,
+                "last_updated": datetime.utcnow()
+            }
+        
+        perf = self.performance_history[provider_name]
+        perf["total_requests"] += 1
+        perf["total_response_time"] += response_time
+        perf["total_cost"] += cost
+        perf["last_updated"] = datetime.utcnow()
+        
+        if success:
+            perf["successful_requests"] += 1
+        
+        # Update averages
+        perf["avg_response_time"] = perf["total_response_time"] / perf["total_requests"]
+        perf["avg_cost"] = perf["total_cost"] / perf["total_requests"]
+        perf["success_rate"] = perf["successful_requests"] / perf["total_requests"]
+    
+    async def update_provider_health(self, provider_name: str, health_status: Dict[str, Any]):
+        """Update provider health cache"""
+        self.provider_health_cache[provider_name] = health_status
+        self.last_health_check = datetime.utcnow()
+    
+    def get_routing_recommendations(self) -> Dict[str, Any]:
+        """Get routing recommendations for dashboard"""
+        recommendations = {
+            "top_performers": [],
+            "cost_optimizers": [],
+            "speed_optimizers": [],
+            "quality_optimizers": [],
+            "health_status": self.provider_health_cache.copy()
+        }
+        
+        # Sort providers by different metrics
+        providers_by_success = sorted(
+            self.performance_history.items(),
+            key=lambda x: x[1].get("success_rate", 0),
+            reverse=True
+        )
+        
+        providers_by_cost = sorted(
+            self.performance_history.items(),
+            key=lambda x: x[1].get("avg_cost", float('inf'))
+        )
+        
+        providers_by_speed = sorted(
+            self.performance_history.items(),
+            key=lambda x: x[1].get("avg_response_time", float('inf'))
+        )
+        
+        # Top 3 in each category
+        recommendations["top_performers"] = [
+            {"provider": name, "success_rate": perf.get("success_rate", 0)}
+            for name, perf in providers_by_success[:3]
+        ]
+        
+        recommendations["cost_optimizers"] = [
+            {"provider": name, "avg_cost": perf.get("avg_cost", 0)}
+            for name, perf in providers_by_cost[:3]
+        ]
+        
+        recommendations["speed_optimizers"] = [
+            {"provider": name, "avg_response_time": perf.get("avg_response_time", 0)}
+            for name, perf in providers_by_speed[:3]
+        ]
+        
+        return recommendations
 
 
 class ModelAlias:
@@ -105,7 +306,7 @@ class ModelAlias:
 
 
 class EnhancedLLMGateway:
-    """Enhanced central gateway for ALL LLM providers"""
+    """Enhanced central gateway for ALL LLM providers with intelligent routing"""
     
     def __init__(self, config_path: Optional[str] = None):
         self.config_path = config_path or "models_config.yaml"
@@ -117,6 +318,9 @@ class EnhancedLLMGateway:
         self._fallback_enabled = True
         self._cost_optimization = True
         self._performance_tracking = True
+        
+        # Enhanced intelligent routing
+        self.intelligent_router = IntelligentRouter()
         
         # Performance tracking
         self.performance_stats: Dict[str, Dict[str, Any]] = {}
@@ -150,8 +354,16 @@ class EnhancedLLMGateway:
             self.provider_classes["openrouter"] = OpenRouterProvider
         if DEEPSEEK_AVAILABLE:
             self.provider_classes["deepseek"] = DeepSeekProvider
+        if MOCK_AVAILABLE:
+            self.provider_classes["mock"] = MockProvider
         
         logger.info(f"Available provider classes: {list(self.provider_classes.keys())}")
+        
+        # Load configuration
+        self._load_configuration()
+        
+        # Setup model aliases
+        self._setup_dynamic_model_aliases(self.model_aliases)
     
     async def initialize(self, force_reload: bool = False) -> bool:
         """Initialize the gateway and all providers"""
@@ -485,10 +697,24 @@ class EnhancedLLMGateway:
         model_spec: str, 
         method_name: str
     ) -> GenerationResponse:
-        """Route request through providers with fallback"""
+        """Route request through providers with intelligent routing and fallback"""
+        
+        # Analyze request characteristics for intelligent routing
+        characteristics = self.intelligent_router.analyze_request_characteristics(request)
+        
+        # Get provider rankings based on characteristics
+        provider_rankings = self.intelligent_router.get_provider_ranking(characteristics, self.providers)
         
         # Resolve model specification to provider/model pairs
         model_options = self._resolve_model_spec(model_spec)
+        
+        # Reorder model options based on intelligent routing
+        if provider_rankings:
+            # Create a mapping of provider names to their rankings
+            provider_rank_map = {name: rank for name, rank in provider_rankings}
+            
+            # Sort model options by provider ranking
+            model_options.sort(key=lambda alias: provider_rank_map.get(alias.provider, 0), reverse=True)
         
         last_error = None
         
@@ -518,6 +744,27 @@ class EnhancedLLMGateway:
                         response.response_time or (time.time() - start_time),
                         response.cost or 0,
                         not response.error
+                    )
+                
+                # Update intelligent router performance history
+                if response.response_time is not None:
+                    await self.intelligent_router.update_performance_history(
+                        alias.provider, 
+                        response.response_time, 
+                        response.cost or 0, 
+                        not response.error
+                    )
+                
+                # Update provider health cache
+                if response.error:
+                    await self.intelligent_router.update_provider_health(
+                        alias.provider, 
+                        {"status": "unhealthy", "error": response.error}
+                    )
+                else:
+                    await self.intelligent_router.update_provider_health(
+                        alias.provider, 
+                        {"status": "healthy"}
                     )
                 
                 # Return successful response
@@ -671,6 +918,10 @@ class EnhancedLLMGateway:
                 "performance_tracking": self._performance_tracking
             }
         }
+
+    def get_routing_recommendations(self) -> Dict[str, Any]:
+        """Get routing recommendations for dashboard"""
+        return self.intelligent_router.get_routing_recommendations()
 
 
 # Global gateway instance

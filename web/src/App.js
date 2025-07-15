@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
 import APIKeys from './pages/APIKeys';
+import Team from './pages/Team';
 import Billing from './pages/Billing';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
@@ -33,6 +34,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="api-keys" element={<APIKeys />} />
+              <Route path="team" element={<Team />} />
               <Route path="billing" element={<Billing />} />
               <Route path="settings" element={<Settings />} />
             </Route>

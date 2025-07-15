@@ -22,7 +22,17 @@ const Dashboard = () => {
       setAnalytics(analyticsRes.data);
       setUsage(usageRes.data);
     } catch (error) {
-      toast.error('Failed to load dashboard data');
+      let message = error.response?.data?.detail;
+      if (!message && error.response?.data && typeof error.response.data === 'object') {
+        if (Array.isArray(error.response.data)) {
+          message = error.response.data.map(e => e.msg).join(', ');
+        } else if (error.response.data.detail) {
+          message = error.response.data.detail;
+        } else {
+          message = JSON.stringify(error.response.data);
+        }
+      }
+      toast.error(message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -31,191 +41,200 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-gray-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-3xl font-bold gradient-text mb-2">Dashboard</h1>
+        <p className="text-gray-600">
           Overview of your LLM Gateway usage and performance
         </p>
       </div>
 
       {/* Usage Stats */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">R</span>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Requests This Month
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {usage?.current_period_requests?.toLocaleString() || '0'}
-                  </dd>
-                </dl>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="stat-card hover-lift overflow-hidden">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">R</span>
               </div>
             </div>
+            <div className="ml-4 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">
+                  Requests This Month
+                </dt>
+                <dd className="text-2xl font-bold text-gray-900">
+                  {usage?.current_period_requests?.toLocaleString() || '0'}
+                </dd>
+              </dl>
+            </div>
           </div>
-          <div className="bg-gray-50 px-5 py-3">
+          <div className="bg-blue-50/60 px-6 py-3">
             <div className="text-sm">
               <span className="text-gray-600">
-                {usage?.request_limit?.toLocaleString() || '0'} limit
+                {usage?.request_limit?.toLocaleString() || '∞'} limit
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">T</span>
-                </div>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Tokens This Month
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {usage?.current_period_tokens?.toLocaleString() || '0'}
-                  </dd>
-                </dl>
+        <div className="stat-card hover-lift overflow-hidden">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-400 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">T</span>
               </div>
             </div>
+            <div className="ml-4 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">
+                  Tokens This Month
+                </dt>
+                <dd className="text-2xl font-bold text-gray-900">
+                  {usage?.current_period_tokens?.toLocaleString() || '0'}
+                </dd>
+              </dl>
+            </div>
           </div>
-          <div className="bg-gray-50 px-5 py-3">
+          <div className="bg-blue-50/60 px-6 py-3">
             <div className="text-sm">
               <span className="text-gray-600">
-                {usage?.token_limit?.toLocaleString() || '0'} limit
+                {usage?.token_limit?.toLocaleString() || '∞'} limit
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">$</span>
-                </div>
+        <div className="stat-card hover-lift overflow-hidden">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">$</span>
               </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Cost This Month
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    ${usage?.current_period_cost?.toFixed(2) || '0.00'}
-                  </dd>
-                </dl>
-              </div>
+            </div>
+            <div className="ml-4 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">
+                  Cost This Month
+                </dt>
+                <dd className="text-2xl font-bold text-gray-900">
+                  ${usage?.current_period_cost?.toFixed(2) || '0.00'}
+                </dd>
+              </dl>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">%</span>
-                </div>
+        <div className="stat-card hover-lift overflow-hidden">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">%</span>
               </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Success Rate
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {analytics?.success_rate?.toFixed(1) || '0.0'}%
-                  </dd>
-                </dl>
-              </div>
+            </div>
+            <div className="ml-4 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">
+                  Success Rate
+                </dt>
+                <dd className="text-2xl font-bold text-gray-900">
+                  {analytics?.success_rate?.toFixed(1) || '0.0'}%
+                </dd>
+              </dl>
             </div>
           </div>
         </div>
       </div>
 
       {/* Usage Chart */}
-      {analytics?.usage_by_day && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Usage Over Time</h3>
+      {analytics?.usage_by_day && analytics.usage_by_day.length > 0 ? (
+        <div className="clean-card hover-lift rounded-xl p-6">
+          <h3 className="text-xl font-semibold gradient-text mb-6">Usage Over Time</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analytics.usage_by_day}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ef" />
+                <XAxis dataKey="date" stroke="#64748b" />
+                <YAxis stroke="#64748b" />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid #e0e7ef',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
                 <Line 
                   type="monotone" 
                   dataKey="requests" 
-                  stroke="#3B82F6" 
-                  strokeWidth={2}
+                  stroke="#3b82f6" 
+                  strokeWidth={3}
                   name="Requests"
+                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="cost" 
-                  stroke="#10B981" 
-                  strokeWidth={2}
+                  stroke="#6366f1" 
+                  strokeWidth={3}
                   name="Cost ($)"
+                  dot={{ fill: '#6366f1', strokeWidth: 2, r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
+      ) : (
+        <div className="empty-state-card">
+          <div className="empty-state-icon">📊</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Usage Data Yet</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Start making API requests to see your usage analytics and performance metrics here.
+          </p>
+        </div>
       )}
 
       {/* Top Models */}
-      {analytics?.top_models && (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Top Models</h3>
+      {analytics?.top_models && analytics.top_models.length > 0 ? (
+        <div className="clean-card hover-lift rounded-xl p-6">
+          <h3 className="text-xl font-semibold gradient-text mb-6">Top Models</h3>
           <div className="overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="table-header">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Model
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Provider
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Requests
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Cost
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-100">
                 {analytics.top_models.slice(0, 5).map((model, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <tr key={index} className="hover-lift">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                       {model.model_id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {model.provider}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {model.request_count.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       ${model.cost.toFixed(2)}
                     </td>
                   </tr>
@@ -223,6 +242,14 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      ) : (
+        <div className="empty-state-card">
+          <div className="empty-state-icon">🤖</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Model Usage Yet</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Start making requests to different LLM models to see usage statistics and comparisons here.
+          </p>
         </div>
       )}
     </div>

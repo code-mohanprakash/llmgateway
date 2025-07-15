@@ -10,9 +10,12 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 # Database URL from environment
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql://localhost:5432/llm_gateway"
+    "sqlite:///./llm_gateway.db"
 )
-ASYNC_DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+ASYNC_DATABASE_URL = os.getenv(
+    "ASYNC_DATABASE_URL",
+    "sqlite+aiosqlite:///./llm_gateway.db"
+)
 
 # Create engines
 engine = create_engine(DATABASE_URL)

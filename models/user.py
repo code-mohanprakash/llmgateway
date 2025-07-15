@@ -3,7 +3,6 @@ User and organization models for multi-tenancy
 """
 from sqlalchemy import Column, String, Boolean, ForeignKey, Integer, Text, JSON, Enum, Numeric
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
 import enum
 from models.base import BaseModel
 
@@ -63,13 +62,16 @@ class User(BaseModel):
     is_verified = Column(Boolean, default=False)
     
     # Organization relationship
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
     role = Column(Enum(UserRole), default=UserRole.MEMBER, nullable=False)
     
     # Profile
     avatar_url = Column(String(500))
     timezone = Column(String(50), default="UTC")
     preferences = Column(JSON, default=dict)
+    
+    # Login tracking
+    last_login_at = Column(String, nullable=True)
     
     # Relationships
     organization = relationship("Organization", back_populates="users")
@@ -98,8 +100,8 @@ class APIKey(BaseModel):
     usage_count = Column(Integer, default=0)
     
     # Relationships
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
     
     user = relationship("User", back_populates="api_keys")
     organization = relationship("Organization", back_populates="api_keys")
@@ -111,8 +113,8 @@ class UsageRecord(BaseModel):
 
     # Request information
     request_id = Column(String(255), unique=True, nullable=False)
-    api_key_id = Column(UUID(as_uuid=True), ForeignKey("api_keys.id"), nullable=False)
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    api_key_id = Column(String(36), ForeignKey("api_keys.id"), nullable=False)
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
     
     # Model information
     provider = Column(String(100), nullable=False)
@@ -147,7 +149,7 @@ class BillingRecord(BaseModel):
     """Billing records for invoicing"""
     __tablename__ = "billing_records"
 
-    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False)
+    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
     
     # Billing period
     billing_period_start = Column(String, nullable=False)

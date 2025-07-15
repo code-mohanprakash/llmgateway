@@ -240,6 +240,46 @@ async def cancel_subscription(
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@router.get("/invoices")
+async def get_invoices(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get billing invoices for the organization"""
+    
+    # Get organization
+    result = await db.execute(
+        select(Organization).where(Organization.id == current_user.organization_id)
+    )
+    organization = result.scalar_one()
+    
+    # Get billing records
+    billing_result = await db.execute(
+        select(BillingRecord).where(
+            BillingRecord.organization_id == organization.id
+        ).order_by(
+            BillingRecord.billing_period_start.desc()
+        ).limit(50)
+    )
+    
+    billing_records = billing_result.scalars().all()
+    
+    invoices = []
+    for record in billing_records:
+        invoices.append({
+            "id": str(record.id),
+            "invoice_number": record.stripe_invoice_id or f"INV-{record.id}",
+            "amount": record.total_cost_usd,
+            "status": record.status,
+            "billing_period_start": record.billing_period_start.isoformat(),
+            "billing_period_end": record.billing_period_end.isoformat(),
+            "paid_at": record.paid_at.isoformat() if record.paid_at else None,
+            "created_at": record.created_at.isoformat()
+        })
+    
+    return invoices
+
+
 @router.post("/webhook")
 async def stripe_webhook(request: Request, db: AsyncSession = Depends(get_db)):
     """Handle Stripe webhooks"""

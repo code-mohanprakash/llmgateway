@@ -4,7 +4,6 @@ Base models and mixins for the SaaS platform
 import uuid
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Boolean
-from sqlalchemy.dialects.postgresql import UUID
 from database.database import Base
 
 
@@ -16,7 +15,7 @@ class TimestampMixin:
 
 class UUIDMixin:
     """Mixin for UUID primary key"""
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
 
 
 class SoftDeleteMixin:

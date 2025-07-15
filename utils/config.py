@@ -45,6 +45,7 @@ class Config(BaseModel):
         "deepseek": DynamicProviderConfig.from_env("deepseek"),
         "ollama": DynamicProviderConfig.from_env("ollama"),
         "openrouter": DynamicProviderConfig.from_env("openrouter"),
+        "mock": DynamicProviderConfig.from_env("mock"),
     })
     
     # Available providers (only those with valid API keys)
