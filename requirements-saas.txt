@@ -1,4 +1,4 @@
-# SaaS-specific dependencies for LLM Gateway
+# SaaS-specific dependencies for Model Bridge
 # Existing core dependencies from requirements.txt
 
 # Web Framework

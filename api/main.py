@@ -1,5 +1,5 @@
 """
-Main FastAPI application for LLM Gateway SaaS
+Main FastAPI application for Model Bridge SaaS
 """
 import os
 from fastapi import FastAPI, Request
@@ -19,8 +19,8 @@ REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method',
 REQUEST_DURATION = Histogram('http_request_duration_seconds', 'HTTP request duration')
 
 app = FastAPI(
-    title="LLM Gateway SaaS",
-    description="Enhanced Multi-Provider LLM Gateway with Intelligent Routing",
+    title="Model Bridge SaaS",
+description="Enhanced Multi-Provider Model Bridge with Intelligent Routing",
     version="2.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -69,8 +69,10 @@ app.include_router(llm.router, prefix="/api/v1", tags=["llm"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 
-# Serve static files (frontend)
-app.mount("/static", StaticFiles(directory="web/dist/static"), name="static")
+# Serve static files (frontend) - only if directory exists
+import os
+if os.path.exists("web/dist/static"):
+    app.mount("/static", StaticFiles(directory="web/dist/static"), name="static")
 
 
 @app.get("/metrics")
@@ -98,8 +100,11 @@ async def serve_frontend(path: str):
     if path.startswith("api/"):
         return {"error": "API endpoint not found"}, 404
     
-    # Serve index.html for client-side routing
-    return FileResponse("web/dist/index.html")
+    # Serve index.html for client-side routing if it exists
+    if os.path.exists("web/dist/index.html"):
+        return FileResponse("web/dist/index.html")
+    else:
+        return {"message": "Frontend not built yet. Please run 'npm run build' in the web directory."}
 
 
 if __name__ == "__main__":

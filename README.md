@@ -1,6 +1,6 @@
-# LLM Gateway - Enhanced Multi-Provider LLM Gateway
+# Model Bridge - Enhanced Multi-Provider Model Bridge
 
-A production-ready, intelligent LLM gateway that manages multiple AI providers with automatic routing, cost optimization, and comprehensive monitoring. **Now with full SaaS capabilities including web dashboard, billing, and multi-tenancy.**
+A production-ready, intelligent Model Bridge that manages multiple AI providers with automatic routing, cost optimization, and comprehensive monitoring. **Now with full SaaS capabilities including web dashboard, billing, and multi-tenancy.**
 
 ## 🚀 Features
 
@@ -36,18 +36,18 @@ A production-ready, intelligent LLM gateway that manages multiple AI providers w
 
 ### Basic Installation
 ```bash
-pip install llm-gateway
+pip install model-bridge
 ```
 
 ### Full Installation (All Providers)
 ```bash
-pip install llm-gateway[all]
+pip install model-bridge[all]
 ```
 
 ### Development Installation
 ```bash
-git clone https://github.com/code-mohanprakash/llmgateway.git
-cd llmgateway
+git clone https://github.com/code-mohanprakash/modelbridge.git
+cd modelbridge
 pip install -e .
 ```
 
@@ -64,11 +64,11 @@ export GOOGLE_API_KEY="your_google_key"
 ### 2. Basic Usage (Standalone)
 ```python
 import asyncio
-from llm_gateway import EnhancedLLMGateway
+from model_bridge import EnhancedModelBridge
 
 async def main():
     # Initialize gateway
-    gateway = EnhancedLLMGateway()
+    gateway = EnhancedModelBridge()
     await gateway.initialize()
     
     # Generate text with automatic model selection
@@ -274,7 +274,7 @@ class BaseModelProvider:
                               │
                               ▼
                        ┌─────────────────┐    ┌─────────────────┐
-                       │     Redis       │    │   LLM Gateway   │
+                       │     Redis       │    │   Model Bridge   │
                        │  Cache & Rate   │    │   Core Engine   │
                        │    Limiting     │    │                 │
                        └─────────────────┘    └─────────────────┘
@@ -345,7 +345,7 @@ import requests
 # Organization-specific API calls
 headers = {"Authorization": "Bearer org_api_key"}
 response = requests.post(
-    "https://api.llmgateway.com/v1/generate",
+    "https://api.modelbridge.com/v1/generate",
     json={"prompt": "Analyze this data", "model": "balanced"},
     headers=headers
 )
@@ -417,10 +417,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/code-mohanprakash/llmgateway/issues)
-- **Documentation**: [Full documentation](https://github.com/code-mohanprakash/llmgateway/wiki)
-- **Examples**: [Example applications](https://github.com/code-mohanprakash/llmgateway/tree/main/examples)
-- **SaaS Support**: [Commercial support and enterprise features](https://llmgateway.com)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/code-mohanprakash/modelbridge/issues)
+- **Documentation**: [Full documentation](https://github.com/code-mohanprakash/modelbridge/wiki)
+- **Examples**: [Example applications](https://github.com/code-mohanprakash/modelbridge/tree/main/examples)
+- **SaaS Support**: [Commercial support and enterprise features](https://modelbridge.com)
 
 ---
 

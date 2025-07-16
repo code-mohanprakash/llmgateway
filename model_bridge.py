@@ -1,5 +1,5 @@
 """
-Enhanced Unified LLM Gateway - Standalone Version
+Enhanced Unified Model Bridge - Standalone Version
 Central service that manages ALL model providers and routes requests intelligently
 """
 import asyncio
@@ -305,7 +305,7 @@ class ModelAlias:
         self.priority = priority
 
 
-class EnhancedLLMGateway:
+class EnhancedModelBridge:
     """Enhanced central gateway for ALL LLM providers with intelligent routing"""
     
     def __init__(self, config_path: Optional[str] = None):
@@ -415,7 +415,7 @@ class EnhancedLLMGateway:
             # Check if at least one provider initialized successfully
             if any(initialization_results):
                 self._initialized = True
-                logger.info(f"Enhanced LLM Gateway initialized with {len(self.providers)} providers")
+                logger.info(f"Enhanced Model Bridge initialized with {len(self.providers)} providers")
                 await self._log_available_models()
                 return True
             else:
@@ -423,7 +423,7 @@ class EnhancedLLMGateway:
                 return False
                 
         except Exception as e:
-            logger.error(f"Failed to initialize Enhanced LLM Gateway: {str(e)}")
+            logger.error(f"Failed to initialize Enhanced Model Bridge: {str(e)}")
             return False
     
     def _setup_dynamic_model_aliases(self, aliases_config: Dict[str, List[Dict[str, Any]]]):
@@ -925,7 +925,7 @@ class EnhancedLLMGateway:
 
 
 # Global gateway instance
-enhanced_gateway = EnhancedLLMGateway()
+enhanced_gateway = EnhancedModelBridge()
 
 # Convenience functions for backward compatibility
 async def generate_text(*args, **kwargs) -> GenerationResponse:
@@ -945,4 +945,4 @@ async def initialize_gateway() -> bool:
     return await enhanced_gateway.initialize()
 
 # Main gateway export
-llm_gateway = enhanced_gateway
+model_bridge = enhanced_gateway

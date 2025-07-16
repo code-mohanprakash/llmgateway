@@ -123,7 +123,7 @@ const APIKeys = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>
-            <p className="text-gray-600 mt-1">Manage your API keys for accessing the LLM Gateway</p>
+            <p className="text-gray-600 mt-1">Manage your API keys for accessing the Model Bridge</p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
@@ -145,7 +145,7 @@ const APIKeys = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>
-          <p className="text-gray-600 mt-1">Manage your API keys for accessing the LLM Gateway</p>
+          <p className="text-gray-600 mt-1">Manage your API keys for accessing the Model Bridge</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -179,7 +179,7 @@ const APIKeys = () => {
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">No API Keys Yet</h3>
               <p className="text-gray-500 max-w-sm mx-auto mb-4">
-                Create your first API key to start making requests to the LLM Gateway.
+                Create your first API key to start making requests to the Model Bridge.
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}

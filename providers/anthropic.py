@@ -1,5 +1,5 @@
 """
-Anthropic Provider for Unified LLM Gateway
+Anthropic Provider for Unified Model Bridge
 Supports Claude 3 models with latest Anthropic SDK
 """
 import asyncio

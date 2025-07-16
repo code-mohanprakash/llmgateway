@@ -1,9 +1,9 @@
-# LLM Gateway SaaS - Development Makefile
+# Model Bridge SaaS - Development Makefile
 
 .PHONY: help install test lint format security clean build deploy docker-build docker-run
 
 help:
-	@echo "LLM Gateway SaaS - Available Commands:"
+	@echo "Model Bridge SaaS - Available Commands:"
 	@echo ""
 	@echo "Development:"
 	@echo "  install      Install all dependencies"

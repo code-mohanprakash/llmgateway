@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = Cookies.get('access_token');
+    console.log('AuthContext initializing, token:', token ? 'exists' : 'none');
     if (token) {
       checkAuth();
     } else {
@@ -30,8 +31,10 @@ export const AuthProvider = ({ children }) => {
       const response = await api.get('/auth/me');
       setUser(response.data);
     } catch (error) {
+      console.log('Auth check failed:', error.message);
       Cookies.remove('access_token');
       Cookies.remove('refresh_token');
+      setUser(null);
     } finally {
       setLoading(false);
     }

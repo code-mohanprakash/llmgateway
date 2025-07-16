@@ -1,5 +1,5 @@
 """
-Configuration management for LLM Gateway - Standalone Version
+Configuration management for Model Bridge - Standalone Version
 """
 import os
 from typing import List, Optional, Dict, Any
@@ -29,7 +29,7 @@ class DynamicProviderConfig(BaseModel):
 
 
 class Config(BaseModel):
-    """Application configuration for standalone LLM Gateway"""
+    """Application configuration for standalone Model Bridge"""
     
     # Dynamic Provider Configuration
     providers: Dict[str, DynamicProviderConfig] = Field(default_factory=lambda: {

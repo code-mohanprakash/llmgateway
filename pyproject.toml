@@ -3,13 +3,13 @@ requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llm-gateway-saas"
+name = "model-bridge-saas"
 version = "2.0.0"
-description = "Enhanced Multi-Provider LLM Gateway with SaaS Features"
+description = "Enhanced Multi-Provider Model Bridge with SaaS Features"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "LLM Gateway Team", email = "contact@llmgateway.com"}
+    {name = "Model Bridge Team", email = "contact@modelbridge.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -67,7 +67,7 @@ dev = [
 ]
 
 [project.scripts]
-llm-gateway = "api.main:main"
+model-bridge = "api.main:main"
 
 [tool.black]
 line-length = 100

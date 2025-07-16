@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import RoleBasedAccess from './RoleBasedAccess';
+import Logo from './Logo';
 import {
   HomeIcon,
   ChartBarIcon,
@@ -9,26 +10,68 @@ import {
   CreditCardIcon,
   CogIcon,
   ArrowRightOnRectangleIcon,
-  UsersIcon
+  UsersIcon,
+  RocketLaunchIcon,
+  SparklesIcon,
+  TrophyIcon,
+  StarIcon,
+  ChevronDownIcon,
+  PlusIcon,
+  FolderIcon
 } from '@heroicons/react/24/outline';
+import api from '../services/api';
 
 const Layout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState('free');
+
+  useEffect(() => {
+    // Fetch current plan from API
+    const fetchPlan = async () => {
+      try {
+        const res = await api.get('/billing/current-plan');
+        setCurrentPlan(res.data?.plan_id || 'free');
+      } catch {
+        setCurrentPlan('free');
+      }
+    };
+    fetchPlan();
+  }, []);
+
+  const getPlanIcon = (planId) => {
+    switch (planId) {
+      case 'free': return <RocketLaunchIcon className="h-4 w-4 mr-1" />;
+      case 'starter': return <StarIcon className="h-4 w-4 mr-1" />;
+      case 'professional': return <SparklesIcon className="h-4 w-4 mr-1" />;
+      case 'enterprise': return <TrophyIcon className="h-4 w-4 mr-1" />;
+      default: return <RocketLaunchIcon className="h-4 w-4 mr-1" />;
+    }
+  };
+  const getPlanName = (planId) => {
+    switch (planId) {
+      case 'free': return 'Shuttle Launch';
+      case 'starter': return 'Star Cruiser';
+      case 'professional': return 'Galaxy Explorer';
+      case 'enterprise': return 'Cosmic Enterprise';
+      default: return 'Shuttle Launch';
+    }
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-    { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
-    { name: 'API Keys', href: '/api-keys', icon: KeyIcon },
+    { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
+    { name: 'API Keys', href: '/dashboard/api-keys', icon: KeyIcon },
     { 
       name: 'Team', 
-      href: '/team', 
+      href: '/dashboard/team', 
       icon: UsersIcon,
       requireAdmin: true 
     },
-    { name: 'Billing', href: '/billing', icon: CreditCardIcon },
-    { name: 'Settings', href: '/settings', icon: CogIcon },
+    { name: 'Billing', href: '/dashboard/billing', icon: CreditCardIcon },
+    { name: 'Settings', href: '/dashboard/settings', icon: CogIcon },
   ];
 
   const handleLogout = async () => {
@@ -38,16 +81,32 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen flex" style={{background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'}}>
-      {/* Sidebar */}
-      <div className="w-64 clean-card border-r border-gray-200/50 backdrop-blur-sm">
+      {/* Compact Sidebar */}
+      <div 
+        className={`${
+          isSidebarExpanded ? 'w-48' : 'w-16'
+        } clean-card border-r border-gray-200/50 backdrop-blur-sm transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0`}
+        onMouseEnter={() => setIsSidebarExpanded(true)}
+        onMouseLeave={() => setIsSidebarExpanded(false)}
+        style={{ height: '100vh' }}
+      >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200/30">
-            <h1 className="gradient-text text-xl font-bold tracking-tight">LLM Gateway</h1>
+          <div className="flex items-center justify-center h-16 px-3 border-b border-gray-200/30 overflow-hidden flex-shrink-0">
+            <div className={`transition-all duration-300 ease-in-out ${
+              isSidebarExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-95 absolute'
+            }`}>
+              <Logo size="default" showText={true} />
+            </div>
+            <div className={`transition-all duration-300 ease-in-out ${
+              isSidebarExpanded ? 'opacity-0 scale-95 absolute' : 'opacity-100 scale-100'
+            }`}>
+              <Logo size="small" showText={false} />
+            </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1">
+          <nav className="flex-1 px-2 py-6 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               
@@ -59,12 +118,19 @@ const Layout = () => {
                       to={item.href}
                       className={`${
                         isActive
-                          ? 'bg-blue-50/80 text-blue-900 border-r-2 border-blue-500'
-                          : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
-                      } group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200`}
+                          ? 'bg-pink-50/80 text-[#9B5967] border-r-2 border-[#9B5967]'
+                          : 'text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50'
+                      } group flex items-center px-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                        isSidebarExpanded ? 'justify-start' : 'justify-center'
+                      }`}
+                      title={!isSidebarExpanded ? item.name : ''}
                     >
-                      <item.icon className="mr-3 h-5 w-5" />
-                      {item.name}
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className={`ml-2 whitespace-nowrap transition-all duration-300 ease-in-out ${
+                        isSidebarExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 absolute'
+                      }`}>
+                        {item.name}
+                      </span>
                     </Link>
                   </RoleBasedAccess>
                 );
@@ -76,64 +142,88 @@ const Layout = () => {
                   to={item.href}
                   className={`${
                     isActive
-                      ? 'bg-blue-50/80 text-blue-900 border-r-2 border-blue-500'
-                      : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
-                  } group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200`}
+                      ? 'bg-pink-50/80 text-[#9B5967] border-r-2 border-[#9B5967]'
+                      : 'text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50'
+                  } group flex items-center px-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    isSidebarExpanded ? 'justify-start' : 'justify-center'
+                  }`}
+                  title={!isSidebarExpanded ? item.name : ''}
                 >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.name}
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  <span className={`ml-2 whitespace-nowrap transition-all duration-300 ease-in-out ${
+                    isSidebarExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 absolute'
+                  }`}>
+                    {item.name}
+                  </span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* User menu */}
-          <div className="p-4 border-t border-gray-200/30">
-            <div className="flex items-center mb-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">
-                  {user?.firstName?.[0] || user?.full_name?.[0] || 'U'}
-                </span>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">
-                  {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.full_name}
-                </p>
-                <p className="text-xs text-gray-500">{user?.email}</p>
-                <p className="text-xs text-gray-400 capitalize">{user?.role}</p>
+          {/* User Profile Section - Always Visible at Bottom */}
+          <div className="p-3 border-t border-gray-200/30 flex-shrink-0">
+            {/* Expanded State */}
+            <div className={`transition-all duration-300 ease-in-out ${
+              isSidebarExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-95 absolute'
+            }`}>
+              <div className="space-y-3">
+                {/* User Info */}
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#9B5967] to-[#8a4d5a] rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white text-sm font-medium">
+                      {user?.firstName?.[0] || user?.full_name?.[0] || 'U'}
+                    </span>
+                  </div>
+                  <div className="ml-3 min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-700 truncate">
+                      {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.full_name || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">{user?.email || 'user@example.com'}</p>
+                    <p className="text-xs text-gray-400 capitalize">{user?.role || 'user'}</p>
+                  </div>
+                </div>
+                
+                {/* Sign Out Button */}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50 rounded-lg transition-all duration-200"
+                >
+                  <ArrowRightOnRectangleIcon className="mr-3 h-4 w-4 flex-shrink-0" />
+                  <span className="whitespace-nowrap">Sign out</span>
+                </button>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-all duration-200"
-            >
-              <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5" />
-              Sign out
-            </button>
+            
+            {/* Collapsed State */}
+            <div className={`transition-all duration-300 ease-in-out ${
+              isSidebarExpanded ? 'opacity-0 scale-95 absolute' : 'opacity-100 scale-100'
+            }`}>
+              <div className="flex flex-col items-center space-y-3">
+                {/* User Avatar */}
+                <div className="w-8 h-8 bg-gradient-to-br from-[#9B5967] to-[#8a4d5a] rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {user?.firstName?.[0] || user?.full_name?.[0] || 'U'}
+                  </span>
+                </div>
+                
+                {/* Sign Out Button */}
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50 rounded-lg transition-all duration-200"
+                  title="Sign out"
+                >
+                  <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="clean-card border-b border-gray-200/50 backdrop-blur-sm">
-          <div className="px-6 py-5">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold gradient-text">
-                {navigation.find(item => item.href === location.pathname)?.name || 'Dashboard'}
-              </h2>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-500 font-medium">
-                  {user?.organization?.name}
-                </span>
-              </div>
-            </div>
-          </div>
-        </header>
-
+      <div className="flex-1 flex flex-col min-h-screen">
         {/* Page content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-auto">
           <Outlet />
         </main>
       </div>

@@ -1,5 +1,5 @@
 """
-Ollama Provider for Unified LLM Gateway
+Ollama Provider for Unified Model Bridge
 Handles local Ollama models like Llama, CodeLlama, Mistral, etc.
 """
 import aiohttp

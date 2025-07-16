@@ -206,22 +206,30 @@ const Analytics = () => {
     console.log('Analytics: Showing loading state');
     return (
       <div className="space-y-8">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold gradient-text">Analytics</h1>
             <p className="text-gray-600 mt-2">Track your API usage and performance</p>
           </div>
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="form-input w-auto"
-            disabled
-          >
-            <option value="24h">Last 24 hours</option>
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-          </select>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium text-gray-700">Time Range:</span>
+            <div className="flex bg-gray-100 rounded-lg p-1 opacity-50">
+              {[
+                { value: '24h', label: '24h' },
+                { value: '7d', label: '7d' },
+                { value: '30d', label: '30d' },
+                { value: '90d', label: '90d' }
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  disabled
+                  className="px-3 py-1 text-sm font-medium rounded-md text-gray-400"
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -660,22 +668,35 @@ const Analytics = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Header with Compact Time Filter */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold gradient-text">Analytics</h1>
           <p className="text-gray-600 mt-2">Track your API usage and intelligent routing performance</p>
         </div>
-        <select
-          value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value)}
-          className="form-input w-auto"
-        >
-          <option value="24h">Last 24 hours</option>
-          <option value="7d">Last 7 days</option>
-          <option value="30d">Last 30 days</option>
-          <option value="90d">Last 90 days</option>
-        </select>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium text-gray-700">Time Range:</span>
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            {[
+              { value: '24h', label: '24h' },
+              { value: '7d', label: '7d' },
+              { value: '30d', label: '30d' },
+              { value: '90d', label: '90d' }
+            ].map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setTimeRange(option.value)}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                  timeRange === option.value
+                    ? 'bg-white text-[#9B5967] shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}

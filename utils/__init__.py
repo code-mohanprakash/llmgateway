@@ -1,1 +1,1 @@
-"""Utils package for LLM Gateway"""
+"""Utils package for Model Bridge"""

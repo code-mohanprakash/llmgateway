@@ -1,11 +1,11 @@
 """
-LLM Gateway - Standalone Enhanced Multi-Provider LLM Gateway
+Model Bridge - Standalone Enhanced Multi-Provider Model Bridge
 """
 
-from .llm_gateway import (
-    EnhancedLLMGateway,
+from .model_bridge import (
+    EnhancedModelBridge,
     enhanced_gateway,
-    llm_gateway,
+    model_bridge,
     generate_text,
     generate_structured_output,
     initialize_gateway
@@ -13,9 +13,9 @@ from .llm_gateway import (
 
 __version__ = "1.0.0"
 __all__ = [
-    "EnhancedLLMGateway",
+    "EnhancedModelBridge",
     "enhanced_gateway", 
-    "llm_gateway",
+    "model_bridge",
     "generate_text",
     "generate_structured_output",
     "initialize_gateway"

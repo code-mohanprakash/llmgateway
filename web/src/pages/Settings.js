@@ -325,7 +325,7 @@ const Settings = () => {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="text-sm font-medium text-blue-900 mb-2">Configuration Notice</h4>
           <p className="text-sm text-blue-700">
-            API settings will be available once you start making requests to the LLM Gateway.
+            API settings will be available once you start making requests to the Model Bridge.
           </p>
         </div>
 
@@ -447,6 +447,148 @@ const Settings = () => {
                 notificationSettings.usageAlerts ? 'translate-x-5' : 'translate-x-0'
               }`}
             />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-medium text-gray-900">Billing Alerts</h4>
+            <p className="text-sm text-gray-600">Get notified about billing and payment issues</p>
+          </div>
+          <button
+            onClick={() => setNotificationSettings({...notificationSettings, billingAlerts: !notificationSettings.billingAlerts})}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 ${
+              notificationSettings.billingAlerts ? 'bg-blue-600' : 'bg-gray-200'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                notificationSettings.billingAlerts ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-medium text-gray-900">Security Alerts</h4>
+            <p className="text-sm text-gray-600">Get notified about security events and login attempts</p>
+          </div>
+          <button
+            onClick={() => setNotificationSettings({...notificationSettings, securityAlerts: !notificationSettings.securityAlerts})}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 ${
+              notificationSettings.securityAlerts ? 'bg-blue-600' : 'bg-gray-200'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                notificationSettings.securityAlerts ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-medium text-gray-900">Marketing Emails</h4>
+            <p className="text-sm text-gray-600">Receive updates about new features and announcements</p>
+          </div>
+          <button
+            onClick={() => setNotificationSettings({...notificationSettings, marketingEmails: !notificationSettings.marketingEmails})}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 ${
+              notificationSettings.marketingEmails ? 'bg-blue-600' : 'bg-gray-200'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                notificationSettings.marketingEmails ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Usage Alert Threshold (%)</label>
+          <input
+            type="number"
+            value={notificationSettings.usageThreshold}
+            onChange={(e) => setNotificationSettings({...notificationSettings, usageThreshold: parseInt(e.target.value)})}
+            className="form-input"
+            min="10"
+            max="100"
+          />
+        </div>
+      </div>
+
+      {/* Email Testing Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <div className="mb-4">
+          <h4 className="text-sm font-medium text-gray-900">Email Configuration Testing</h4>
+          <p className="text-sm text-gray-600">Test your email configuration to ensure notifications are working properly.</p>
+        </div>
+        
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="flex">
+            <CheckCircleIcon className="h-5 w-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" />
+            <div>
+              <h5 className="text-sm font-medium text-blue-900">Email Service Status</h5>
+              <p className="text-sm text-blue-700 mt-1">
+                SMTP configuration is properly set up and ready to send notifications.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={async () => {
+              try {
+                const response = await api.post('/auth/test-email', {
+                  email: profileData.email,
+                  test_type: 'password_reset'
+                });
+                toast.success('Test email sent successfully! Check your inbox.');
+              } catch (error) {
+                toast.error('Failed to send test email. Please check your email configuration.');
+              }
+            }}
+            className="btn-secondary"
+          >
+            Send Test Password Reset Email
+          </button>
+          
+          <button
+            onClick={async () => {
+              try {
+                const response = await api.post('/auth/test-email', {
+                  email: profileData.email,
+                  test_type: 'verification'
+                });
+                toast.success('Test verification email sent successfully! Check your inbox.');
+              } catch (error) {
+                toast.error('Failed to send test email. Please check your email configuration.');
+              }
+            }}
+            className="btn-secondary"
+          >
+            Send Test Verification Email
+          </button>
+          
+          <button
+            onClick={async () => {
+              try {
+                const response = await api.post('/auth/test-email', {
+                  email: profileData.email,
+                  test_type: 'notification'
+                });
+                toast.success('Test notification email sent successfully! Check your inbox.');
+              } catch (error) {
+                toast.error('Failed to send test email. Please check your email configuration.');
+              }
+            }}
+            className="btn-secondary"
+          >
+            Send Test Notification Email
           </button>
         </div>
       </div>

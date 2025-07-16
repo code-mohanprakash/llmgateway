@@ -8,6 +8,8 @@ const Dashboard = () => {
   const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -22,6 +24,7 @@ const Dashboard = () => {
       setAnalytics(analyticsRes.data);
       setUsage(usageRes.data);
     } catch (error) {
+      console.error('Dashboard data fetch error:', error);
       let message = error.response?.data?.detail;
       if (!message && error.response?.data && typeof error.response.data === 'object') {
         if (Array.isArray(error.response.data)) {
@@ -33,6 +36,25 @@ const Dashboard = () => {
         }
       }
       toast.error(message || 'Failed to load dashboard data');
+      
+      // Set real empty state, not fake data
+      setAnalytics({
+        total_requests: 0,
+        total_tokens: 0,
+        total_cost: 0,
+        average_response_time: 0,
+        success_rate: 0,
+        daily_usage: [],
+        top_models: []
+      });
+      setUsage({
+        current_period_requests: 0,
+        current_period_tokens: 0,
+        current_period_cost: 0,
+        monthly_token_limit: 0,
+        monthly_request_limit: 0,
+        plan_type: 'free'
+      });
     } finally {
       setLoading(false);
     }
@@ -48,10 +70,11 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
+      {/* Dashboard Content */}
       <div>
         <h1 className="text-3xl font-bold gradient-text mb-2">Dashboard</h1>
         <p className="text-gray-600">
-          Overview of your LLM Gateway usage and performance
+          Overview of your Model Bridge usage and performance
         </p>
       </div>
 

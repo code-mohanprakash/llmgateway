@@ -50,7 +50,7 @@ const Login = () => {
             Welcome Back
           </h2>
           <p className="text-gray-600">
-            Sign in to your LLM Gateway account
+            Sign in to your Model Bridge account
           </p>
           <p className="mt-4 text-sm text-gray-500">
             Don't have an account?{' '}
@@ -107,6 +107,21 @@ const Login = () => {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+
+          <div className="text-center space-y-3">
+            <Link 
+              to="/forgot-password" 
+              className="block text-[#9B5967] hover:text-[#8a4d5a] font-medium transition-colors"
+            >
+              Forgot your password?
+            </Link>
+            <div>
+              <span className="text-gray-600">Don't have an account?</span>
+              <Link to="/register" className="ml-2 text-[#9B5967] hover:text-[#8a4d5a] font-medium transition-colors">
+                Sign up
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

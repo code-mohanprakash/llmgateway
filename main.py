@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Production FastAPI application for LLM Gateway SaaS
+Production FastAPI application for Model Bridge SaaS
 """
 import os
 from fastapi import FastAPI
@@ -16,8 +16,8 @@ load_dotenv()
 from api.routers import auth, dashboard, llm, admin, billing
 
 app = FastAPI(
-    title=os.getenv("APP_NAME", "LLM Gateway SaaS"),
-    description="Production-ready Multi-Provider LLM Gateway",
+    title=os.getenv("APP_NAME", "Model Bridge SaaS"),
+description="Production-ready Multi-Provider Model Bridge",
     version=os.getenv("APP_VERSION", "2.0.0"),
     docs_url="/api/docs",
     redoc_url="/api/redoc",

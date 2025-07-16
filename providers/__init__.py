@@ -1,1 +1,1 @@
-"""Providers package for LLM Gateway"""
+"""Providers package for Model Bridge"""

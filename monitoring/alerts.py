@@ -1,5 +1,5 @@
 """
-Alerting system for LLM Gateway
+Alerting system for Model Bridge
 """
 import os
 import smtplib
@@ -118,7 +118,7 @@ class AlertManager:
             msg = MimeMultipart()
             msg['From'] = ALERT_FROM_EMAIL
             msg['To'] = ", ".join(admin_emails)
-            msg['Subject'] = f"[LLM Gateway Alert] {alert.title}"
+            msg['Subject'] = f"[Model Bridge Alert] {alert.title}"
             
             # Email body
             body = f"""
@@ -135,7 +135,7 @@ Metadata:
 {json.dumps(alert.metadata, indent=2)}
 
 ---
-LLM Gateway Alert System
+Model Bridge Alert System
             """.strip()
             
             msg.attach(MimeText(body, 'plain'))

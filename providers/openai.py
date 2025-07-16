@@ -1,5 +1,5 @@
 """
-OpenAI Provider for Unified LLM Gateway
+OpenAI Provider for Unified Model Bridge
 Supports GPT-4, GPT-3.5, and other OpenAI models with latest syntax
 """
 import asyncio

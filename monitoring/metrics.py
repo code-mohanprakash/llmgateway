@@ -1,5 +1,5 @@
 """
-Prometheus metrics for monitoring LLM Gateway
+Prometheus metrics for monitoring Model Bridge
 """
 import time
 from prometheus_client import Counter, Histogram, Gauge, Summary
@@ -7,76 +7,76 @@ from typing import Dict, Any
 
 # Request metrics
 REQUEST_COUNT = Counter(
-    'llm_gateway_requests_total',
+    'model_bridge_requests_total',
     'Total number of LLM requests',
     ['organization_id', 'provider', 'model', 'status']
 )
 
 REQUEST_DURATION = Histogram(
-    'llm_gateway_request_duration_seconds',
+    'model_bridge_request_duration_seconds',
     'Request duration in seconds',
     ['organization_id', 'provider', 'model']
 )
 
 TOKEN_COUNT = Counter(
-    'llm_gateway_tokens_total',
+    'model_bridge_tokens_total',
     'Total tokens processed',
     ['organization_id', 'provider', 'model', 'type']  # type: input/output
 )
 
 COST_TOTAL = Counter(
-    'llm_gateway_cost_usd_total',
+    'model_bridge_cost_usd_total',
     'Total cost in USD',
     ['organization_id', 'provider', 'model']
 )
 
 # Cache metrics
 CACHE_HITS = Counter(
-    'llm_gateway_cache_hits_total',
+    'model_bridge_cache_hits_total',
     'Total cache hits',
     ['organization_id']
 )
 
 CACHE_MISSES = Counter(
-    'llm_gateway_cache_misses_total',
+    'model_bridge_cache_misses_total',
     'Total cache misses',
     ['organization_id']
 )
 
 # Rate limiting metrics
 RATE_LIMIT_EXCEEDED = Counter(
-    'llm_gateway_rate_limit_exceeded_total',
+    'model_bridge_rate_limit_exceeded_total',
     'Total rate limit exceeded events',
     ['organization_id', 'limit_type']  # limit_type: minute/hour/day
 )
 
 # Provider health metrics
 PROVIDER_HEALTH = Gauge(
-    'llm_gateway_provider_health',
+    'model_bridge_provider_health',
     'Provider health status (1=healthy, 0=unhealthy)',
     ['provider']
 )
 
 PROVIDER_RESPONSE_TIME = Summary(
-    'llm_gateway_provider_response_seconds',
+    'model_bridge_provider_response_seconds',
     'Provider response time',
     ['provider', 'model']
 )
 
 # Organization metrics
 ACTIVE_ORGANIZATIONS = Gauge(
-    'llm_gateway_active_organizations',
+    'model_bridge_active_organizations',
     'Number of active organizations'
 )
 
 ACTIVE_API_KEYS = Gauge(
-    'llm_gateway_active_api_keys',
+    'model_bridge_active_api_keys',
     'Number of active API keys'
 )
 
 # Billing metrics
 MONTHLY_USAGE = Gauge(
-    'llm_gateway_monthly_usage',
+    'model_bridge_monthly_usage',
     'Monthly usage metrics',
     ['organization_id', 'metric']  # metric: requests/tokens/cost
 )

@@ -49,6 +49,7 @@ class Organization(BaseModel):
     users = relationship("User", back_populates="organization")
     api_keys = relationship("APIKey", back_populates="organization")
     usage_records = relationship("UsageRecord", back_populates="organization")
+    usage_records = relationship("UsageRecord", back_populates="organization")
 
 
 class User(BaseModel):
@@ -72,6 +73,14 @@ class User(BaseModel):
     
     # Login tracking
     last_login_at = Column(String, nullable=True)
+    
+    # Password reset
+    reset_token = Column(String(100), nullable=True)
+    reset_token_expires = Column(String, nullable=True)
+    
+    # Email verification
+    verification_token = Column(String(100), nullable=True)
+    verification_token_expires = Column(String, nullable=True)
     
     # Relationships
     organization = relationship("Organization", back_populates="users")

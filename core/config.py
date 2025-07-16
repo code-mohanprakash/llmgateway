@@ -11,8 +11,8 @@ class Config:
     """Application configuration"""
     
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./llm_gateway.db")
-    ASYNC_DATABASE_URL: str = os.getenv("ASYNC_DATABASE_URL", "sqlite+aiosqlite:///./llm_gateway.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./model_bridge.db")
+    ASYNC_DATABASE_URL: str = os.getenv("ASYNC_DATABASE_URL", "sqlite+aiosqlite:///./model_bridge.db")
     
     # Security
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-super-secret-jwt-key-change-in-production")
@@ -21,7 +21,7 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7"))
     
     # Application
-    APP_NAME: str = os.getenv("APP_NAME", "LLM Gateway SaaS")
+    APP_NAME: str = os.getenv("APP_NAME", "Model Bridge SaaS")
     APP_VERSION: str = os.getenv("APP_VERSION", "2.0.0")
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
     
@@ -36,9 +36,12 @@ class Config:
     
     # Email
     SMTP_HOST: str = os.getenv("SMTP_HOST", "")
+    SMTP_SERVER: str = os.getenv("SMTP_SERVER", "smtp.gmail.com")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    FROM_EMAIL: str = os.getenv("FROM_EMAIL", "")
+    APP_URL: str = os.getenv("APP_URL", "http://localhost:3000")
     
     # Logging
     log_level: str = os.getenv("LOG_LEVEL", "INFO")

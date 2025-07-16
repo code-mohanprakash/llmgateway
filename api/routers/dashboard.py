@@ -11,7 +11,7 @@ from sqlalchemy import select, func, desc, extract
 from database.database import get_db
 from models.user import User, Organization, UsageRecord, APIKey
 from auth.dependencies import get_current_user
-from llm_gateway import enhanced_gateway
+from model_bridge import enhanced_gateway
 
 router = APIRouter()
 

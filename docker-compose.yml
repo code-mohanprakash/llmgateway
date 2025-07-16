@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://llm_gateway:password@postgres:5432/llm_gateway
+      - DATABASE_URL=postgresql://model_bridge:password@postgres:5432/model_bridge
       - REDIS_HOST=redis
       - JWT_SECRET_KEY=your-secret-key-change-in-production
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
@@ -23,8 +23,8 @@ services:
   postgres:
     image: postgres:15
     environment:
-      - POSTGRES_DB=llm_gateway
-      - POSTGRES_USER=llm_gateway
+      - POSTGRES_DB=model_bridge
+      - POSTGRES_USER=model_bridge
       - POSTGRES_PASSWORD=password
     volumes:
       - postgres_data:/var/lib/postgresql/data

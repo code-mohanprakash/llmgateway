@@ -23,29 +23,38 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
+    // Only handle auth errors for protected routes
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
-      const refreshToken = Cookies.get('refresh_token');
-      if (refreshToken) {
-        try {
-          const response = await axios.post('/api/auth/refresh', {
-            refresh_token: refreshToken
-          });
-          
-          const { access_token } = response.data;
-          Cookies.set('access_token', access_token, { expires: 1 });
-          
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
-          return api(originalRequest);
-        } catch (refreshError) {
-          Cookies.remove('access_token');
-          Cookies.remove('refresh_token');
-          window.location.href = '/login';
+      // Check if this is a protected route that requires auth
+      const protectedRoutes = ['/auth/me', '/auth/refresh', '/dashboard', '/analytics', '/api-keys', '/billing', '/settings', '/team'];
+      const isProtectedRoute = protectedRoutes.some(route => originalRequest.url.includes(route));
+      
+              if (isProtectedRoute) {
+          const refreshToken = Cookies.get('refresh_token');
+          if (refreshToken) {
+            try {
+              const response = await axios.post('/api/auth/refresh', {
+                refresh_token: refreshToken
+              });
+              
+              const { access_token, refresh_token } = response.data;
+              Cookies.set('access_token', access_token, { expires: 1 });
+              Cookies.set('refresh_token', refresh_token, { expires: 7 });
+              
+              originalRequest.headers.Authorization = `Bearer ${access_token}`;
+              return api(originalRequest);
+            } catch (refreshError) {
+              console.error('Token refresh failed:', refreshError);
+              Cookies.remove('access_token');
+              Cookies.remove('refresh_token');
+              window.location.href = '/login';
+            }
+          } else {
+            window.location.href = '/login';
+          }
         }
-      } else {
-        window.location.href = '/login';
-      }
     }
     
     return Promise.reject(error);

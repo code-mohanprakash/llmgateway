@@ -1,5 +1,5 @@
 """
-OpenRouter Provider for Unified LLM Gateway
+OpenRouter Provider for Unified Model Bridge
 Supports DeepSeek R1, GPT-4, Claude, and other models through OpenRouter's API
 Uses OpenAI-compatible syntax with OpenRouter endpoint
 """

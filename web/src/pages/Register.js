@@ -63,7 +63,7 @@ const Register = () => {
             Create Account
           </h2>
           <p className="text-gray-600">
-            Join LLM Gateway and start building
+            Join Model Bridge and start building
           </p>
           <p className="mt-4 text-sm text-gray-500">
             Already have an account?{' '}

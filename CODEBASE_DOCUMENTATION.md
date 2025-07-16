@@ -1,11 +1,11 @@
-# LLM Gateway SaaS - Complete Codebase Documentation
+# Model Bridge SaaS - Complete Codebase Documentation
 
 ## 📁 Project Structure Overview
 
 ```
-llmgateway/
+modelbridge/
 ├── 🗂️ Core Application Files
-│   ├── llm_gateway.py              # Main LLM Gateway engine
+│   ├── model_bridge.py              # Main Model Bridge engine
 │   ├── models_config.yaml          # Model configuration
 │   ├── example.py                  # Usage examples
 │   └── setup.py                   # Package installation
@@ -92,7 +92,7 @@ llmgateway/
 
 ## 🔧 Core Components Deep Dive
 
-### 1. **llm_gateway.py** - The Heart of the System
+### 1. **model_bridge.py** - The Heart of the System
 **Purpose**: Main orchestration engine that manages all LLM providers
 **Key Features**:
 - Intelligent model routing based on aliases (fastest, cheapest, best, balanced)
@@ -103,7 +103,7 @@ llmgateway/
 
 ```python
 # Key Classes:
-- EnhancedLLMGateway: Main gateway class
+- EnhancedModelBridge: Main gateway class
 - ModelAlias: Configuration for model routing
 - GenerationRequest/Response: Standardized interfaces
 ```
@@ -492,7 +492,7 @@ ANTHROPIC_API_KEY=...
 ## 🔄 Data Flow Architecture
 
 ```
-Frontend (React) → API Gateway (FastAPI) → Authentication Layer → Rate Limiting → Cache Check → LLM Gateway Core → Provider Selection → External LLM APIs → Response Processing → Usage Tracking → Database Storage → Analytics Generation
+Frontend (React) → API Gateway (FastAPI) → Authentication Layer → Rate Limiting → Cache Check → Model Bridge Core → Provider Selection → External LLM APIs → Response Processing → Usage Tracking → Database Storage → Analytics Generation
 ```
 
 ---

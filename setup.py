@@ -1,5 +1,5 @@
 """
-Setup script for LLM Gateway
+Setup script for Model Bridge
 """
 from setuptools import setup, find_packages
 
@@ -10,14 +10,14 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="llm-gateway",
+    name="model-bridge",
     version="1.0.0",
     author="WinCraft AI",
     author_email="contact@wincraftai.com",
-    description="Enhanced Multi-Provider LLM Gateway with Intelligent Routing",
+    description="Enhanced Multi-Provider Model Bridge with Intelligent Routing",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/code-mohanprakash/llmgateway",
+    url="https://github.com/code-mohanprakash/modelbridge",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -53,11 +53,11 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "llm-gateway=llm_gateway.cli:main",
+            "model-bridge=model_bridge.cli:main",
         ],
     },
     include_package_data=True,
     package_data={
-        "llm_gateway": ["*.yaml", "*.yml"],
+        "model_bridge": ["*.yaml", "*.yml"],
     },
 )

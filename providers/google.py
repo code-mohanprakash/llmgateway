@@ -1,5 +1,5 @@
 """
-Google Gemini Provider for Unified LLM Gateway
+Google Gemini Provider for Unified Model Bridge
 Handles all Google AI models including Gemini Pro, Gemini Flash, etc.
 """
 import os
