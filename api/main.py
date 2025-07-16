@@ -12,7 +12,7 @@ from prometheus_client import Counter, Histogram, generate_latest
 from starlette.responses import Response
 
 # Import routers
-from api.routers import auth, dashboard, llm, admin, billing
+from api.routers import auth, dashboard, llm, admin, billing, rbac, workflow, sso, ab_testing
 
 # Metrics
 REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
@@ -68,6 +68,10 @@ app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"]
 app.include_router(llm.router, prefix="/api/v1", tags=["llm"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
+app.include_router(rbac.router, prefix="/api/rbac", tags=["rbac"])
+app.include_router(workflow.router, prefix="/api/workflow", tags=["workflow"])
+app.include_router(sso.router, prefix="/api/sso", tags=["sso"])
+app.include_router(ab_testing.router, prefix="/api/ab-testing", tags=["ab-testing"])
 
 # Serve static files (frontend) - only if directory exists
 import os

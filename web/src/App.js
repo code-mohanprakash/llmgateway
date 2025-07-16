@@ -17,6 +17,10 @@ import Landing from './pages/Landing';
 import Models from './pages/Models';
 import Documentation from './pages/Documentation';
 import Pricing from './pages/Pricing';
+import RBAC from './pages/RBAC';
+import WorkflowBuilder from './pages/WorkflowBuilder';
+import APIPlayground from './pages/APIPlayground';
+import ABTesting from './pages/ABTesting';
 
 import Guides from './pages/Guides';
 import Support from './pages/Support';
@@ -68,6 +72,40 @@ function App() {
               <Route path="billing" element={<Billing />} />
               <Route path="settings" element={<Settings />} />
             </Route>
+
+            {/* Enterprise Routes */}
+            <Route
+              path="/rbac"
+              element={
+                <ProtectedRoute>
+                  <RBAC />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/workflow"
+              element={
+                <ProtectedRoute>
+                  <WorkflowBuilder />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/api-playground"
+              element={
+                <ProtectedRoute>
+                  <APIPlayground />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ab-testing"
+              element={
+                <ProtectedRoute>
+                  <ABTesting />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
       </Router>

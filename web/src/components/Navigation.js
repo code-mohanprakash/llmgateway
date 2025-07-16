@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { StarIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../contexts/AuthContext';
 import Logo from './Logo';
 
 const Navigation = () => {
   const location = useLocation();
+  const { user } = useAuth();
   
   const isActive = (path) => {
     if (path === '/') {
@@ -68,6 +70,54 @@ const Navigation = () => {
                 >
                   Documentation
                 </Link>
+                {user && user.role === 'admin' && (
+                  <Link 
+                    to="/rbac" 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive('/rbac') 
+                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#9B5967]'
+                    }`}
+                  >
+                    RBAC
+                  </Link>
+                )}
+                {user && (
+                  <Link 
+                    to="/workflow-builder" 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive('/workflow-builder') 
+                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#9B5967]'
+                    }`}
+                  >
+                    Workflows
+                  </Link>
+                )}
+                {user && (
+                  <Link 
+                    to="/api-playground" 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive('/api-playground') 
+                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#9B5967]'
+                    }`}
+                  >
+                    API Playground
+                  </Link>
+                )}
+                {user && user.role === 'admin' && (
+                  <Link 
+                    to="/ab-testing" 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive('/ab-testing') 
+                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#9B5967]'
+                    }`}
+                  >
+                    A/B Testing
+                  </Link>
+                )}
               </div>
             </div>
           </div>
