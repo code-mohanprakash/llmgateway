@@ -53,7 +53,7 @@ class GenerationRequest(BaseModel):
     temperature: Optional[float] = None
     task_type: Optional[str] = None
     complexity: Optional[str] = "medium"
-    schema: Optional[Dict[str, Any]] = None  # For structured output
+    response_schema: Optional[Dict[str, Any]] = None  # For structured output
 
 
 class AdvancedGenerationRequest(BaseModel):
@@ -67,7 +67,7 @@ class AdvancedGenerationRequest(BaseModel):
     excluded_providers: Optional[List[str]] = None
     max_cost: Optional[float] = None
     max_response_time: Optional[float] = None
-    schema: Optional[Dict[str, Any]] = None
+    response_schema: Optional[Dict[str, Any]] = None
 
 
 class GenerationResponse(BaseModel):
@@ -482,7 +482,7 @@ async def generate_structured_output(
             "temperature": request.temperature,
             "task_type": request.task_type,
             "complexity": request.complexity,
-            "schema": request.schema
+            "response_schema": request.response_schema
         }
         
         cached_response = await get_cached_response(
@@ -527,7 +527,7 @@ async def generate_structured_output(
         # Generate structured output using the gateway
         response = await gateway.generate_structured_output(
             prompt=request.prompt,
-            schema=request.schema,
+            schema=request.response_schema,
             model=request.model,
             max_tokens=request.max_tokens,
             temperature=request.temperature,

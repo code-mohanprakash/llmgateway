@@ -69,7 +69,7 @@ class AuditLogResponse(BaseModel):
     ip_address: Optional[str]
     user_agent: Optional[str]
     created_at: str
-    metadata: Optional[Dict[str, Any]]
+    additional_metadata: Optional[Dict[str, Any]]
 
 
 # Role management endpoints
@@ -519,7 +519,7 @@ async def list_audit_logs(
             ip_address=str(log.ip_address) if log.ip_address else None,
             user_agent=log.user_agent,
             created_at=log.created_at,
-            metadata=log.metadata
+            additional_metadata=log.additional_metadata
         )
         for log in audit_logs
     ]
@@ -560,7 +560,7 @@ async def get_audit_log(
         ip_address=str(log.ip_address) if log.ip_address else None,
         user_agent=log.user_agent,
         created_at=log.created_at,
-        metadata=log.metadata
+                    additional_metadata=log.additional_metadata
     )
 
 

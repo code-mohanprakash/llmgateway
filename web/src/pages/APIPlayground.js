@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { apiService } from '../services/api';
+import api from '../services/api';
 
 const APIPlayground = () => {
     const { user } = useAuth();
@@ -146,9 +146,9 @@ const APIPlayground = () => {
             if (endpoint.method === 'GET') {
                 const params = new URLSearchParams(data).toString();
                 const url = params ? `${endpoint.path}?${params}` : endpoint.path;
-                response = await apiService.get(url);
+                response = await api.get(url);
             } else {
-                response = await apiService.post(endpoint.path, data);
+                response = await api.post(endpoint.path, data);
             }
 
             setResponseData(JSON.stringify(response, null, 2));

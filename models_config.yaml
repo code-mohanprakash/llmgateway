@@ -1,6 +1,10 @@
 # Comprehensive Multi-Provider Model Bridge Configuration
 # Supports ALL major providers with full model ranges
 
+models:
+  enabled: true
+  total_count: 60+
+  
 gateway:
   fallback_enabled: true
   max_retries: 3

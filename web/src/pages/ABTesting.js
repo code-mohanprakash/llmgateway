@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { apiService } from '../services/api';
+import api from '../services/api';
 
 const ABTesting = () => {
     const { user } = useAuth();
@@ -30,7 +30,7 @@ const ABTesting = () => {
     const loadTests = async () => {
         try {
             setIsLoading(true);
-            const response = await apiService.get('/api/ab-testing/tests');
+            const response = await api.get('/api/ab-testing/tests');
             setTests(response.data || []);
         } catch (error) {
             console.error('Failed to load A/B tests:', error);
@@ -42,7 +42,7 @@ const ABTesting = () => {
     const loadTestResults = async (testId) => {
         try {
             setIsLoading(true);
-            const response = await apiService.get(`/api/ab-testing/tests/${testId}/results`);
+            const response = await api.get(`/api/ab-testing/tests/${testId}/results`);
             setTestResults(response.data);
         } catch (error) {
             console.error('Failed to load test results:', error);
@@ -62,7 +62,7 @@ const ABTesting = () => {
                 }, {})
             };
 
-            await apiService.post('/api/ab-testing/tests', testData);
+            await api.post('/api/ab-testing/tests', testData);
             setShowCreateForm(false);
             setNewTest({
                 name: '',
@@ -87,7 +87,7 @@ const ABTesting = () => {
 
     const stopTest = async (testId) => {
         try {
-            await apiService.post(`/api/ab-testing/tests/${testId}/stop`);
+            await api.post(`/api/ab-testing/tests/${testId}/stop`);
             loadTests();
         } catch (error) {
             console.error('Failed to stop A/B test:', error);

@@ -93,7 +93,7 @@ class AuditLog(BaseModel):
     error_message = Column(Text)
     
     # Additional metadata
-    metadata = Column(JSON)  # Additional context
+    additional_metadata = Column(JSON)  # Additional context
     
     # Relationships
     organization = relationship("Organization")
