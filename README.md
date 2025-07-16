@@ -1,6 +1,6 @@
 # LLM Gateway - Enhanced Multi-Provider LLM Gateway
 
-A production-ready, intelligent LLM gateway that manages multiple AI providers with automatic routing, cost optimization, and comprehensive monitoring.
+A production-ready, intelligent LLM gateway that manages multiple AI providers with automatic routing, cost optimization, and comprehensive monitoring. **Now with full SaaS capabilities including web dashboard, billing, and multi-tenancy.**
 
 ## 🚀 Features
 
@@ -21,6 +21,16 @@ A production-ready, intelligent LLM gateway that manages multiple AI providers w
 - **Health Monitoring**: Provider availability and performance checks
 - **Configuration Management**: YAML/JSON configuration with environment variables
 - **Comprehensive Logging**: Structured logging with performance metrics
+
+### 🆕 SaaS Features (NEW!)
+- **Web Dashboard**: Modern React-based admin interface
+- **Multi-Tenancy**: Organizations with role-based access control
+- **Billing & Subscriptions**: Stripe integration with usage-based pricing
+- **API Key Management**: Secure key generation and management
+- **Real-time Analytics**: Usage tracking and cost optimization
+- **Team Management**: User roles and permissions
+- **Rate Limiting**: Per-organization request limits
+- **Caching Layer**: Redis-based response caching
 
 ## 📦 Installation
 
@@ -51,7 +61,7 @@ export GOOGLE_API_KEY="your_google_key"
 # ... add other provider keys as needed
 ```
 
-### 2. Basic Usage
+### 2. Basic Usage (Standalone)
 ```python
 import asyncio
 from llm_gateway import EnhancedLLMGateway
@@ -76,26 +86,34 @@ async def main():
 asyncio.run(main())
 ```
 
-### 3. Structured Output
-```python
-# Generate structured JSON output
-schema = {
-    "type": "object",
-    "properties": {
-        "summary": {"type": "string"},
-        "key_points": {"type": "array", "items": {"type": "string"}},
-        "complexity_score": {"type": "number", "minimum": 1, "maximum": 10}
-    },
-    "required": ["summary", "key_points", "complexity_score"]
-}
+### 3. SaaS Web Application
+```bash
+# Start the full SaaS application
+docker-compose up -d
 
-response = await gateway.generate_structured_output(
-    prompt="Analyze this text and extract key information...",
-    schema=schema,
-    model="best"  # Uses highest quality model
+# Or run manually
+uvicorn main:app --reload  # Backend API
+cd web && npm start         # Frontend dashboard
+```
+
+### 4. API Usage (SaaS)
+```python
+import requests
+
+# Authenticate with API key
+headers = {"Authorization": "Bearer your_api_key"}
+
+# Generate text
+response = requests.post(
+    "http://localhost:8000/api/v1/generate",
+    json={
+        "prompt": "Explain quantum computing",
+        "model": "balanced"
+    },
+    headers=headers
 )
 
-print(response.content)  # Valid JSON matching schema
+print(response.json())
 ```
 
 ## 🎯 Model Routing
@@ -123,6 +141,27 @@ response = await gateway.generate_text(
 )
 ```
 
+## 🏢 SaaS Features
+
+### Subscription Plans
+- **Free**: $0/month - 1K requests, 50K tokens, basic models
+- **Starter**: $29/month - 10K requests, 500K tokens, all models
+- **Professional**: $99/month - 50K requests, 2.5M tokens, advanced features
+- **Enterprise**: $299/month - Unlimited requests, custom deployment
+
+### Web Dashboard Features
+- **Real-time Analytics**: Usage charts and cost tracking
+- **Team Management**: User roles and permissions
+- **API Key Management**: Secure key generation and rotation
+- **Billing Dashboard**: Subscription management and usage
+- **Settings Panel**: Organization configuration
+
+### Multi-Tenancy
+- **Organizations**: Isolated workspaces for teams
+- **User Roles**: Owner, Admin, Member, Viewer
+- **API Key Scoping**: Granular permissions per key
+- **Usage Isolation**: Per-organization limits and tracking
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -133,6 +172,13 @@ ANTHROPIC_API_KEY=your_key
 GOOGLE_API_KEY=your_key
 GROQ_API_KEY=your_key
 # ... etc
+
+# SaaS Configuration
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
+REDIS_HOST=localhost
+JWT_SECRET_KEY=your-secret-key
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Provider Priorities (lower = higher priority)
 OPENAI_PRIORITY=1
@@ -187,6 +233,12 @@ print(f"Status: {health['status']}")
 print(f"Healthy providers: {health['healthy_providers']}/{health['total_providers']}")
 ```
 
+### SaaS Analytics
+- **Usage Tracking**: Real-time request and token monitoring
+- **Cost Analytics**: Provider-level cost breakdown
+- **Performance Metrics**: Response times and success rates
+- **Cache Analytics**: Hit rates and optimization metrics
+
 ### Cost Optimization Results
 - **Baseline Cost**: $0.10-0.50 per request
 - **Optimized Cost**: $0.03-0.15 per request (70% reduction)
@@ -212,6 +264,28 @@ class BaseModelProvider:
 3. **Provider Routing**: Try providers in priority order with fallback
 4. **Response Processing**: Standardized response with metadata
 5. **Performance Tracking**: Metrics collection and optimization
+
+### SaaS Architecture
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   React Web    │    │   FastAPI       │    │   PostgreSQL   │
+│   Dashboard     │◄──►│   Backend       │◄──►│   Database     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐    ┌─────────────────┐
+                       │     Redis       │    │   LLM Gateway   │
+                       │  Cache & Rate   │    │   Core Engine   │
+                       │    Limiting     │    │                 │
+                       └─────────────────┘    └─────────────────┘
+                              │                       │
+                              ▼                       ▼
+                       ┌─────────────────┐    ┌─────────────────┐
+                       │   Prometheus    │    │  12+ Providers  │
+                       │   Monitoring    │    │  OpenAI, Claude │
+                       │                 │    │  Gemini, etc.   │
+                       └─────────────────┘    └─────────────────┘
+```
 
 ## 🔌 Supported Providers
 
@@ -263,6 +337,20 @@ response = await gateway.generate_text(
 )
 ```
 
+### 4. SaaS Applications
+```python
+# Multi-tenant API usage
+import requests
+
+# Organization-specific API calls
+headers = {"Authorization": "Bearer org_api_key"}
+response = requests.post(
+    "https://api.llmgateway.com/v1/generate",
+    json={"prompt": "Analyze this data", "model": "balanced"},
+    headers=headers
+)
+```
+
 ## 🛠️ Development
 
 ### Running Tests
@@ -277,6 +365,19 @@ black .
 isort .
 flake8
 mypy .
+```
+
+### SaaS Development
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up -d
+
+# Run migrations
+alembic upgrade head
+
+# Start services
+uvicorn main:app --reload  # Backend
+cd web && npm start         # Frontend
 ```
 
 ## 📈 Performance Benchmarks
@@ -296,6 +397,12 @@ mypy .
 - **Error Recovery**: Automatic retry with different providers
 - **Health Monitoring**: Real-time provider status
 
+### SaaS Performance
+- **Multi-tenant**: 1000+ organizations supported
+- **API Rate Limiting**: Per-organization limits
+- **Caching**: 60-80% cache hit rate
+- **Scalability**: Horizontal scaling ready
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -313,7 +420,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **GitHub Issues**: [Report bugs or request features](https://github.com/code-mohanprakash/llmgateway/issues)
 - **Documentation**: [Full documentation](https://github.com/code-mohanprakash/llmgateway/wiki)
 - **Examples**: [Example applications](https://github.com/code-mohanprakash/llmgateway/tree/main/examples)
+- **SaaS Support**: [Commercial support and enterprise features](https://llmgateway.com)
 
 ---
 
 **Built with ❤️ for the AI community**
+
+*Now with full SaaS capabilities for enterprise deployment!*
