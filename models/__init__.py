@@ -3,7 +3,7 @@ Models package for Model Bridge SaaS
 """
 from .base import BaseModel
 from .user import User, Organization, APIKey, UsageRecord, BillingRecord
-from .rbac import Role, Permission, UserRole, AuditLog, CostCenter, UsageAllocation, Workflow, WorkflowExecution, ABTest, ABTestExecution, ABTestResult
+from .rbac import Role, Permission, UserRole, AuditLog, CostCenter, UsageAllocation, ABTest, ABTestExecution, ABTestResult
 
 __all__ = [
     'BaseModel',
@@ -18,6 +18,8 @@ __all__ = [
     'AuditLog',
     'CostCenter',
     'UsageAllocation',
-    'Workflow',
-    'WorkflowExecution'
+
+    'ABTest',
+    'ABTestExecution',
+    'ABTestResult'
 ]

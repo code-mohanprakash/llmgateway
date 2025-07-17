@@ -17,7 +17,11 @@ import {
   StarIcon,
   ChevronDownIcon,
   PlusIcon,
-  FolderIcon
+  FolderIcon,
+  ShieldCheckIcon,
+  Cog6ToothIcon,
+  BeakerIcon,
+  CommandLineIcon
 } from '@heroicons/react/24/outline';
 import api from '../services/api';
 
@@ -29,16 +33,19 @@ const Layout = () => {
   const [currentPlan, setCurrentPlan] = useState('free');
 
   useEffect(() => {
-    // Fetch current plan from API
-    const fetchPlan = async () => {
-      try {
-        const res = await api.get('/billing/current-plan');
-        setCurrentPlan(res.data?.plan_id || 'free');
-      } catch {
-        setCurrentPlan('free');
-      }
-    };
-    fetchPlan();
+    // Set default plan - disable API call until billing integration is complete
+    setCurrentPlan('free');
+    
+    // TODO: Re-enable billing API call when working auth is integrated
+    // const fetchPlan = async () => {
+    //   try {
+    //     const res = await api.get('/billing/current-plan');
+    //     setCurrentPlan(res.data?.plan_id || 'free');
+    //   } catch {
+    //     setCurrentPlan('free');
+    //   }
+    // };
+    // fetchPlan();
   }, []);
 
   const getPlanIcon = (planId) => {
@@ -72,6 +79,25 @@ const Layout = () => {
     },
     { name: 'Billing', href: '/dashboard/billing', icon: CreditCardIcon },
     { name: 'Settings', href: '/dashboard/settings', icon: CogIcon },
+    // Enterprise Features
+    { 
+      name: 'RBAC', 
+      href: '/rbac', 
+      icon: ShieldCheckIcon,
+      requireAdmin: true 
+    },
+
+    { 
+      name: 'A/B Testing', 
+      href: '/ab-testing', 
+      icon: BeakerIcon,
+      requireAdmin: true 
+    },
+    { 
+      name: 'API Playground', 
+      href: '/api-playground', 
+      icon: CommandLineIcon
+    },
   ];
 
   const handleLogout = async () => {
@@ -179,7 +205,21 @@ const Layout = () => {
                       {user?.firstName ? `${user.firstName} ${user.lastName}` : user?.full_name || 'User'}
                     </p>
                     <p className="text-xs text-gray-500 truncate">{user?.email || 'user@example.com'}</p>
-                    <p className="text-xs text-gray-400 capitalize">{user?.role || 'user'}</p>
+                    <div className="flex items-center mt-1">
+                      <span className="text-xs text-gray-400 capitalize">{user?.role || 'user'}</span>
+                      {user?.role && (
+                        <span className={`ml-2 px-1.5 py-0.5 text-xs rounded-full ${
+                          user.role === 'owner' ? 'bg-purple-100 text-purple-800' :
+                          user.role === 'admin' ? 'bg-blue-100 text-blue-800' :
+                          user.role === 'member' ? 'bg-green-100 text-green-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {user.role === 'owner' ? '👑' :
+                           user.role === 'admin' ? '⚡' :
+                           user.role === 'member' ? '👤' : '👁️'}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 
@@ -206,6 +246,20 @@ const Layout = () => {
                   </span>
                 </div>
                 
+                {/* Role Badge */}
+                {user?.role && (
+                  <div className={`px-1.5 py-0.5 text-xs rounded-full ${
+                    user.role === 'owner' ? 'bg-purple-100 text-purple-800' :
+                    user.role === 'admin' ? 'bg-blue-100 text-blue-800' :
+                    user.role === 'member' ? 'bg-green-100 text-green-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {user.role === 'owner' ? '👑' :
+                     user.role === 'admin' ? '⚡' :
+                     user.role === 'member' ? '👤' : '👁️'}
+                  </div>
+                )}
+                
                 {/* Sign Out Button */}
                 <button
                   onClick={handleLogout}
@@ -222,6 +276,25 @@ const Layout = () => {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen">
+        {/* Top-right role display */}
+        {user?.role && (
+          <div className="absolute top-4 right-4 z-10">
+            <div className={`px-3 py-1.5 rounded-full text-sm font-medium shadow-sm ${
+              user.role === 'owner' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+              user.role === 'admin' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+              user.role === 'member' ? 'bg-green-100 text-green-800 border border-green-200' :
+              'bg-gray-100 text-gray-800 border border-gray-200'
+            }`}>
+              <span className="mr-1">
+                {user.role === 'owner' ? '👑' :
+                 user.role === 'admin' ? '⚡' :
+                 user.role === 'member' ? '👤' : '👁️'}
+              </span>
+              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+            </div>
+          </div>
+        )}
+        
         {/* Page content */}
         <main className="flex-1 p-6 overflow-auto">
           <Outlet />

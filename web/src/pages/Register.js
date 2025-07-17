@@ -34,21 +34,12 @@ const Register = () => {
     setLoading(true);
     try {
       await register(formData);
-      toast.success('Registration successful!');
+      toast.success('Welcome to Model Bridge! Account created successfully.');
       navigate('/dashboard');
     } catch (error) {
-      let message = error.response?.data?.detail;
-      if (!message && error.response?.data && typeof error.response.data === 'object') {
-        // If it's a validation error array, join the messages
-        if (Array.isArray(error.response.data)) {
-          message = error.response.data.map(e => e.msg).join(', ');
-        } else if (error.response.data.detail) {
-          message = error.response.data.detail;
-        } else {
-          message = JSON.stringify(error.response.data);
-        }
-      }
-      toast.error(message || 'Registration failed');
+      console.error('Registration error:', error);
+      const message = error.message || 'Registration failed. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }

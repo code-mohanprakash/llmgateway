@@ -10,32 +10,44 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    if (!email.trim()) {
+      toast.error('Email is required');
+      return false;
+    }
+    
+    if (!password.trim()) {
+      toast.error('Password is required');
+      return false;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
 
     try {
       await login(email, password);
-      toast.success('Successfully logged in!');
+      toast.success('Welcome back! Login successful.');
       navigate('/dashboard');
     } catch (error) {
-      let message = error.response?.data?.detail;
-      if (!message && error.response?.data && typeof error.response.data === 'object') {
-        // If it's a validation error array, join the messages
-        if (Array.isArray(error.response.data)) {
-          message = error.response.data.map(e => e.msg || JSON.stringify(e)).join(', ');
-        } else if (error.response.data.detail) {
-          message = error.response.data.detail;
-        } else {
-          // If it's a validation error object, try to extract 'msg' or fallback to string
-          message = error.response.data.msg || JSON.stringify(error.response.data);
-        }
-      }
-      // Always ensure message is a string
-      if (typeof message !== 'string') {
-        message = JSON.stringify(message);
-      }
-      toast.error(message || 'Login failed');
+      console.error('Login error:', error);
+      const message = error.message || 'Login failed. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }

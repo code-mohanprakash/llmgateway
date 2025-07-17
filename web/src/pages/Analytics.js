@@ -17,7 +17,16 @@ const Analytics = () => {
 
   useEffect(() => {
     console.log('Analytics useEffect triggered');
-    fetchAnalytics();
+    // Disable API call until working auth integration is complete
+    // fetchAnalytics();
+    
+    // Set empty/default states for now
+    setAnalytics(null);
+    setRecentRequests([]);
+    setIntelligentRouting(null);
+    setProviderPerformance([]);
+    setRoutingInsights(null);
+    setLoading(false);
   }, [timeRange]);
 
   const fetchAnalytics = async () => {

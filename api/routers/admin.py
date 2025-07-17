@@ -8,11 +8,14 @@ from sqlalchemy import select, func, update
 from database.database import get_db
 from models.user import User, Organization, UsageRecord, APIKey
 from auth.dependencies import get_current_user, require_role
+from auth.rbac_middleware import require_permission, audit_action
 
 router = APIRouter()
 
 
 @router.get("/stats")
+@require_permission("admin.stats.read", "admin")
+@audit_action("admin.stats.read", "admin")
 async def get_admin_stats(
     current_user: User = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db)
@@ -55,6 +58,8 @@ async def get_admin_stats(
 
 
 @router.get("/users")
+@require_permission("admin.users.read", "admin")
+@audit_action("admin.users.read", "admin")
 async def list_organization_users(
     current_user: User = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db)
@@ -84,6 +89,8 @@ async def list_organization_users(
 
 
 @router.put("/users/{user_id}/role")
+@require_permission("admin.users.update", "admin")
+@audit_action("admin.users.update", "admin")
 async def update_user_role(
     user_id: str,
     new_role: str,
@@ -122,6 +129,8 @@ async def update_user_role(
 
 
 @router.delete("/users/{user_id}")
+@require_permission("admin.users.delete", "admin")
+@audit_action("admin.users.delete", "admin")
 async def remove_user(
     user_id: str,
     current_user: User = Depends(require_role("owner")),

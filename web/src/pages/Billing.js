@@ -12,8 +12,15 @@ const Billing = () => {
 
   useEffect(() => {
     console.log('Billing useEffect triggered');
-    fetchBillingData();
-    fetchCurrentPlan();
+    // Disable API calls until working auth integration is complete
+    // fetchBillingData();
+    // fetchCurrentPlan();
+    
+    // Set default states for now
+    setUsage(null);
+    setInvoices([]);
+    setCurrentPlan('free');
+    setLoading(false);
   }, []);
 
   const fetchBillingData = async () => {

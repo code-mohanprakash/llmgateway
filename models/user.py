@@ -85,6 +85,7 @@ class User(BaseModel):
     # Relationships
     organization = relationship("Organization", back_populates="users")
     api_keys = relationship("APIKey", back_populates="user")
+    user_roles = relationship("UserRole", foreign_keys="UserRole.user_id", back_populates="user")
 
 
 class APIKey(BaseModel):

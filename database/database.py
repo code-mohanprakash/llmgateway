@@ -6,19 +6,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from core.config import config # Import the centralized config
 
-# Database URL from environment
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "sqlite:///./llm_gateway.db"
-)
-ASYNC_DATABASE_URL = os.getenv(
-    "ASYNC_DATABASE_URL",
-    "sqlite+aiosqlite:///./llm_gateway.db"
-)
+# Use the centralized database URL
+DATABASE_URL = config.DATABASE_URL
+ASYNC_DATABASE_URL = config.ASYNC_DATABASE_URL
 
 # Create engines
-engine = create_engine(DATABASE_URL)
+# Connect args for SQLite to prevent thread issues
+connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 async_engine = create_async_engine(ASYNC_DATABASE_URL)
 
 # Session makers

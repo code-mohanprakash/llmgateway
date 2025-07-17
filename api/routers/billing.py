@@ -13,6 +13,7 @@ from sqlalchemy import select, func, extract
 from database.database import get_db
 from models.user import User, Organization, BillingRecord, UsageRecord, PlanType
 from auth.dependencies import get_current_user, require_role
+from auth.rbac_middleware import require_permission
 
 # Configure Stripe
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -134,6 +135,7 @@ async def get_plans():
 
 
 @router.get("/usage", response_model=UsageSummary)
+@require_permission("billing.read", "billing")
 async def get_usage_summary(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -177,6 +179,7 @@ async def get_usage_summary(
 
 
 @router.get("/current-plan")
+@require_permission("billing.read", "billing")
 async def get_current_plan(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -346,6 +349,7 @@ async def cancel_subscription(
 
 
 @router.get("/invoices")
+@require_permission("billing.read", "billing")
 async def get_invoices(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -368,6 +372,7 @@ async def get_invoices(
 
 
 @router.get("/payment-methods")
+@require_permission("billing.read", "billing")
 async def get_payment_methods(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)

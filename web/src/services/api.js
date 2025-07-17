@@ -28,7 +28,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       // Check if this is a protected route that requires auth
-      const protectedRoutes = ['/auth/me', '/auth/refresh', '/dashboard', '/analytics', '/api-keys', '/billing', '/settings', '/team'];
+      const protectedRoutes = ['/auth/me', '/working-auth/me', '/auth/refresh', '/dashboard', '/analytics', '/api-keys', '/billing', '/settings', '/team'];
       const isProtectedRoute = protectedRoutes.some(route => originalRequest.url.includes(route));
       
               if (isProtectedRoute) {
@@ -49,10 +49,12 @@ api.interceptors.response.use(
               console.error('Token refresh failed:', refreshError);
               Cookies.remove('access_token');
               Cookies.remove('refresh_token');
-              window.location.href = '/login';
+              // Don't auto-redirect, let the app handle it
+              console.log('Tokens cleared due to refresh failure');
             }
           } else {
-            window.location.href = '/login';
+            console.log('No refresh token available');
+            // Don't auto-redirect, let the app handle it
           }
         }
     }

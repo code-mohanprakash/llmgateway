@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from database.database import get_db
 from models.user import User
 from auth.dependencies import get_current_user
-from auth.rbac_middleware import log_audit_event, check_permission
+from auth.rbac_middleware import log_audit_event, check_permission, require_permission, audit_action
 from models.rbac import ABTest, ABTestExecution, ABTestResult
 
 router = APIRouter(prefix="/ab-testing", tags=["A/B Testing"])
@@ -45,6 +45,8 @@ class ABTestResultRequest(BaseModel):
 
 
 @router.post("/tests")
+@require_permission("ab_testing.create", "ab_testing")
+@audit_action("ab_testing.create", "ab_testing")
 async def create_ab_test(
     request: ABTestCreateRequest,
     current_user: User = Depends(get_current_user),
@@ -115,6 +117,7 @@ async def create_ab_test(
 
 
 @router.get("/tests")
+@require_permission("ab_testing.read", "ab_testing")
 async def get_ab_tests(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -157,6 +160,7 @@ async def get_ab_tests(
 
 
 @router.get("/tests/{test_id}")
+@require_permission("ab_testing.read", "ab_testing")
 async def get_ab_test(
     test_id: str,
     current_user: User = Depends(get_current_user),

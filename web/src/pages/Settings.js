@@ -49,8 +49,18 @@ const Settings = () => {
   ];
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    // Disable API call until working auth integration is complete
+    // fetchSettings();
+    
+    // Set default values for now
+    setProfile({
+      email: user?.email || '',
+      firstName: user?.first_name || '',
+      lastName: user?.last_name || '',
+      organizationName: user?.organization || 'My Organization'
+    });
+    setLoading(false);
+  }, [user]);
 
   const fetchSettings = async () => {
     try {
@@ -216,26 +226,32 @@ const Settings = () => {
     const [loadingModels, setLoadingModels] = useState(true);
 
     useEffect(() => {
-      const fetchModels = async () => {
-        setLoadingModels(true);
-        try {
-          const res = await api.get('/v1/models');
-          // Flatten models into a list with plan_required
-          let allModels = [];
-          Object.entries(res.data.models).forEach(([provider, models]) => {
-            models.forEach((model) => {
-              allModels.push({ ...model, provider });
-            });
-          });
-          setModels(allModels);
-          setPlanType(res.data.plan_type);
-        } catch (err) {
-          toast.error('Failed to load models');
-        } finally {
-          setLoadingModels(false);
-        }
-      };
-      fetchModels();
+      // Disable API call until working auth integration is complete
+      // const fetchModels = async () => {
+      //   setLoadingModels(true);
+      //   try {
+      //     const res = await api.get('/v1/models');
+      //     // Flatten models into a list with plan_required
+      //     let allModels = [];
+      //     Object.entries(res.data.models).forEach(([provider, models]) => {
+      //       models.forEach((model) => {
+      //         allModels.push({ ...model, provider });
+      //       });
+      //     });
+      //     setModels(allModels);
+      //     setPlanType(res.data.plan_type);
+      //   } catch (err) {
+      //     toast.error('Failed to load models');
+      //   } finally {
+      //     setLoadingModels(false);
+      //   }
+      // };
+      // fetchModels();
+      
+      // Set empty state for now
+      setModels([]);
+      setPlanType('free');
+      setLoadingModels(false);
     }, []);
 
     const handleModelChange = (e) => {

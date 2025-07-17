@@ -2,9 +2,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 export const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, initialized } = useAuth();
 
-  if (loading) {
+  console.log('ProtectedRoute - loading:', loading, 'initialized:', initialized, 'user:', !!user);
+
+  if (loading || !initialized) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -12,5 +14,11 @@ export const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return user ? children : <Navigate to="/login" />;
+  if (!user) {
+    console.log('ProtectedRoute - No user found, redirecting to login');
+    return <Navigate to="/login" />;
+  }
+
+  console.log('ProtectedRoute - User authenticated, rendering children');
+  return children;
 };

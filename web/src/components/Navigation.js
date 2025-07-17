@@ -25,21 +25,7 @@ const Navigation = () => {
             </Link>
             <div className="hidden md:block ml-10">
               <div className="flex items-baseline space-x-8">
-                <Link 
-                  to="/" 
-                  className={`flex items-center space-x-3 px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/') 
-                      ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                      : 'text-gray-900 hover:text-[#9B5967]'
-                  }`}
-                >
-                  <img 
-                    src={process.env.PUBLIC_URL + '/images/homeicons.png'}
-                    alt="Home"
-                    className="w-8 h-8 object-contain"
-                  />
-                  <span>Home</span>
-                </Link>
+
                 <Link 
                   to="/models" 
                   className={`px-3 py-2 text-sm font-medium transition-colors ${
@@ -70,6 +56,18 @@ const Navigation = () => {
                 >
                   Documentation
                 </Link>
+                {user && (
+                  <Link 
+                    to="/dashboard" 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive('/dashboard') 
+                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#9B5967]'
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 {user && user.role === 'admin' && (
                   <Link 
                     to="/rbac" 
@@ -84,9 +82,9 @@ const Navigation = () => {
                 )}
                 {user && (
                   <Link 
-                    to="/workflow-builder" 
+                    to="/workflow" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
-                      isActive('/workflow-builder') 
+                      isActive('/workflow') 
                         ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
                         : 'text-gray-900 hover:text-[#9B5967]'
                     }`}
@@ -122,19 +120,7 @@ const Navigation = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            {/* Mobile menu button with home icon */}
-            <div className="md:hidden">
-              <Link 
-                to="/" 
-                className="flex items-center space-x-2 p-2 text-gray-600 hover:text-[#9B5967] transition-colors"
-              >
-                <img 
-                  src={process.env.PUBLIC_URL + '/images/homeicons.png'}
-                  alt="Home"
-                  className="w-6 h-6 object-contain"
-                />
-              </Link>
-            </div>
+
             
             <button className="flex items-center space-x-2 text-gray-600 hover:text-[#9B5967] transition-colors">
               <StarIcon className="h-4 w-4" />

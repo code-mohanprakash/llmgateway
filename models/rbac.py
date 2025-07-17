@@ -3,9 +3,11 @@ Role-Based Access Control (RBAC) models for enterprise security
 """
 from sqlalchemy import Column, String, Boolean, ForeignKey, Integer, Text, JSON, DateTime, Index, Float
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, INET
+from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
+import uuid
 from models.base import BaseModel
+from database.database import Base
 
 
 class Role(BaseModel):
@@ -24,7 +26,7 @@ class Role(BaseModel):
     # Relationships
     organization = relationship("Organization")
     parent_role = relationship("Role", remote_side="Role.id")
-    child_roles = relationship("Role")
+    child_roles = relationship("Role", overlaps="parent_role")
     user_roles = relationship("UserRole", back_populates="role")
 
 
@@ -32,11 +34,15 @@ class Permission(BaseModel):
     """Permission model for granular access control"""
     __tablename__ = "permissions"
 
-    name = Column(String(100), unique=True, nullable=False)
+    name = Column(String(100), nullable=False, unique=True)
     description = Column(Text)
     resource_type = Column(String(50), nullable=False)  # e.g., 'api_key', 'organization', 'user'
     action = Column(String(50), nullable=False)  # e.g., 'create', 'read', 'update', 'delete'
     conditions = Column(JSON)  # Additional conditions for the permission
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_deleted = Column(Boolean, default=False, nullable=False)
+    deleted_at = Column(DateTime, nullable=True)
     
     # Relationships
     role_permissions = relationship("RolePermission", back_populates="permission")
@@ -63,8 +69,8 @@ class UserRole(BaseModel):
     assigned_by = Column(String(36), ForeignKey("users.id"), nullable=False)
     expires_at = Column(DateTime, nullable=True)
     
-    # Relationships
-    user = relationship("User")
+    # Relationships - explicitly specify foreign keys to avoid ambiguity
+    user = relationship("User", foreign_keys=[user_id], back_populates="user_roles")
     role = relationship("Role", back_populates="user_roles")
     assigned_by_user = relationship("User", foreign_keys=[assigned_by])
 
@@ -84,7 +90,7 @@ class AuditLog(BaseModel):
     new_values = Column(JSON)  # New state
     
     # Request context
-    ip_address = Column(INET)
+    ip_address = Column(String(45))
     user_agent = Column(Text)
     session_id = Column(String(255))
     
@@ -141,42 +147,7 @@ class UsageAllocation(BaseModel):
     cost_center = relationship("CostCenter", back_populates="usage_allocations")
 
 
-class Workflow(BaseModel):
-    """Multi-step workflow definitions"""
-    __tablename__ = "workflows"
 
-    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
-    name = Column(String(200), nullable=False)
-    description = Column(Text)
-    definition = Column(JSON, nullable=False)  # Workflow definition
-    version = Column(Integer, default=1)
-    status = Column(String(20), default='draft')  # draft, active, archived
-    created_by = Column(String(36), ForeignKey("users.id"), nullable=False)
-    
-    # Relationships
-    organization = relationship("Organization")
-    created_by_user = relationship("User")
-    executions = relationship("WorkflowExecution", back_populates="workflow")
-
-
-class WorkflowExecution(BaseModel):
-    """Workflow execution tracking"""
-    __tablename__ = "workflow_executions"
-
-    workflow_id = Column(String(36), ForeignKey("workflows.id"), nullable=False)
-    organization_id = Column(String(36), ForeignKey("organizations.id"), nullable=False)
-    input_data = Column(JSON)
-    output_data = Column(JSON)
-    status = Column(String(20), default='running')  # running, completed, failed, cancelled
-    started_at = Column(DateTime, default=datetime.utcnow)
-    completed_at = Column(DateTime)
-    error_message = Column(Text)
-    execution_time_ms = Column(Integer)
-    total_cost = Column(Integer)  # Cost in cents
-    
-    # Relationships
-    workflow = relationship("Workflow", back_populates="executions")
-    organization = relationship("Organization")
 
 
 class ABTest(BaseModel):
@@ -257,12 +228,7 @@ SYSTEM_PERMISSIONS = [
     {"name": "billing.read", "description": "Read billing information", "resource_type": "billing", "action": "read"},
     {"name": "billing.update", "description": "Update billing settings", "resource_type": "billing", "action": "update"},
     
-    # Workflow management
-    {"name": "workflow.create", "description": "Create workflows", "resource_type": "workflow", "action": "create"},
-    {"name": "workflow.read", "description": "Read workflow information", "resource_type": "workflow", "action": "read"},
-    {"name": "workflow.update", "description": "Update workflows", "resource_type": "workflow", "action": "update"},
-    {"name": "workflow.delete", "description": "Delete workflows", "resource_type": "workflow", "action": "delete"},
-    {"name": "workflow.execute", "description": "Execute workflows", "resource_type": "workflow", "action": "execute"},
+
     
     # Cost center management
     {"name": "cost_center.create", "description": "Create cost centers", "resource_type": "cost_center", "action": "create"},
@@ -318,7 +284,7 @@ SYSTEM_ROLES = [
             "organization.read", "organization.update",
             "usage.read", "analytics.read",
             "billing.read", "billing.update",
-            "workflow.create", "workflow.read", "workflow.update", "workflow.delete", "workflow.execute",
+
             "cost_center.create", "cost_center.read", "cost_center.update", "cost_center.delete",
             "role.create", "role.read", "role.update", "role.delete", "role.assign",
             "audit_log.read",
@@ -335,7 +301,7 @@ SYSTEM_ROLES = [
             "organization.read",
             "usage.read", "analytics.read",
             "billing.read",
-            "workflow.read", "workflow.execute",
+
             "cost_center.read",
             "llm.generate", "llm.models.read"
         ]

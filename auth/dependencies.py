@@ -10,6 +10,7 @@ from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from database.database import get_db
 from models.user import User, APIKey, Organization
 from auth.jwt_handler import verify_token, decode_api_key
@@ -32,24 +33,30 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    payload = verify_token(credentials.credentials)
-    if payload is None or payload.get("type") != "access":
+    try:
+        payload = verify_token(credentials.credentials)
+        if payload is None or payload.get("type") != "access":
+            raise credentials_exception
+        
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+        
+        # Get user from database with organization relationship preloaded
+        result = await db.execute(
+            select(User).options(selectinload(User.organization))
+            .where(User.id == user_id, User.is_active == True)
+        )
+        user = result.scalar_one_or_none()
+        
+        if user is None:
+            raise credentials_exception
+        
+        return user
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Authentication error: {e}")
         raise credentials_exception
-    
-    user_id: str = payload.get("sub")
-    if user_id is None:
-        raise credentials_exception
-    
-    # Get user from database
-    result = await db.execute(
-        select(User).where(User.id == user_id, User.is_active == True, User.is_deleted == False)
-    )
-    user = result.scalar_one_or_none()
-    
-    if user is None:
-        raise credentials_exception
-    
-    return user
 
 
 async def get_api_key_auth(

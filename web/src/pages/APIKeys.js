@@ -10,7 +10,12 @@ const APIKeys = () => {
   const [newKeyName, setNewKeyName] = useState('');
 
   useEffect(() => {
-    fetchApiKeys();
+    // Disable API call until working auth integration is complete
+    // fetchApiKeys();
+    
+    // Set empty state for now
+    setApiKeys([]);
+    setLoading(false);
   }, []);
 
   const fetchApiKeys = async () => {

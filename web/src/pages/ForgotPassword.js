@@ -9,16 +9,44 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const validateForm = () => {
+    if (!email.trim()) {
+      toast.error('Email is required');
+      return false;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
 
     try {
-      await api.post('/auth/forgot-password', { email });
+      const result = await api.post('/auth/forgot-password', { email });
       setSent(true);
-      toast.success('Password reset email sent!');
+      toast.success(result.data.message || 'Password reset email sent!');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to send reset email');
+      console.error('Forgot password error:', error);
+      let message = 'Failed to send reset email';
+      if (error.response?.data?.detail) {
+        message = error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        message = error.response.data.message;
+      }
+      toast.error(message);
     } finally {
       setLoading(false);
     }

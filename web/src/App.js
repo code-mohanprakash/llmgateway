@@ -18,7 +18,6 @@ import Models from './pages/Models';
 import Documentation from './pages/Documentation';
 import Pricing from './pages/Pricing';
 import RBAC from './pages/RBAC';
-import WorkflowBuilder from './pages/WorkflowBuilder';
 import APIPlayground from './pages/APIPlayground';
 import ABTesting from './pages/ABTesting';
 
@@ -78,34 +77,33 @@ function App() {
               path="/rbac"
               element={
                 <ProtectedRoute>
-                  <RBAC />
+                  <Layout />
                 </ProtectedRoute>
               }
-            />
-            <Route
-              path="/workflow"
-              element={
-                <ProtectedRoute>
-                  <WorkflowBuilder />
-                </ProtectedRoute>
-              }
-            />
+            >
+              <Route index element={<RBAC />} />
+            </Route>
+
             <Route
               path="/api-playground"
               element={
                 <ProtectedRoute>
-                  <APIPlayground />
+                  <Layout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<APIPlayground />} />
+            </Route>
             <Route
               path="/ab-testing"
               element={
                 <ProtectedRoute>
-                  <ABTesting />
+                  <Layout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<ABTesting />} />
+            </Route>
           </Routes>
         </div>
       </Router>

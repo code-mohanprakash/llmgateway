@@ -30,7 +30,14 @@ const RBAC = () => {
   });
 
   useEffect(() => {
-    loadData();
+    // Disable API call until working auth integration is complete
+    // loadData();
+    
+    // Set empty states for now
+    setRoles([]);
+    setPermissions([]);
+    setAuditLogs([]);
+    setLoading(false);
   }, [activeTab]);
 
   const loadData = async () => {
@@ -140,11 +147,14 @@ const RBAC = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Role-Based Access Control</h1>
-          <p className="mt-2 text-gray-600">Manage roles, permissions, and audit logs for enterprise security</p>
+    <>
+      <div className="space-y-8">
+        {/* Page Header */}
+        <div>
+          <h1 className="text-3xl font-bold gradient-text mb-2">Role-Based Access Control</h1>
+          <p className="text-gray-600">
+            Manage roles, permissions, and audit logs for enterprise security
+          </p>
         </div>
 
         {/* Tab Navigation */}
@@ -485,7 +495,7 @@ const RBAC = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

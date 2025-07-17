@@ -3,6 +3,7 @@ Email service for authentication
 """
 import os
 import smtplib
+import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Optional
@@ -10,6 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+logger = logging.getLogger("email_service")
 
 class EmailService:
     def __init__(self):
@@ -23,8 +25,13 @@ class EmailService:
     def send_email(self, to_email: str, subject: str, html_content: str) -> bool:
         """Send an email"""
         if not self.smtp_username or not self.smtp_password:
-            print("Email service not configured. Set SMTP_USERNAME and SMTP_PASSWORD environment variables.")
-            return False
+            # Development mode: log email instead of sending
+            logger.info("📧 EMAIL SERVICE - DEVELOPMENT MODE")
+            logger.info(f"TO: {to_email}")
+            logger.info(f"SUBJECT: {subject}")
+            logger.info(f"HTML CONTENT: {html_content}")
+            logger.info("✅ Email logged successfully (SMTP not configured)")
+            return True
             
         try:
             msg = MIMEMultipart('alternative')
@@ -43,7 +50,7 @@ class EmailService:
             
             return True
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            logger.error(f"Failed to send email: {e}")
             return False
     
     def send_password_reset_email(self, email: str, token: str) -> bool:

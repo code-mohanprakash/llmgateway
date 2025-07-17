@@ -24,7 +24,12 @@ const ABTesting = () => {
     });
 
     useEffect(() => {
-        loadTests();
+        // Disable API call until working auth integration is complete
+        // loadTests();
+        
+        // Set empty state for now
+        setTests([]);
+        setIsLoading(false);
     }, []);
 
     const loadTests = async () => {
@@ -148,10 +153,11 @@ const ABTesting = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">A/B Testing</h1>
+        <>
+            <div className="space-y-8">
+                {/* Page Header */}
+                <div>
+                    <h1 className="text-3xl font-bold gradient-text mb-2">A/B Testing</h1>
                     <p className="text-gray-600">
                         Create and manage A/B tests to optimize model performance, costs, and quality.
                     </p>
@@ -509,7 +515,7 @@ const ABTesting = () => {
                     </div>
                 )}
             </div>
-        </div>
+        </>
     );
 };
 

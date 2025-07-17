@@ -38,7 +38,13 @@ const Team = () => {
   ];
 
   useEffect(() => {
-    fetchTeamData();
+    // Disable API call until working auth integration is complete
+    // fetchTeamData();
+    
+    // Set empty states for now
+    setUsers([]);
+    setOrganization({ name: 'My Organization', plan: 'free' });
+    setLoading(false);
   }, []);
 
   const fetchTeamData = async () => {

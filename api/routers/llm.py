@@ -14,6 +14,7 @@ from datetime import datetime
 from database.database import get_db
 from models.user import APIKey, Organization, UsageRecord, PlanType
 from auth.dependencies import get_api_key_auth, get_current_organization
+from auth.rbac_middleware import require_permission
 from model_bridge import EnhancedModelBridge
 from utils.cache import get_cached_response, cache_response
 
@@ -91,6 +92,7 @@ async def startup_event():
 
 
 @router.post("/generate", response_model=GenerationResponse)
+@require_permission("llm.generate", "llm")
 async def generate_text(
     request: GenerationRequest,
     api_key: APIKey = Depends(get_api_key_auth),
@@ -243,6 +245,7 @@ async def generate_text(
 
 
 @router.post("/generate-advanced", response_model=GenerationResponse)
+@require_permission("llm.generate", "llm")
 async def generate_text_advanced(
     request: AdvancedGenerationRequest,
     api_key: APIKey = Depends(get_api_key_auth),
@@ -457,6 +460,7 @@ async def determine_optimal_model(request: AdvancedGenerationRequest) -> str:
 
 
 @router.post("/generate-structured", response_model=GenerationResponse)
+@require_permission("llm.generate", "llm")
 async def generate_structured_output(
     request: GenerationRequest,
     api_key: APIKey = Depends(get_api_key_auth),
@@ -758,6 +762,7 @@ async def list_public_models():
         }
 
 @router.get("/models")
+@require_permission("llm.models.read", "llm")
 async def list_available_models(
     api_key: APIKey = Depends(get_api_key_auth),
     db: AsyncSession = Depends(get_db)

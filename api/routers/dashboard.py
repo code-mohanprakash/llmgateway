@@ -10,7 +10,7 @@ from sqlalchemy import select, func, desc, extract, and_
 
 from database.database import get_db
 from models.user import User, Organization, UsageRecord, APIKey, PlanType
-from models.rbac import AuditLog, CostCenter, Workflow, ABTest
+from models.rbac import AuditLog, CostCenter, ABTest
 from auth.dependencies import get_current_user
 from auth.rbac_middleware import require_permission
 from model_bridge import enhanced_gateway

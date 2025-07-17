@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 const ResetPassword = () => {
@@ -12,12 +12,26 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { resetPassword } = useAuth();
   
   const token = searchParams.get('token');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // Validate required fields
+    if (!password.trim()) {
+      toast.error('Password is required');
+      setLoading(false);
+      return;
+    }
+
+    if (!confirmPassword.trim()) {
+      toast.error('Please confirm your password');
+      setLoading(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
@@ -32,14 +46,13 @@ const ResetPassword = () => {
     }
 
     try {
-      await api.post('/auth/reset-password', {
-        token,
-        new_password: password
-      });
-      toast.success('Password reset successfully! You can now login.');
+      const result = await resetPassword(token, password);
+      toast.success(result.message || 'Password reset successfully! You can now login.');
       navigate('/login');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to reset password');
+      console.error('Reset password error:', error);
+      const message = error.message || 'Failed to reset password. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -16,6 +16,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import logging
 
 from database.database import get_db
 from models.user import User, Organization, APIKey, UserRole, PlanType
@@ -28,9 +29,12 @@ from auth.jwt_handler import (
     ALGORITHM
 )
 from auth.dependencies import get_current_user, require_role
+from auth.rbac_middleware import require_permission
 from utils.auth.email_service import email_service
 
 router = APIRouter()
+
+logger = logging.getLogger("auth")
 
 
 class PasswordResetRequest(BaseModel):
@@ -217,29 +221,45 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     """Login user"""
-    
-    # Find user by email
-    result = await db.execute(
-        select(User).where(User.email == form_data.username, User.is_active == True)
-    )
-    user = result.scalar_one_or_none()
-    
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
+    try:
+        # Find user by email
+        result = await db.execute(
+            select(User).where(User.email == form_data.username, User.is_active == True)
         )
-    
-    # Generate tokens
-    access_token = create_access_token(data={"sub": str(user.id)})
-    refresh_token = create_refresh_token(data={"sub": str(user.id)})
-    
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "token_type": "bearer"
-    }
+        user = result.scalar_one_or_none()
+        if not user:
+            logger.warning(f"Login failed: user not found or inactive for email {form_data.username}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        if not user.is_verified:
+            logger.warning(f"Login failed: user not verified for email {form_data.username}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Email not verified. Please verify your email before logging in.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        if not verify_password(form_data.password, user.hashed_password):
+            logger.warning(f"Login failed: incorrect password for email {form_data.username}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        # Generate tokens
+        access_token = create_access_token(data={"sub": str(user.id)})
+        refresh_token = create_refresh_token(data={"sub": str(user.id)})
+        logger.info(f"Login successful for user {form_data.username}")
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer"
+        }
+    except Exception as e:
+        logger.error(f"Login error for {form_data.username}: {e}")
+        raise
 
 
 class RefreshTokenRequest(BaseModel):
@@ -520,6 +540,7 @@ async def get_organization_info(
 
 
 @router.post("/api-keys", response_model=APIKeyResponse)
+@require_permission("api_key.create", "api_key")
 async def create_api_key(
     key_data: APIKeyCreate,
     current_user: User = Depends(get_current_user),
@@ -566,6 +587,7 @@ async def create_api_key(
 
 
 @router.get("/api-keys", response_model=list[APIKeyResponse])
+@require_permission("api_key.read", "api_key")
 async def list_api_keys(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -596,6 +618,7 @@ async def list_api_keys(
 
 
 @router.delete("/api-keys/{key_id}")
+@require_permission("api_key.delete", "api_key")
 async def delete_api_key(
     key_id: str,
     current_user: User = Depends(get_current_user),
@@ -634,31 +657,31 @@ async def forgot_password(
     db: AsyncSession = Depends(get_db)
 ):
     """Send password reset email"""
-    
-    # Find user by email
-    result = await db.execute(
-        select(User).where(User.email == request.email)
-    )
-    user = result.scalar_one_or_none()
-    
-    if not user:
-        # Don't reveal if email exists for security
-        return {"message": "If the email exists, a password reset link has been sent"}
-    
-    # Generate reset token
-    reset_token = secrets.token_urlsafe(32)
-    
-    # Store token in user record (you might want a separate table for this)
-    user.reset_token = reset_token
-    user.reset_token_expires = (datetime.utcnow() + timedelta(hours=1)).isoformat()
-    await db.commit()
-    
-    # Send password reset email
-    email_sent = email_service.send_password_reset_email(user.email, reset_token)
-    
-    if email_sent:
-        return {"message": "If the email exists, a password reset link has been sent"}
-    else:
+    try:
+        # Find user by email
+        result = await db.execute(
+            select(User).where(User.email == request.email)
+        )
+        user = result.scalar_one_or_none()
+        if not user:
+            logger.warning(f"Forgot password: email not found {request.email}")
+            return {"message": "If the email exists, a password reset link has been sent"}
+        # Generate reset token
+        reset_token = secrets.token_urlsafe(32)
+        # Store token in user record
+        user.reset_token = reset_token
+        user.reset_token_expires = (datetime.utcnow() + timedelta(hours=1)).isoformat()
+        await db.commit()
+        # Send password reset email
+        email_sent = email_service.send_password_reset_email(user.email, reset_token)
+        if email_sent:
+            logger.info(f"Password reset email sent to {user.email}")
+            return {"message": "If the email exists, a password reset link has been sent"}
+        else:
+            logger.error(f"Failed to send password reset email to {user.email}")
+            return {"message": "If the email exists, a password reset link has been sent"}
+    except Exception as e:
+        logger.error(f"Forgot password error for {request.email}: {e}")
         return {"message": "If the email exists, a password reset link has been sent"}
 
 
@@ -916,3 +939,22 @@ async def update_profile(
     await db.commit()
     
     return {"message": "Profile updated successfully"}
+
+
+@router.get("/health/email")
+async def email_health():
+    """Health check for email service"""
+    try:
+        # Try to send a test email to the configured FROM_EMAIL (in dev mode, just logs)
+        test_result = email_service.send_email(
+            to_email=email_service.from_email or "test@example.com",
+            subject="Model Bridge Email Health Check",
+            html_content="<p>This is a test email for health check.</p>"
+        )
+        if test_result:
+            return {"status": "ok"}
+        else:
+            return {"status": "error", "detail": "Failed to send test email. Check SMTP config."}
+    except Exception as e:
+        logger.error(f"Email health check failed: {e}")
+        return {"status": "error", "detail": str(e)}

@@ -2,10 +2,9 @@
 JWT token handling for authentication
 """
 import os
-import jwt
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
-from jose import JWTError
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 # Configuration
@@ -53,9 +52,19 @@ def create_refresh_token(data: Dict[str, Any]) -> str:
 def verify_token(token: str) -> Optional[Dict[str, Any]]:
     """Verify and decode JWT token"""
     try:
+        # Check if token is empty or malformed
+        if not token or not isinstance(token, str):
+            return None
+        
+        # Check if token has the correct format (should have 3 parts separated by dots)
+        if token.count('.') != 2:
+            return None
+            
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
+        return None
+    except Exception:
         return None
 
 
