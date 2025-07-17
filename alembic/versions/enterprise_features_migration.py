@@ -82,7 +82,7 @@ def upgrade():
         sa.Column('session_id', sa.String(255)),
         sa.Column('success', sa.Boolean, default=True),
         sa.Column('error_message', sa.Text),
-        sa.Column('additional_metadata', postgresql.JSONB),
+        sa.Column('metadata', postgresql.JSONB),
         sa.Column('created_at', sa.String, nullable=False),
         sa.Column('updated_at', sa.String, nullable=False),
         sa.ForeignKeyConstraint(['organization_id'], ['organizations.id']),

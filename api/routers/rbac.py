@@ -560,7 +560,7 @@ async def get_audit_log(
         ip_address=str(log.ip_address) if log.ip_address else None,
         user_agent=log.user_agent,
         created_at=log.created_at,
-                    additional_metadata=log.additional_metadata
+        additional_metadata=log.additional_metadata
     )
 
 

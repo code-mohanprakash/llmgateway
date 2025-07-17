@@ -184,7 +184,7 @@ class RBACMiddleware:
             session_id=session_id,
             success=success,
             error_message=error_message,
-            metadata={
+            additional_metadata={
                 "timestamp": str(uuid.uuid4()),
                 "version": "1.0"
             }
