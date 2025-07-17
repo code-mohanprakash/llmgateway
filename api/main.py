@@ -75,8 +75,8 @@ app.include_router(ab_testing.router, prefix="/api/ab-testing", tags=["ab-testin
 
 # Serve static files (frontend) - only if directory exists
 import os
-if os.path.exists("web/dist/static"):
-    app.mount("/static", StaticFiles(directory="web/dist/static"), name="static")
+if os.path.exists("web/build/static"):
+    app.mount("/static", StaticFiles(directory="web/build/static"), name="static")
 
 
 @app.get("/metrics")
@@ -105,8 +105,8 @@ async def serve_frontend(path: str):
         return {"error": "API endpoint not found"}, 404
     
     # Serve index.html for client-side routing if it exists
-    if os.path.exists("web/dist/index.html"):
-        return FileResponse("web/dist/index.html")
+    if os.path.exists("web/build/index.html"):
+        return FileResponse("web/build/index.html")
     else:
         return {"message": "Frontend not built yet. Please run 'npm run build' in the web directory."}
 
