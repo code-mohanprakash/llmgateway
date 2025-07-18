@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { UserIcon, CogIcon, ShieldCheckIcon, BellIcon, LockClosedIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const Settings = () => {
+  const { user, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({
@@ -49,18 +51,19 @@ const Settings = () => {
   ];
 
   useEffect(() => {
-    // Disable API call until working auth integration is complete
-    // fetchSettings();
-    
-    // Set default values for now
-    setProfile({
-      email: user?.email || '',
-      firstName: user?.first_name || '',
-      lastName: user?.last_name || '',
-      organizationName: user?.organization || 'My Organization'
-    });
+    if (isAuthenticated && user) {
+      // Set default values from user data
+      setProfileData({
+        email: user.email || '',
+        firstName: user.first_name || user.firstName || '',
+        lastName: user.last_name || user.lastName || '',
+        organizationName: user.organization || 'My Organization',
+        timezone: 'America/New_York',
+        language: 'en'
+      });
+    }
     setLoading(false);
-  }, [user]);
+  }, [isAuthenticated, user]);
 
   const fetchSettings = async () => {
     try {

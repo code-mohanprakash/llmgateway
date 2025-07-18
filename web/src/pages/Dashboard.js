@@ -2,64 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
   const [analytics, setAnalytics] = useState(null);
   const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(true);
-
-
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if (isAuthenticated && user) {
+      fetchDashboardData();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, user]);
 
   const fetchDashboardData = async () => {
     try {
-      // Set zero/empty data since no actual usage yet
-      console.log('Loading dashboard with zero data (no usage yet)');
+      setLoading(true);
       
-      // Zero analytics data
-      setAnalytics({
-        total_requests: 0,
-        total_tokens: 0,
-        total_cost: 0,
-        average_response_time: 0,
-        success_rate: 0,
-        daily_usage: [],
-        top_models: []
-      });
+      // TODO: Enable when backend endpoints are integrated with working auth
+      // const analyticsResponse = await api.get('/dashboard/analytics');
+      // const usageResponse = await api.get('/billing/usage');
+      // setAnalytics(analyticsResponse.data);
+      // setUsage(usageResponse.data);
       
-      // Zero usage data
-      setUsage({
-        current_period_requests: 0,
-        current_period_tokens: 0,
-        current_period_cost: 0,
-        monthly_token_limit: 10000,
-        monthly_request_limit: 1000000,
-        plan_type: 'free'
-      });
+      // For now, set null to show empty state
+      setAnalytics(null);
+      setUsage(null);
       
     } catch (error) {
-      console.error('Dashboard data fetch error:', error);
+      // Don't show toast for 401 errors
+      if (error.response?.status !== 401) {
+        toast.error('Failed to load dashboard data');
+      }
       
-      setAnalytics({
-        total_requests: 0,
-        total_tokens: 0,
-        total_cost: 0,
-        average_response_time: 0,
-        success_rate: 0,
-        daily_usage: [],
-        top_models: []
-      });
-      setUsage({
-        current_period_requests: 0,
-        current_period_tokens: 0,
-        current_period_cost: 0,
-        monthly_token_limit: 10000,
-        monthly_request_limit: 1000000,
-        plan_type: 'free'
-      });
+      setAnalytics(null);
+      setUsage(null);
     } finally {
       setLoading(false);
     }
@@ -69,6 +49,56 @@ const Dashboard = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-gray-500"></div>
+      </div>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold gradient-text mb-2">Dashboard</h1>
+          <p className="text-gray-600">
+            Please log in to view your Model Bridge usage and performance
+          </p>
+        </div>
+        
+        <div className="empty-state-card">
+          <div className="empty-state-icon">🔐</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            You need to be logged in to view dashboard analytics and usage statistics.
+          </p>
+          <a 
+            href="/login" 
+            className="btn-primary"
+          >
+            Log In
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // If no data available, show empty state
+  if (!analytics && !usage) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold gradient-text mb-2">Dashboard</h1>
+          <p className="text-gray-600">
+            No data available. Start making API requests to see your usage analytics.
+          </p>
+        </div>
+        
+        <div className="empty-state-card">
+          <div className="empty-state-icon">📊</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Data Available</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Start making API requests to see your usage analytics and performance metrics here.
+          </p>
+        </div>
       </div>
     );
   }
@@ -83,108 +113,109 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Usage Stats */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="stat-card hover-lift overflow-hidden">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">R</span>
+      {/* Usage Stats - Only show if we have usage data */}
+      {usage && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="stat-card hover-lift overflow-hidden">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm font-semibold">R</span>
+                </div>
+              </div>
+              <div className="ml-4 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Requests This Month
+                  </dt>
+                  <dd className="text-2xl font-bold text-gray-900">
+                    {(usage.current_period_requests || 0).toLocaleString()}
+                  </dd>
+                </dl>
               </div>
             </div>
-            <div className="ml-4 w-0 flex-1">
-              <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
-                  Requests This Month
-                </dt>
-                <dd className="text-2xl font-bold text-gray-900">
-                  {(usage?.current_period_requests ?? 0).toLocaleString()}
-                </dd>
-              </dl>
+            <div className="bg-blue-50/60 px-6 py-3">
+              <div className="text-sm">
+                <span className="text-gray-600">
+                  {usage.request_limit ? usage.request_limit.toLocaleString() : '∞'} limit
+                </span>
+              </div>
             </div>
           </div>
-          <div className="bg-blue-50/60 px-6 py-3">
-            <div className="text-sm">
-              <span className="text-gray-600">
-                {usage?.request_limit ? usage.request_limit.toLocaleString() : '∞'} limit
-              </span>
-            </div>
-          </div>
-        </div>
 
-        <div className="stat-card hover-lift overflow-hidden">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-400 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">T</span>
+          <div className="stat-card hover-lift overflow-hidden">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-400 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm font-semibold">T</span>
+                </div>
+              </div>
+              <div className="ml-4 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Tokens This Month
+                  </dt>
+                  <dd className="text-2xl font-bold text-gray-900">
+                    {(usage.current_period_tokens || 0).toLocaleString()}
+                  </dd>
+                </dl>
               </div>
             </div>
-            <div className="ml-4 w-0 flex-1">
-              <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
-                  Tokens This Month
-                </dt>
-                <dd className="text-2xl font-bold text-gray-900">
-                  {(usage?.current_period_tokens ?? 0).toLocaleString()}
-                </dd>
-              </dl>
+            <div className="bg-blue-50/60 px-6 py-3">
+              <div className="text-sm">
+                <span className="text-gray-600">
+                  {usage.token_limit ? usage.token_limit.toLocaleString() : '∞'} limit
+                </span>
+              </div>
             </div>
           </div>
-          <div className="bg-blue-50/60 px-6 py-3">
-            <div className="text-sm">
-              <span className="text-gray-600">
-                {usage?.token_limit ? usage.token_limit.toLocaleString() : '∞'} limit
-              </span>
-            </div>
-          </div>
-        </div>
 
-        <div className="stat-card hover-lift overflow-hidden">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">$</span>
+          <div className="stat-card hover-lift overflow-hidden">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm font-semibold">$</span>
+                </div>
+              </div>
+              <div className="ml-4 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Cost This Month
+                  </dt>
+                  <dd className="text-2xl font-bold text-gray-900">
+                    ${(usage.current_period_cost || 0).toFixed(2)}
+                  </dd>
+                </dl>
               </div>
             </div>
-            <div className="ml-4 w-0 flex-1">
-              <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
-                  Cost This Month
-                </dt>
-                <dd className="text-2xl font-bold text-gray-900">
-                  ${(usage?.current_period_cost ?? 0).toFixed(2)}
-                </dd>
-              </dl>
-            </div>
           </div>
-        </div>
 
-        <div className="stat-card hover-lift overflow-hidden">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">%</span>
+          <div className="stat-card hover-lift overflow-hidden">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm font-semibold">%</span>
+                </div>
               </div>
-            </div>
-            <div className="ml-4 w-0 flex-1">
-              <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">
-                  Success Rate
-                </dt>
-                <dd className="text-2xl font-bold text-gray-900">
-                  {(analytics?.success_rate ?? 0).toFixed(1)}%
-                </dd>
-              </dl>
+              <div className="ml-4 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Success Rate
+                  </dt>
+                  <dd className="text-2xl font-bold text-gray-900">
+                    {(analytics?.success_rate || 0).toFixed(1)}%
+                  </dd>
+                </dl>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Enterprise Features Quick Access */}
       <div className="clean-card hover-lift rounded-xl p-6">
         <h3 className="text-xl font-semibold gradient-text mb-6">Enterprise Features</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
 
           <a href="/api-playground" className="feature-card group">
             <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-3">
@@ -218,7 +249,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Usage Chart */}
+      {/* Usage Chart - Only show if we have analytics data */}
       {analytics?.usage_by_day && analytics.usage_by_day.length > 0 ? (
         <div className="clean-card hover-lift rounded-xl p-6">
           <h3 className="text-xl font-semibold gradient-text mb-6">Usage Over Time</h3>
@@ -266,7 +297,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Top Models */}
+      {/* Top Models - Only show if we have analytics data */}
       {analytics?.top_models && analytics.top_models.length > 0 ? (
         <div className="clean-card hover-lift rounded-xl p-6">
           <h3 className="text-xl font-semibold gradient-text mb-6">Top Models</h3>
@@ -298,10 +329,10 @@ const Dashboard = () => {
                       {model.provider}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {(model.request_count ?? 0).toLocaleString()}
+                      {(model.request_count || 0).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      ${(model.cost ?? 0).toFixed(2)}
+                      ${(model.cost || 0).toFixed(2)}
                     </td>
                   </tr>
                 ))}

@@ -2,66 +2,60 @@ import React, { useState, useEffect } from 'react';
 import { CreditCardIcon, CheckIcon, BoltIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const Billing = () => {
-  console.log('Billing component rendering');
   const [currentPlan, setCurrentPlan] = useState('free');
   const [loading, setLoading] = useState(true);
   const [usageData, setUsageData] = useState(null);
   const [invoices, setInvoices] = useState([]);
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    console.log('Billing useEffect triggered');
-    // Disable API calls until working auth integration is complete
-    // fetchBillingData();
-    // fetchCurrentPlan();
-    
-    // Set default states for now
-    setUsage(null);
-    setInvoices([]);
-    setCurrentPlan('free');
-    setLoading(false);
-  }, []);
+    if (isAuthenticated && user) {
+      fetchBillingData();
+      fetchCurrentPlan();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, user]);
 
   const fetchBillingData = async () => {
     try {
       setLoading(true);
-      console.log('Fetching billing data...');
+      console.log('Fetching billing data for user:', user?.email);
       
-      const [usageRes, invoicesRes] = await Promise.all([
-        api.get('/billing/usage'),
-        api.get('/billing/invoices')
-      ]);
+      // TODO: Enable when backend endpoints are integrated with working auth
+      // const [usageRes, invoicesRes] = await Promise.all([
+      //   api.get('/billing/usage'),
+      //   api.get('/billing/invoices')
+      // ]);
+      // setUsageData(usageRes.data);
+      // setInvoices(invoicesRes.data || []);
       
-      console.log('Usage response:', usageRes.data);
-      console.log('Invoices response:', invoicesRes.data);
-      
-      setUsageData(usageRes.data);
-      setInvoices(invoicesRes.data || []);
+      // For now, set null to show empty state
+      setUsageData(null);
+      setInvoices([]);
       
     } catch (error) {
       console.error('Billing data fetch error:', error);
-      let message = error.response?.data?.detail;
-      if (!message && error.response?.data && typeof error.response.data === 'object') {
-        if (Array.isArray(error.response.data)) {
-          message = error.response.data.map(e => e.msg).join(', ');
-        } else if (error.response.data.detail) {
-          message = error.response.data.detail;
-        } else {
-          message = JSON.stringify(error.response.data);
-        }
-      }
-      toast.error(message || 'Failed to load billing data');
       
-      // Set real empty state, not fake data
-      setUsageData({
-        current_period_requests: 0,
-        current_period_tokens: 0,
-        current_period_cost: 0,
-        monthly_token_limit: 0,
-        monthly_request_limit: 0,
-        top_models: []
-      });
+      if (error.response?.status === 401) {
+        console.log('Authentication failed - user needs to log in');
+      } else {
+        let message = error.response?.data?.detail;
+        if (!message && error.response?.data && typeof error.response.data === 'object') {
+          if (Array.isArray(error.response.data)) {
+            message = error.response.data.map(e => e.msg).join(', ');
+          } else if (error.response.data.detail) {
+            message = error.response.data.detail;
+          } else {
+            message = JSON.stringify(error.response.data);
+          }
+        }
+        toast.error(message || 'Failed to load billing data');
+      }
+      setUsageData(null);
       setInvoices([]);
     } finally {
       setLoading(false);
@@ -70,8 +64,12 @@ const Billing = () => {
 
   const fetchCurrentPlan = async () => {
     try {
-      const res = await api.get('/billing/current-plan');
-      setCurrentPlan(res.data?.plan_id || 'free');
+      // TODO: Enable when backend endpoints are integrated with working auth
+      // const res = await api.get('/billing/current-plan');
+      // setCurrentPlan(res.data?.plan_id || 'free');
+      
+      // For now, set default plan
+      setCurrentPlan('free');
     } catch (error) {
       console.error('Failed to fetch current plan:', error);
       setCurrentPlan('free');
@@ -165,7 +163,6 @@ const Billing = () => {
         toast.success('Plan upgraded successfully!');
         fetchCurrentPlan();
       } catch (error) {
-        console.error('Failed to upgrade plan:', error);
         toast.error('Failed to upgrade plan. Please try again.');
       }
     };
@@ -226,42 +223,57 @@ const Billing = () => {
     );
   };
 
-  // Default usage fallback - real zero state
-  const defaultUsage = {
-    current_period_requests: 0,
-    current_period_tokens: 0,
-    current_period_cost: 0,
-    monthly_token_limit: 0,
-    monthly_request_limit: 0,
-    top_models: []
-  };
-
-  // Use fallback if usageData is null/undefined
-  const usageSafe = usageData || defaultUsage;
-  const invoicesSafe = invoices || [];
-  const hasUsage = usageSafe && (usageSafe.current_period_requests > 0 || usageSafe.current_period_cost > 0);
-
   if (loading) {
-    console.log('Billing: Showing loading state');
     return (
       <div className="space-y-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold gradient-text">Billing & Usage</h1>
-            <p className="text-gray-600 mt-2">Manage your subscription and view usage analytics</p>
+            <p className="text-gray-600">Loading your subscription and usage data...</p>
           </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="stat-card animate-pulse">
-              <div className="h-24 bg-gray-200 rounded"></div>
-            </div>
-          ))}
-        </div>
-        
         <div className="flex items-center justify-center h-64">
-          <div className="spinner w-12 h-12"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-gray-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold gradient-text mb-2">Billing & Usage</h1>
+          <p className="text-gray-600">
+            Please log in to view your subscription and usage data.
+          </p>
+        </div>
+        <div className="empty-state-card">
+          <div className="empty-state-icon">🔐</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            You need to be logged in to view billing and usage information.
+          </p>
+          <a 
+            href="/login" 
+            className="btn-primary"
+          >
+            Log In
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // If no usage data, show empty state
+  if (!usageData) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold gradient-text mb-2">Billing & Usage</h1>
+          <p className="text-gray-600">
+            No usage data available. Start making API requests to see your usage here.
+          </p>
         </div>
       </div>
     );
@@ -269,74 +281,40 @@ const Billing = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold gradient-text">Billing & Usage</h1>
-          <p className="text-gray-600 mt-2">Manage your subscription and view usage</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold gradient-text">Billing & Usage</h1>
+        <p className="text-gray-600">Manage your subscription and view usage</p>
       </div>
-
-      {/* Current Usage */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <UsageCard
           title="Tokens Used"
-          value={usageSafe.current_period_tokens?.toLocaleString() || '0'}
-          subtitle={`of ${usageSafe.monthly_token_limit?.toLocaleString() || 'unlimited'}`}
+          value={usageData.current_period_tokens || 0}
+          subtitle={`of ${usageData.monthly_token_limit || 0}`}
           icon={BoltIcon}
-          progress={usageSafe.monthly_token_limit ? (usageSafe.current_period_tokens / usageSafe.monthly_token_limit) * 100 : null}
+          progress={usageData.monthly_token_limit ? (usageData.current_period_tokens / usageData.monthly_token_limit) * 100 : 0}
         />
-        
         <UsageCard
           title="Cost This Month"
-          value={formatCurrency(usageSafe.current_period_cost || 0)}
+          value={formatCurrency(usageData.current_period_cost || 0)}
           subtitle="Current billing period"
           icon={CreditCardIcon}
         />
-        
         <UsageCard
           title="API Requests"
-          value={usageSafe.current_period_requests?.toLocaleString() || '0'}
+          value={usageData.current_period_requests || 0}
           subtitle="This billing period"
           icon={ArrowTrendingUpIcon}
+          progress={usageData.monthly_request_limit ? (usageData.current_period_requests / usageData.monthly_request_limit) * 100 : 0}
         />
       </div>
-
-      {/* Pricing Plans */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Pricing Plans</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Pricing Plans</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan) => (
-            <PlanCard
-              key={plan.id}
-              plan={plan}
-              isCurrentPlan={plan.id === currentPlan}
-            />
+            <PlanCard key={plan.id} plan={plan} isCurrentPlan={plan.id === currentPlan} />
           ))}
         </div>
       </div>
-
-      {/* Usage Breakdown */}
-      {hasUsage && usageSafe?.top_models && usageSafe.top_models.length > 0 && (
-        <div className="clean-card overflow-hidden">
-          <div className="px-6 py-4 table-header">
-            <h3 className="text-lg font-semibold text-gray-900">Model Usage</h3>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {usageSafe.top_models.map((model, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-900">{model.model_id}</span>
-                  <div className="flex items-center space-x-6">
-                    <span className="text-sm text-gray-600">{model.request_count} requests</span>
-                    <span className="text-sm font-semibold text-gray-900">{formatCurrency(model.cost)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

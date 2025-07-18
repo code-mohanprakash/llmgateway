@@ -6,13 +6,18 @@ import Logo from './Logo';
 
 const Navigation = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   
   const isActive = (path) => {
     if (path === '/') {
       return location.pathname === '/';
     }
     return location.pathname.startsWith(path);
+  };
+
+  const handleLogout = () => {
+    logout();
+    // The app will handle redirect automatically
   };
 
   return (
@@ -56,7 +61,7 @@ const Navigation = () => {
                 >
                   Documentation
                 </Link>
-                {user && (
+                {isAuthenticated && user && (
                   <Link 
                     to="/dashboard" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
@@ -68,7 +73,7 @@ const Navigation = () => {
                     Dashboard
                   </Link>
                 )}
-                {user && user.role === 'admin' && (
+                {isAuthenticated && user && user.role === 'admin' && (
                   <Link 
                     to="/rbac" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
@@ -80,19 +85,7 @@ const Navigation = () => {
                     RBAC
                   </Link>
                 )}
-                {user && (
-                  <Link 
-                    to="/workflow" 
-                    className={`px-3 py-2 text-sm font-medium transition-colors ${
-                      isActive('/workflow') 
-                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                        : 'text-gray-900 hover:text-[#9B5967]'
-                    }`}
-                  >
-                    Workflows
-                  </Link>
-                )}
-                {user && (
+                {isAuthenticated && user && (
                   <Link 
                     to="/api-playground" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
@@ -104,7 +97,7 @@ const Navigation = () => {
                     API Playground
                   </Link>
                 )}
-                {user && user.role === 'admin' && (
+                {isAuthenticated && user && user.role === 'admin' && (
                   <Link 
                     to="/ab-testing" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
@@ -121,23 +114,39 @@ const Navigation = () => {
           </div>
           <div className="flex items-center space-x-4">
 
-            
             <button className="flex items-center space-x-2 text-gray-600 hover:text-[#9B5967] transition-colors">
               <StarIcon className="h-4 w-4" />
               <span className="text-sm font-medium">227</span>
             </button>
-            <Link
-              to="/login"
-              className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="bg-[#9B5967] hover:bg-[#8a4d5a] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
-            >
-              Get Started
-            </Link>
+            
+            {isAuthenticated && user ? (
+              <div className="flex items-center space-x-4">
+                <div className="text-sm text-gray-700">
+                  Welcome, {user.email}
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-[#9B5967] hover:bg-[#8a4d5a] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

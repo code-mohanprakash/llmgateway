@@ -2,9 +2,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 export const ProtectedRoute = ({ children }) => {
-  const { user, loading, initialized } = useAuth();
+  const { user, isAuthenticated, loading, initialized } = useAuth();
 
-  console.log('ProtectedRoute - loading:', loading, 'initialized:', initialized, 'user:', !!user);
+  console.log('ProtectedRoute - loading:', loading, 'initialized:', initialized, 'isAuthenticated:', isAuthenticated, 'user:', !!user);
 
   if (loading || !initialized) {
     return (
@@ -14,8 +14,8 @@ export const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!user) {
-    console.log('ProtectedRoute - No user found, redirecting to login');
+  if (!isAuthenticated || !user) {
+    console.log('ProtectedRoute - Not authenticated, redirecting to login');
     return <Navigate to="/login" />;
   }
 
