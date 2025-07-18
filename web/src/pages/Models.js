@@ -54,10 +54,10 @@ const Models = () => {
         ]
       });
       setStats({
-        total_models: 50,
+        total_models: 80,
         total_providers: 10,
         free_models: 12,
-        paid_models: 38
+        paid_models: 68
       });
     } finally {
       setLoading(false);
@@ -66,21 +66,21 @@ const Models = () => {
 
   const getProviderIcon = (provider) => {
     const icons = {
-      groq: '⚡',
-      'inference.net': '🧠',
-      'kluster.ai': '{K}',
-      openai: '🤖',
-      anthropic: '🧠',
-      google: '🔍',
-      together: '🤝',
-      mistral: '🌪️',
-      cohere: '💬',
-      perplexity: '🔮',
-      ollama: '🦙',
-      huggingface: '🤗',
-      deepseek: '🔍'
+      groq: `${process.env.PUBLIC_URL}/images/icons8-grok-48.png`,
+      'inference.net': `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      'kluster.ai': `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      openai: `${process.env.PUBLIC_URL}/images/openaiiconq.png`,
+      anthropic: `${process.env.PUBLIC_URL}/images/icons8-anthropic-48.png`,
+      google: `${process.env.PUBLIC_URL}/images/google-color.png`,
+      together: `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      mistral: `${process.env.PUBLIC_URL}/images/mistral-color.png`,
+      cohere: `${process.env.PUBLIC_URL}/images/cohere-color.png`,
+      perplexity: `${process.env.PUBLIC_URL}/images/deepseek-color.png`,
+      ollama: `${process.env.PUBLIC_URL}/images/ollama.png`,
+      huggingface: `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      deepseek: `${process.env.PUBLIC_URL}/images/deepseek-color.png`
     };
-    return icons[provider] || '🤖';
+    return icons[provider] || `${process.env.PUBLIC_URL}/images/openai.png`;
   };
 
   const formatCost = (cost, isFree = false) => {
@@ -135,7 +135,7 @@ const Models = () => {
       <div className="min-h-screen bg-white">
         <Navigation />
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-[#9B5967]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-[#000000]"></div>
         </div>
       </div>
     );
@@ -166,7 +166,7 @@ const Models = () => {
                 placeholder="Search models or providers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#9B5967] focus:border-transparent transition-all duration-200 bg-white"
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#000000] focus:border-transparent transition-all duration-200 bg-white"
               />
             </div>
           </div>
@@ -181,8 +181,21 @@ const Models = () => {
                 <div key={provider} className="space-y-6">
                   {/* Provider Header */}
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white text-lg font-bold">
-                      {getProviderIcon(provider)}
+                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200 shadow-sm">
+                      <img 
+                        src={getProviderIcon(provider)} 
+                        alt={`${provider} logo`}
+                        className="w-6 h-6 object-contain"
+                        onError={(e) => {
+                          console.log(`Failed to load icon for ${provider}:`, getProviderIcon(provider));
+                          e.target.style.display = 'none';
+                          // Show fallback text
+                          const fallback = document.createElement('div');
+                          fallback.textContent = provider.charAt(0).toUpperCase();
+                          fallback.className = 'text-gray-600 font-bold text-lg';
+                          e.target.parentNode.appendChild(fallback);
+                        }}
+                      />
                     </div>
                     <div className="flex items-center space-x-3">
                       <h2 className="text-2xl font-bold text-gray-900 capitalize">
@@ -207,7 +220,7 @@ const Models = () => {
                           {/* Copy Button */}
                           <button
                             onClick={() => copyModelId(model.model_id)}
-                            className="absolute top-3 right-3 p-1 text-gray-400 hover:text-[#9B5967] transition-colors"
+                            className="absolute top-3 right-3 p-1 text-gray-400 hover:text-[#000000] transition-colors"
                           >
                             <ClipboardIcon className="h-4 w-4" />
                           </button>

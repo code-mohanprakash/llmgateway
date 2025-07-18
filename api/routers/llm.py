@@ -34,9 +34,21 @@ FREE_TIER_MODELS = {
 }
 
 PAID_TIER_MODELS = {
-    "openai": ["gpt-4o", "gpt-4-turbo", "gpt-4", "gpt-3.5-turbo"],
-    "anthropic": ["claude-3-opus", "claude-3.5-sonnet", "claude-3-sonnet", "claude-3-haiku"],
-    "google": ["gemini-1.5-pro", "gemini-ultra"],
+    "openai": [
+        "gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-4-turbo-preview", "gpt-4-1106-preview",
+        "gpt-4-0613", "gpt-4-0314", "gpt-4", "gpt-3.5-turbo", "gpt-3.5-turbo-16k",
+        "gpt-3.5-turbo-0613", "gpt-3.5-turbo-0301", "text-davinci-003", "text-curie-001",
+        "text-babbage-001", "text-ada-001"
+    ],
+    "anthropic": [
+        "claude-3-5-sonnet-20241022", "claude-3-opus-20240229", "claude-3-sonnet-20240229",
+        "claude-3-haiku-20240307", "claude-2.1", "claude-2.0", "claude-instant-1.2",
+        "claude-instant-1.1"
+    ],
+    "google": [
+        "gemini-1.5-pro", "gemini-1.5-flash", "gemini-1.5-pro-latest", "gemini-pro",
+        "gemini-pro-vision", "gemini-ultra", "gemini-ultra-vision"
+    ],
     "groq": ["mixtral-8x7b-32768", "llama3-70b-8192"],
     "together": ["llama-3-13b-chat", "llama-3-70b-chat", "mixtral-8x22b-instruct"],
     "mistral": ["mistral-tiny", "mistral-small", "mistral-medium", "mistral-large"],
@@ -678,23 +690,41 @@ async def list_public_models():
         return {
             "models": {
                 "openai": [
-                    {"model_id": "gpt-4", "model_name": "GPT-4", "context_length": 8192, "cost_per_1k_tokens": 0.03, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "excellent"},
-                    {"model_id": "gpt-4-turbo", "model_name": "GPT-4 Turbo", "context_length": 128000, "cost_per_1k_tokens": 0.01, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
-                    {"model_id": "gpt-3.5-turbo", "model_name": "GPT-3.5 Turbo", "context_length": 4096, "cost_per_1k_tokens": 0.002, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"},
-                    {"model_id": "gpt-4o-mini", "model_name": "GPT-4o Mini", "context_length": 128000, "cost_per_1k_tokens": 0.0006, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "small", "speed": "fastest", "reasoning": "basic"},
-                    {"model_id": "gpt-4o", "model_name": "GPT-4o", "context_length": 128000, "cost_per_1k_tokens": 0.015, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "medium", "speed": "medium", "reasoning": "good"}
+                    {"model_id": "gpt-4o", "model_name": "GPT-4o", "context_length": 128000, "cost_per_1k_tokens": 0.015, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
+                    {"model_id": "gpt-4o-mini", "model_name": "GPT-4o Mini", "context_length": 128000, "cost_per_1k_tokens": 0.00015, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "small", "speed": "fastest", "reasoning": "basic"},
+                    {"model_id": "gpt-4-turbo", "model_name": "GPT-4 Turbo", "context_length": 128000, "cost_per_1k_tokens": 0.01, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
+                    {"model_id": "gpt-4-turbo-preview", "model_name": "GPT-4 Turbo Preview", "context_length": 128000, "cost_per_1k_tokens": 0.01, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
+                    {"model_id": "gpt-4-1106-preview", "model_name": "GPT-4 1106 Preview", "context_length": 128000, "cost_per_1k_tokens": 0.01, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
+                    {"model_id": "gpt-4-0613", "model_name": "GPT-4 0613", "context_length": 8192, "cost_per_1k_tokens": 0.03, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "excellent"},
+                    {"model_id": "gpt-4-0314", "model_name": "GPT-4 0314", "context_length": 8192, "cost_per_1k_tokens": 0.03, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "excellent"},
+                    {"model_id": "gpt-4", "model_name": "GPT-4", "context_length": 8192, "cost_per_1k_tokens": 0.03, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "excellent"},
+                    {"model_id": "gpt-3.5-turbo", "model_name": "GPT-3.5 Turbo", "context_length": 16385, "cost_per_1k_tokens": 0.002, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"},
+                    {"model_id": "gpt-3.5-turbo-16k", "model_name": "GPT-3.5 Turbo 16K", "context_length": 16385, "cost_per_1k_tokens": 0.004, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"},
+                    {"model_id": "gpt-3.5-turbo-0613", "model_name": "GPT-3.5 Turbo 0613", "context_length": 4096, "cost_per_1k_tokens": 0.002, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"},
+                    {"model_id": "gpt-3.5-turbo-0301", "model_name": "GPT-3.5 Turbo 0301", "context_length": 4096, "cost_per_1k_tokens": 0.002, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"},
+                    {"model_id": "text-davinci-003", "model_name": "Text Davinci 003", "context_length": 4097, "cost_per_1k_tokens": 0.02, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "good"},
+                    {"model_id": "text-curie-001", "model_name": "Text Curie 001", "context_length": 2049, "cost_per_1k_tokens": 0.002, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "medium", "speed": "medium", "reasoning": "basic"},
+                    {"model_id": "text-babbage-001", "model_name": "Text Babbage 001", "context_length": 2049, "cost_per_1k_tokens": 0.0005, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"},
+                    {"model_id": "text-ada-001", "model_name": "Text Ada 001", "context_length": 2049, "cost_per_1k_tokens": 0.0004, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "small", "speed": "fastest", "reasoning": "basic"}
                 ],
                 "anthropic": [
-                    {"model_id": "claude-3-opus", "model_name": "Claude 3 Opus", "context_length": 200000, "cost_per_1k_tokens": 0.015, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "superior"},
-                    {"model_id": "claude-3-sonnet", "model_name": "Claude 3 Sonnet", "context_length": 200000, "cost_per_1k_tokens": 0.003, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "medium", "speed": "medium", "reasoning": "excellent"},
-                    {"model_id": "claude-3-haiku", "model_name": "Claude 3 Haiku", "context_length": 200000, "cost_per_1k_tokens": 0.00025, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "small", "speed": "fastest", "reasoning": "good"},
-                    {"model_id": "claude-3.5-sonnet", "model_name": "Claude 3.5 Sonnet", "context_length": 200000, "cost_per_1k_tokens": 0.015, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "superior"}
+                    {"model_id": "claude-3-5-sonnet-20241022", "model_name": "Claude 3.5 Sonnet", "context_length": 200000, "cost_per_1k_tokens": 0.003, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "superior"},
+                    {"model_id": "claude-3-opus-20240229", "model_name": "Claude 3 Opus", "context_length": 200000, "cost_per_1k_tokens": 0.015, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "superior"},
+                    {"model_id": "claude-3-sonnet-20240229", "model_name": "Claude 3 Sonnet", "context_length": 200000, "cost_per_1k_tokens": 0.003, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "medium", "speed": "medium", "reasoning": "excellent"},
+                    {"model_id": "claude-3-haiku-20240307", "model_name": "Claude 3 Haiku", "context_length": 200000, "cost_per_1k_tokens": 0.00025, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fastest", "reasoning": "good"},
+                    {"model_id": "claude-2.1", "model_name": "Claude 2.1", "context_length": 100000, "cost_per_1k_tokens": 0.008, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "excellent"},
+                    {"model_id": "claude-2.0", "model_name": "Claude 2.0", "context_length": 100000, "cost_per_1k_tokens": 0.008, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "excellent"},
+                    {"model_id": "claude-instant-1.2", "model_name": "Claude Instant 1.2", "context_length": 100000, "cost_per_1k_tokens": 0.00163, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"},
+                    {"model_id": "claude-instant-1.1", "model_name": "Claude Instant 1.1", "context_length": 100000, "cost_per_1k_tokens": 0.00163, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "basic"}
                 ],
                 "google": [
-                    {"model_id": "gemini-pro", "model_name": "Gemini Pro", "context_length": 32768, "cost_per_1k_tokens": 0.001, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "good"},
-                    {"model_id": "gemini-1.5-flash", "model_name": "Gemini 1.5 Flash", "context_length": 1000000, "cost_per_1k_tokens": 0.0002, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "small", "speed": "fastest", "reasoning": "good"},
-                    {"model_id": "gemini-1.5-pro", "model_name": "Gemini 1.5 Pro", "context_length": 2000000, "cost_per_1k_tokens": 0.0035, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
-                    {"model_id": "gemini-ultra", "model_name": "Gemini Ultra", "context_length": 32768, "cost_per_1k_tokens": 0.01, "capabilities": ["text_generation", "structured_output"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "superior"}
+                    {"model_id": "gemini-1.5-pro", "model_name": "Gemini 1.5 Pro", "context_length": 2000000, "cost_per_1k_tokens": 0.0035, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
+                    {"model_id": "gemini-1.5-flash", "model_name": "Gemini 1.5 Flash", "context_length": 1000000, "cost_per_1k_tokens": 0.0002, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "small", "speed": "fastest", "reasoning": "good"},
+                    {"model_id": "gemini-1.5-pro-latest", "model_name": "Gemini 1.5 Pro Latest", "context_length": 2000000, "cost_per_1k_tokens": 0.0035, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "medium", "reasoning": "excellent"},
+                    {"model_id": "gemini-pro", "model_name": "Gemini Pro", "context_length": 32768, "cost_per_1k_tokens": 0.0005, "capabilities": ["text_generation", "structured_output", "function_calling"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "good"},
+                    {"model_id": "gemini-pro-vision", "model_name": "Gemini Pro Vision", "context_length": 32768, "cost_per_1k_tokens": 0.0005, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "small", "speed": "fast", "reasoning": "good"},
+                    {"model_id": "gemini-ultra", "model_name": "Gemini Ultra", "context_length": 32768, "cost_per_1k_tokens": 0.01, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "superior"},
+                    {"model_id": "gemini-ultra-vision", "model_name": "Gemini Ultra Vision", "context_length": 32768, "cost_per_1k_tokens": 0.01, "capabilities": ["text_generation", "structured_output", "function_calling", "vision"], "is_free": False, "category": "large", "speed": "slow", "reasoning": "superior"}
                 ],
                 "groq": [
                     {"model_id": "llama3-8b-8192", "model_name": "Llama 3 8B", "context_length": 8192, "cost_per_1k_tokens": 0.0001, "capabilities": ["text_generation"], "is_free": False, "category": "small", "speed": "ultra_fast", "reasoning": "basic"},
@@ -755,10 +785,10 @@ async def list_public_models():
                 "best": [{"provider": "openai", "model_id": "gpt-4", "priority": 1}],
                 "balanced": [{"provider": "anthropic", "model_id": "claude-3-sonnet", "priority": 1}]
             },
-            "total_models": 50,
+            "total_models": 80,
             "total_providers": 10,
             "free_models": 12,
-            "paid_models": 38
+            "paid_models": 68
         }
 
 @router.get("/models")

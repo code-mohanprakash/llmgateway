@@ -73,7 +73,7 @@ class EmailService:
                     padding: 20px;
                 }}
                 .header {{
-                    background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+                    background: linear-gradient(135deg, #000000 0%, #14213d 100%);
                     color: white;
                     padding: 30px;
                     text-align: center;
@@ -86,7 +86,7 @@ class EmailService:
                 }}
                 .button {{
                     display: inline-block;
-                    background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+                    background: linear-gradient(135deg, #000000 0%, #14213d 100%);
                     color: white;
                     padding: 12px 30px;
                     text-decoration: none;
@@ -147,7 +147,7 @@ class EmailService:
                     padding: 20px;
                 }}
                 .header {{
-                    background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+                    background: linear-gradient(135deg, #000000 0%, #14213d 100%);
                     color: white;
                     padding: 30px;
                     text-align: center;
@@ -160,7 +160,7 @@ class EmailService:
                 }}
                 .button {{
                     display: inline-block;
-                    background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+                    background: linear-gradient(135deg, #000000 0%, #14213d 100%);
                     color: white;
                     padding: 12px 30px;
                     text-decoration: none;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { StarIcon } from '@heroicons/react/24/outline';
+
 import { useAuth } from '../contexts/AuthContext';
 import Logo from './Logo';
 
@@ -35,8 +35,8 @@ const Navigation = () => {
                   to="/models" 
                   className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/models') 
-                      ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                      : 'text-gray-900 hover:text-[#9B5967]'
+                      ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                      : 'text-gray-900 hover:text-[#000000]'
                   }`}
                 >
                   Models
@@ -45,8 +45,8 @@ const Navigation = () => {
                   to="/pricing" 
                   className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/pricing') 
-                      ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                      : 'text-gray-900 hover:text-[#9B5967]'
+                      ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                      : 'text-gray-900 hover:text-[#000000]'
                   }`}
                 >
                   Pricing
@@ -55,8 +55,8 @@ const Navigation = () => {
                   to="/docs" 
                   className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/docs') 
-                      ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                      : 'text-gray-900 hover:text-[#9B5967]'
+                      ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                      : 'text-gray-900 hover:text-[#000000]'
                   }`}
                 >
                   Documentation
@@ -66,8 +66,8 @@ const Navigation = () => {
                     to="/dashboard" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
                       isActive('/dashboard') 
-                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                        : 'text-gray-900 hover:text-[#9B5967]'
+                        ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#000000]'
                     }`}
                   >
                     Dashboard
@@ -78,8 +78,8 @@ const Navigation = () => {
                     to="/rbac" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
                       isActive('/rbac') 
-                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                        : 'text-gray-900 hover:text-[#9B5967]'
+                        ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#000000]'
                     }`}
                   >
                     RBAC
@@ -90,8 +90,8 @@ const Navigation = () => {
                     to="/api-playground" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
                       isActive('/api-playground') 
-                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                        : 'text-gray-900 hover:text-[#9B5967]'
+                        ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#000000]'
                     }`}
                   >
                     API Playground
@@ -102,8 +102,8 @@ const Navigation = () => {
                     to="/ab-testing" 
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
                       isActive('/ab-testing') 
-                        ? 'text-[#9B5967] bg-pink-50/50 rounded-lg' 
-                        : 'text-gray-900 hover:text-[#9B5967]'
+                        ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#000000]'
                     }`}
                   >
                     A/B Testing
@@ -114,10 +114,7 @@ const Navigation = () => {
           </div>
           <div className="flex items-center space-x-4">
 
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-[#9B5967] transition-colors">
-              <StarIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">227</span>
-            </button>
+
             
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-4">
@@ -126,7 +123,7 @@ const Navigation = () => {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-gray-900 hover:text-[#000000] px-3 py-2 text-sm font-medium transition-colors"
                 >
                   Sign Out
                 </button>
@@ -135,13 +132,13 @@ const Navigation = () => {
               <>
                 <Link
                   to="/login"
-                  className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors"
+                  className="text-gray-900 hover:text-[#000000] px-3 py-2 text-sm font-medium transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-[#9B5967] hover:bg-[#8a4d5a] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  className="bg-[#000000] hover:bg-[#14213d] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 >
                   Get Started
                 </Link>

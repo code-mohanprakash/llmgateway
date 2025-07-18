@@ -10,10 +10,13 @@ import {
   ChartBarIcon,
   CogIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  PlayIcon,
+  ArrowRightIcon,
+  PhoneIcon,
+  EnvelopeIcon
 } from '@heroicons/react/24/outline';
 import api from '../services/api';
-import BridgeAnimation from '../components/BridgeAnimation';
 import Logo from '../components/Logo';
 
 const Landing = () => {
@@ -23,8 +26,13 @@ const Landing = () => {
     uptime: '99.9%'
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  console.log('Landing page rendering...');
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    company: '',
+    message: ''
+  });
 
   useEffect(() => {
     fetchStats();
@@ -32,243 +40,139 @@ const Landing = () => {
 
   const fetchStats = async () => {
     try {
-      console.log('Fetching stats from API...');
       const response = await api.get('/v1/models/public');
       const modelCount = response.data.total_models || Object.values(response.data.models || {}).reduce((sum, models) => sum + models.length, 0);
       const providerCount = response.data.total_providers || Object.keys(response.data.models || {}).length;
-      const freeModels = response.data.free_models || 0;
-      const paidModels = response.data.paid_models || 0;
       
       setStats({
         totalModels: modelCount,
         providers: providerCount,
-        freeModels: freeModels,
-        paidModels: paidModels,
         uptime: '99.9%'
       });
-      console.log('Stats fetched successfully');
     } catch (error) {
-      console.log('API fetch failed, using default stats:', error.message);
-      // Use default stats if API is not available
       setStats({
-        totalModels: 50,
-        providers: 10,
-        freeModels: 12,
-        paidModels: 38,
+        totalModels: 80,
+        providers: 12,
         uptime: '99.9%'
       });
+    }
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Send email via your backend API
+      await api.post('/v1/contact', contactForm);
+      alert('Thank you! Your message has been sent. We\'ll get back to you soon.');
+      setContactForm({ name: '', email: '', company: '', message: '' });
+      setContactModalOpen(false);
+    } catch (error) {
+      alert('Sorry, there was an error sending your message. Please try again.');
     }
   };
 
   const features = [
     {
       icon: CpuChipIcon,
-      title: 'Multi-Provider Access',
-      description: 'Access OpenAI, Anthropic, Google, Groq, and 10+ more providers through one unified API'
+      title: 'Unified Model Access',
+      description: 'Access 80+ AI models from OpenAI, Anthropic, Google, and 12+ providers through a single, consistent API.',
+      highlight: 'One API for everything'
     },
     {
       icon: BoltIcon,
       title: 'Intelligent Routing',
-      description: 'Automatic provider selection based on performance, cost, and availability with smart fallbacks'
-    },
-    {
-      icon: ChartBarIcon,
-      title: 'Usage Analytics',
-      description: 'Comprehensive analytics, cost tracking, and performance monitoring for all your LLM requests'
+      description: 'Smart algorithm automatically selects the optimal model for each request, balancing cost, speed, and quality.',
+      highlight: 'Save 50-80% on costs'
     },
     {
       icon: ShieldCheckIcon,
       title: 'Enterprise Security',
-      description: 'SOC 2 compliant with API key management, rate limiting, and audit logging'
+      description: 'SOC 2 compliant infrastructure with secure key management, rate limiting, and comprehensive audit logs.',
+      highlight: 'Bank-level security'
     },
     {
       icon: CloudIcon,
       title: 'High Availability',
-      description: '99.9% uptime with automatic failover between providers and global edge deployment'
-    },
-    {
-      icon: CogIcon,
-      title: 'Easy Integration',
-      description: 'Drop-in replacement for OpenAI API with enhanced features and multi-provider support'
+      description: 'Automatic failover across multiple providers ensures 99.9% uptime for mission-critical applications.',
+      highlight: 'Never goes down'
     }
   ];
 
   const providers = [
-    { name: 'OpenAI', models: 'GPT-4, GPT-4o, GPT-3.5' },
-    { name: 'Anthropic', models: 'Claude 3.5, Claude 3 Opus, Claude 3 Sonnet' },
-    { name: 'Google', models: 'Gemini Pro, Gemini 1.5, Gemini Ultra' },
-    { name: 'Groq', models: 'Llama 3, Mixtral (Ultra-fast)' },
-    { name: 'Together AI', models: 'Llama 3, Mistral, Mixtral' },
-    { name: 'Mistral AI', models: 'Mistral Large, Medium, Small' },
-    { name: 'Cohere', models: 'Command R+, Command R, Command' },
-    { name: 'Perplexity', models: 'PPLX 7B, PPLX 70B' },
-    { name: 'Ollama', models: 'Local Models (Free)' },
-    { name: 'DeepSeek', models: 'DeepSeek R1 (Reasoning)' }
+    { name: 'OpenAI', models: 'GPT-4o, GPT-4, GPT-3.5', category: 'General Purpose', icon: `${process.env.PUBLIC_URL}/images/openaiiconq.png` },
+    { name: 'Anthropic', models: 'Claude 3.5 Sonnet, Claude 3 Opus', category: 'Reasoning', icon: `${process.env.PUBLIC_URL}/images/icons8-anthropic-48.png` },
+    { name: 'Google', models: 'Gemini 1.5 Pro, Gemini Ultra', category: 'Multimodal', icon: `${process.env.PUBLIC_URL}/images/google-color.png` },
+    { name: 'Groq', models: 'Llama 3, Mixtral (Ultra-fast)', category: 'Speed', icon: `${process.env.PUBLIC_URL}/images/icons8-grok-48.png` },
+    { name: 'Cohere', models: 'Command R+, Command R', category: 'Enterprise', icon: `${process.env.PUBLIC_URL}/images/cohere-color.png` },
+    { name: 'DeepSeek', models: 'DeepSeek R1 (Reasoning)', category: 'Specialized', icon: `${process.env.PUBLIC_URL}/images/deepseek-color.png` },
+    { name: 'Mistral', models: 'Mistral Large, Medium', category: 'Open Source', icon: `${process.env.PUBLIC_URL}/images/mistral-color.png` },
+    { name: 'Meta', models: 'Llama 3, Llama 2', category: 'Open Source', icon: `${process.env.PUBLIC_URL}/images/meta-color.png` },
+    { name: 'Ollama', models: 'Local Models (Free)', category: 'Local', icon: `${process.env.PUBLIC_URL}/images/ollama.png` }
   ];
 
-  const HeroSection = () => {
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-      setIsVisible(true);
-    }, []);
-
-    return (
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
-        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto pt-20">
-          {/* Main Content */}
-          <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="mb-6 flex items-center justify-center relative">
-              {/* Animated Text with Neuron Effects */}
-              <div className="relative">
-                {/* Bigger Text with Gradient and Shining Effect */}
-                <div className="relative">
-                  <h1 className="text-4xl md:text-6xl font-bold tracking-tight whitespace-nowrap">
-                    <span className="text-[#9B5967] drop-shadow-sm">Model</span>
-                    <span className="text-black drop-shadow-sm"> Bridge</span>
-                  </h1>
-                  
-                  {/* Shining overlay effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 animate-shine"></div>
-                  
-                  {/* Neuron particles */}
-                  <div className="absolute inset-0 overflow-hidden">
-                    {/* Neuron 1 - Blue */}
-                    <div className="absolute top-1/4 left-0 w-2 h-2 bg-blue-500 rounded-full animate-neuron-1"></div>
-                    <div className="absolute top-1/4 left-0 w-1 h-8 bg-gradient-to-b from-blue-500 to-transparent animate-neuron-1"></div>
-                    
-                    {/* Neuron 2 - Green */}
-                    <div className="absolute top-1/2 right-0 w-2 h-2 bg-green-500 rounded-full animate-neuron-2"></div>
-                    <div className="absolute top-1/2 right-0 w-1 h-6 bg-gradient-to-b from-green-500 to-transparent animate-neuron-2"></div>
-                    
-                    {/* Neuron 3 - Purple */}
-                    <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-purple-500 rounded-full animate-neuron-3"></div>
-                    <div className="absolute bottom-1/4 left-1/3 w-1 h-4 bg-gradient-to-b from-purple-500 to-transparent animate-neuron-3"></div>
-                  </div>
-                </div>
-                
-                {/* Floating neural network dots */}
-                <div className="absolute -top-4 -left-4 w-3 h-3 bg-orange-500/60 rounded-full animate-bounce"></div>
-                <div className="absolute -top-2 -right-8 w-2 h-2 bg-pink-500/70 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-                <div className="absolute -bottom-4 -left-8 w-2 h-2 bg-cyan-500/60 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-                <div className="absolute -bottom-2 -right-4 w-3 h-3 bg-yellow-500/50 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
-              </div>
-            </div>
-            
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto">
-              We dynamically route requests from devices to the optimal AI model—OpenAI, Anthropic, Google, and more.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
-              <Link
-                to="/register"
-                className="px-8 py-4 bg-[#9B5967] hover:bg-[#8a4d5a] text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                Start Building Free →
-              </Link>
-              <Link
-                to="/docs"
-                className="px-8 py-4 border-2 border-[#9B5967] text-[#9B5967] font-semibold rounded-lg hover:bg-[#9B5967]/10 transition-all duration-300"
-              >
-                View Documentation
-              </Link>
-            </div>
-          </div>
-
-          {/* Advanced Bridge Animation - Moved down with more spacing */}
-          <div className="relative h-80 md:h-96 max-w-5xl mx-auto mb-16">
-            <BridgeAnimation />
-          </div>
-
-          {/* Stats Section - More spacing and better layout */}
-          <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-20 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-[#9B5967]/10 rounded-lg flex items-center justify-center mr-3">
-                  <CpuChipIcon className="w-5 h-5 text-[#9B5967]" />
-                </div>
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Models</span>
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">{stats.totalModels}+</div>
-              <div className="text-gray-600">AI Models Available</div>
-            </div>
-            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-[#9B5967]/10 rounded-lg flex items-center justify-center mr-3">
-                  <CloudIcon className="w-5 h-5 text-[#9B5967]" />
-                </div>
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Providers</span>
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">{stats.providers}+</div>
-              <div className="text-gray-600">Integrated Providers</div>
-            </div>
-            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>
-                <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Uptime</span>
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">{stats.uptime}</div>
-              <div className="text-gray-600">System Reliability</div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  };
+  const companyLogos = [
+    { name: 'TechCorp', logo: '🏢' },
+    { name: 'StartupXYZ', logo: '🚀' },
+    { name: 'Enterprise Inc', logo: '🏛️' },
+    { name: 'Innovation Labs', logo: '🔬' },
+    { name: 'Global Systems', logo: '🌐' },
+    { name: 'Future Tech', logo: '⚡' }
+  ];
 
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
                 <Logo size="large" showText={true} />
-              </div>
-              <div className="hidden md:block ml-10">
-                <div className="flex items-baseline space-x-8">
-                  <a href="#features" className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors">
+              <div className="hidden md:block ml-12">
+                <div className="flex items-center space-x-8">
+                  <a href="#features" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
                     Features
                   </a>
-                  <Link to="/models" className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors">
+                  <Link to="/models" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
                     Models
                   </Link>
-                  <Link to="/pricing" className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors">
+                  <Link to="/pricing" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
                     Pricing
                   </Link>
-                  <Link to="/docs" className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors">
-                    Documentation
+                  <Link to="/docs" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                    Docs
                   </Link>
                 </div>
               </div>
             </div>
+            
             <div className="hidden md:flex items-center space-x-4">
+              <button
+                onClick={() => setContactModalOpen(true)}
+                className="flex items-center text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
+                <PhoneIcon className="h-4 w-4 mr-1" />
+                Contact Sales
+              </button>
               <Link
                 to="/login"
-                className="text-gray-900 hover:text-[#9B5967] px-3 py-2 text-sm font-medium transition-colors"
+                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 to="/register"
-                className="bg-[#9B5967] hover:bg-[#8a4d5a] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
-                Start Free
+                Get Started
               </Link>
             </div>
+
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-900 hover:text-[#9B5967] p-2"
+                className="text-gray-600 hover:text-gray-900 p-2"
               >
-                {mobileMenuOpen ? (
-                  <XMarkIcon className="h-6 w-6" />
-                ) : (
-                  <Bars3Icon className="h-6 w-6" />
-                )}
+                {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
               </button>
             </div>
           </div>
@@ -276,32 +180,33 @@ const Landing = () => {
         
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-200">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <a href="#features" className="block text-gray-900 hover:text-[#9B5967] px-3 py-2 text-base font-medium transition-colors">
+          <div className="md:hidden bg-white border-t border-gray-100">
+            <div className="px-4 pt-2 pb-3 space-y-1">
+              <a href="#features" className="block text-gray-600 hover:text-gray-900 px-3 py-2 font-medium">
                 Features
               </a>
-              <Link to="/models" className="block text-gray-900 hover:text-[#9B5967] px-3 py-2 text-base font-medium transition-colors">
+              <Link to="/models" className="block text-gray-600 hover:text-gray-900 px-3 py-2 font-medium">
                 Models
               </Link>
-              <Link to="/pricing" className="block text-gray-900 hover:text-[#9B5967] px-3 py-2 text-base font-medium transition-colors">
+              <Link to="/pricing" className="block text-gray-600 hover:text-gray-900 px-3 py-2 font-medium">
                 Pricing
               </Link>
-              <Link to="/docs" className="block text-gray-900 hover:text-[#9B5967] px-3 py-2 text-base font-medium transition-colors">
-                Documentation
-              </Link>
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                <Link
-                  to="/login"
-                  className="block text-gray-900 hover:text-[#9B5967] px-3 py-2 text-base font-medium transition-colors"
-                >
-                  Sign In
+                              <Link to="/docs" className="block text-gray-600 hover:text-gray-900 px-3 py-2 font-medium">
+                  Docs
                 </Link>
-                <Link
-                  to="/register"
-                  className="block bg-[#9B5967] hover:bg-[#8a4d5a] text-white px-3 py-2 rounded-lg text-base font-medium transition-colors mt-2"
-                >
-                  Start Free
+                <div className="pt-4 border-t border-gray-100">
+                  <button
+                    onClick={() => setContactModalOpen(true)}
+                    className="flex items-center text-gray-600 hover:text-gray-900 px-3 py-2 font-medium"
+                  >
+                    <PhoneIcon className="h-4 w-4 mr-1" />
+                    Contact Sales
+                  </button>
+                  <Link to="/login" className="block text-gray-600 hover:text-gray-900 px-3 py-2 font-medium">
+                    Sign In
+                  </Link>
+                  <Link to="/register" className="block bg-gray-900 text-white px-3 py-2 rounded-lg font-medium mt-2">
+                    Get Started
                 </Link>
               </div>
             </div>
@@ -309,56 +214,187 @@ const Landing = () => {
         )}
       </nav>
 
-      {/* Stunning Animated Hero Section */}
-      <HeroSection />
+      {/* Hero Section with Video */}
+      <section className="pt-24 pb-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-5xl mx-auto mb-16">
+            {/* Enterprise Badge with Advanced Styling */}
+            <div className="relative inline-flex items-center justify-center mb-8">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-green-600/20 rounded-full blur-xl"></div>
+              <div className="relative bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-full px-6 py-2 shadow-lg">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+                    Where AI-First Companies Scale
+                  </span>
+                  <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+            </div>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, #9B5967 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
-          }}></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-[#9B5967] to-gray-900 bg-clip-text text-transparent">
-              Enterprise-Grade AI Infrastructure
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Built for scale, designed for reliability. Everything you need to power your AI applications.
+            {/* Main Title with Advanced Typography */}
+            <h1 className="relative text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              <span className="text-gray-900">One API for</span>
+              <span className="block relative mt-2">
+                <span className="absolute inset-0 bg-gradient-to-r from-yellow-700 via-yellow-800 to-gray-900 bg-clip-text text-transparent blur-sm opacity-40">
+                  Every AI Model
+                </span>
+                <span className="relative bg-gradient-to-r from-yellow-800 via-amber-900 to-black bg-clip-text text-transparent">
+                  Every AI Model
+                </span>
+              </span>
+            </h1>
+
+            {/* Decorative Elements */}
+            <div className="flex items-center justify-center mb-8">
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent w-20"></div>
+              <div className="mx-4 w-3 h-3 bg-gradient-to-r from-blue-500 to-green-500 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent w-20"></div>
+            </div>
+            
+            <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
+              Watch how Model Bridge connects your application to 80+ AI models through intelligent routing, 
+              automatic failover, and enterprise-grade security.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Video with story around it */}
+          <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 items-center mb-20">
+            {/* Left side story */}
+            <div className="lg:col-span-2 space-y-12">
+              <div className="text-center lg:text-right p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '0s' }}>
+                <div className="inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-4 animate-pulse">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-ping"></span>
+                  Your App
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Single Request</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">Send one API call to our unified endpoint</p>
+              </div>
+              
+              <div className="text-center lg:text-right p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '1s' }}>
+                <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium mb-4 animate-pulse">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-ping"></span>
+                  Smart Routing
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">AI Decides</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">Our system picks the best model for your specific task</p>
+              </div>
+            </div>
+            
+            {/* Center video - bigger */}
+            <div className="lg:col-span-6">
+              <div className="relative mx-auto">
+                <video 
+                  src="/images/Untitled1.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline
+                  className="w-full h-auto rounded-lg"
+                  style={{ maxHeight: '600px' }}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+            
+            {/* Right side story */}
+            <div className="lg:col-span-2 space-y-12">
+              <div className="text-center lg:text-left p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '2s' }}>
+                <div className="inline-flex items-center px-4 py-2 bg-purple-50 text-purple-700 rounded-full text-sm font-medium mb-4 animate-pulse">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 animate-ping"></span>
+                  Multiple Providers
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">80+ Models</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">OpenAI, Anthropic, Google, and 9+ more providers</p>
+              </div>
+              
+              <div className="text-center lg:text-left p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '3s' }}>
+                <div className="inline-flex items-center px-4 py-2 bg-orange-50 text-orange-700 rounded-full text-sm font-medium mb-4 animate-pulse">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-ping"></span>
+                  Best Response
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Optimized Result</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">Get the perfect balance of cost, speed, and quality</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* CTA below video */}
+          <div className="text-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Link
+                to="/register"
+                className="group bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 inline-flex items-center justify-center"
+              >
+                Start Building Free
+                <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                to="/docs"
+                className="group border border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-4 rounded-lg font-semibold transition-all duration-300 inline-flex items-center justify-center"
+              >
+                <PlayIcon className="mr-2 h-5 w-5" />
+                View Demo
+              </Link>
+            </div>
+            
+            <p className="text-sm text-gray-500">
+              Free tier • 1,000 requests/month • No credit card required
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">{stats.totalModels}+</div>
+              <div className="text-gray-600 font-medium">AI Models</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">{stats.providers}+</div>
+              <div className="text-gray-600 font-medium">Providers</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">{stats.uptime}</div>
+              <div className="text-gray-600 font-medium">Uptime</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">80%</div>
+              <div className="text-gray-600 font-medium">Cost Savings</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Built for Enterprise
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Production-ready infrastructure that scales with your business
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {features.map((feature, index) => (
-              <div key={index} className="group relative p-8 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 hover:border-[#9B5967]/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
-                {/* Gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#9B5967]/5 to-[#8a4d5a]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                {/* Icon container */}
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#9B5967]/10 to-[#8a4d5a]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon className="h-8 w-8 text-[#9B5967] group-hover:rotate-12 transition-transform duration-300" />
-                  </div>
-                  
-                  {/* Floating elements */}
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-[#9B5967]/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-300"></div>
+              <div key={index} className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
+                  <feature.icon className="h-6 w-6 text-gray-600" />
                 </div>
                 
-                <div className="relative">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#9B5967] transition-colors duration-300">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                  
-                  {/* Hover indicator */}
-                  <div className="flex items-center text-[#9B5967] text-sm font-medium mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    Learn more
-                    <svg className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{feature.title}</h3>
+                <p className="text-gray-600 mb-4 leading-relaxed">{feature.description}</p>
+                
+                <div className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                  <CheckIcon className="h-4 w-4 mr-1" />
+                  {feature.highlight}
                 </div>
               </div>
             ))}
@@ -366,52 +402,49 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Providers Section */}
-      <section id="models" className="py-20 bg-gradient-to-br from-white to-gray-50 relative">
-        {/* Animated background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#9B5967]/5 rounded-full blur-3xl animate-pulse-slow"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl animate-pulse-slow" style={{animationDelay: '1s'}}></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-[#9B5967] to-gray-900 bg-clip-text text-transparent">
-              Access All Leading AI Providers
+      {/* Models Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Leading AI Providers
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              One API to rule them all. Switch between providers seamlessly with intelligent routing.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Access models from the world's top AI companies through one unified interface
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {providers.map((provider, index) => (
-              <div key={index} className="group relative bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-200/50 hover:border-[#9B5967]/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                
-                {/* Status indicator */}
-                <div className="absolute top-4 right-4">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-lg">
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-ping absolute inset-0"></div>
+              <div key={index} className="group bg-gray-50 hover:bg-white rounded-2xl p-6 border border-transparent hover:border-gray-200 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <img 
+                      src={provider.icon} 
+                      alt={`${provider.name} logo`}
+                      className="w-8 h-8 object-contain"
+                      onError={(e) => {
+                        console.log(`Failed to load icon for ${provider.name}:`, provider.icon);
+                        e.target.style.display = 'none';
+                        // Show fallback text
+                        const fallback = document.createElement('div');
+                        fallback.textContent = provider.name.charAt(0);
+                        fallback.className = 'w-8 h-8 bg-gray-100 rounded flex items-center justify-center text-gray-600 font-bold';
+                        e.target.parentNode.insertBefore(fallback, e.target);
+                      }}
+                    />
+                    <h3 className="text-xl font-bold text-gray-900">{provider.name}</h3>
+                  </div>
+                  <div className="flex items-center text-green-600 text-sm">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    Online
                   </div>
                 </div>
                 
-                <div className="relative">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#9B5967] transition-colors duration-300">{provider.name}</h3>
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">{provider.models}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-green-600 text-sm font-medium">
-                      <CheckIcon className="h-4 w-4 mr-1" />
-                      Available
-                    </div>
-                    
-                    <div className="text-xs text-gray-500">
-                      <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                      Online
-                    </div>
-                  </div>
+                <p className="text-gray-600 mb-3">{provider.models}</p>
+                
+                <div className="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                  {provider.category}
                 </div>
               </div>
             ))}
@@ -420,121 +453,186 @@ const Landing = () => {
           <div className="text-center">
             <Link
               to="/models"
-              className="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#9B5967] to-[#8a4d5a] text-white text-lg font-semibold rounded-2xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl overflow-hidden"
+              className="group inline-flex items-center px-8 py-4 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-lg transition-colors duration-300"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-[#8a4d5a] to-[#9B5967] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span className="relative flex items-center">
                 View All Models
                 <ChevronRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </span>
             </Link>
           </div>
         </div>
       </section>
 
+
+
+
+
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-[#9B5967] via-[#8a4d5a] to-[#9B5967] relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-slow" style={{animationDelay: '2s'}}></div>
-          </div>
-          
-          {/* Geometric patterns */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rotate-45 animate-spin-slow"></div>
-            <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-white rounded-full animate-bounce"></div>
-            <div className="absolute top-1/2 left-1/4 w-12 h-12 bg-white/20 transform rotate-45 animate-pulse"></div>
-          </div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-          
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            Ready to Transform Your 
-            <span className="relative inline-block">
-              AI Infrastructure?
-              <div className="absolute -bottom-2 left-0 w-full h-1 bg-white/50 transform scale-x-0 animate-pulse"></div>
-            </span>
+      <section className="py-24 bg-white text-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Ready to Get Started?
           </h2>
           
-          <p className="text-xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Join thousands of developers and companies using Model Bridge to build better AI applications.
+          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+            Join thousands of developers building the next generation of AI applications
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/register"
-              className="group relative bg-white text-[#9B5967] hover:bg-gray-100 px-8 py-4 rounded-2xl text-lg font-semibold transition-all transform hover:scale-105 inline-flex items-center shadow-xl hover:shadow-2xl overflow-hidden"
+              className="group bg-gray-900 text-white hover:bg-gray-800 px-8 py-4 rounded-lg font-semibold transition-all duration-300 inline-flex items-center justify-center"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-gray-50 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span className="relative flex items-center">
                 Start Free Trial
-                <ChevronRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </span>
+              <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             
             <Link
-              to="/docs"
-              className="group border-2 border-white text-white hover:bg-white hover:text-[#9B5967] px-8 py-4 rounded-2xl text-lg font-semibold transition-all inline-flex items-center backdrop-blur-sm bg-white/10"
+              to="/contact"
+              className="group border border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-4 rounded-lg font-semibold transition-all duration-300 inline-flex items-center justify-center"
             >
-              <span className="flex items-center">
-                <svg className="mr-2 w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Read Documentation
-              </span>
+              Contact Sales
             </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-white py-16 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="mb-4">
-                <Logo size="default" showText={true} variant="white" />
-              </div>
-              <p className="text-gray-400">
+                <Logo size="default" showText={true} />
+              <p className="text-gray-600 mt-4 leading-relaxed">
                 Enterprise-grade AI infrastructure for modern applications.
               </p>
             </div>
+            
             <div>
-              <h4 className="text-sm font-semibold mb-4 text-gray-300">Product</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><Link to="/models" className="hover:text-white transition-colors">Models</Link></li>
-                <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link to="/dashboard/analytics" className="hover:text-white transition-colors">Analytics</Link></li>
+              <h4 className="font-semibold text-gray-900 mb-4">Product</h4>
+              <ul className="space-y-3 text-gray-600">
+                <li><a href="#features" className="hover:text-gray-900 transition-colors">Features</a></li>
+                <li><Link to="/models" className="hover:text-gray-900 transition-colors">Models</Link></li>
+                <li><Link to="/pricing" className="hover:text-gray-900 transition-colors">Pricing</Link></li>
+                <li><Link to="/dashboard/analytics" className="hover:text-gray-900 transition-colors">Analytics</Link></li>
               </ul>
             </div>
+            
             <div>
-              <h4 className="text-sm font-semibold mb-4 text-gray-300">Resources</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link to="/docs" className="hover:text-white transition-colors">Documentation</Link></li>
-
-                <li><Link to="/guides" className="hover:text-white transition-colors">Guides</Link></li>
-                <li><Link to="/support" className="hover:text-white transition-colors">Support</Link></li>
+              <h4 className="font-semibold text-gray-900 mb-4">Resources</h4>
+              <ul className="space-y-3 text-gray-600">
+                <li><Link to="/docs" className="hover:text-gray-900 transition-colors">Documentation</Link></li>
+                <li><Link to="/guides" className="hover:text-gray-900 transition-colors">API Reference</Link></li>
+                <li><Link to="/support" className="hover:text-gray-900 transition-colors">Support</Link></li>
               </ul>
             </div>
+            
             <div>
-              <h4 className="text-sm font-semibold mb-4 text-gray-300">Company</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
-
-                <li><Link to="/careers" className="hover:text-white transition-colors">Careers</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+              <h4 className="font-semibold text-gray-900 mb-4">Company</h4>
+              <ul className="space-y-3 text-gray-600">
+                <li><Link to="/about" className="hover:text-gray-900 transition-colors">About</Link></li>
+                <li><Link to="/careers" className="hover:text-gray-900 transition-colors">Careers</Link></li>
+                <li><Link to="/contact" className="hover:text-gray-900 transition-colors">Contact</Link></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          
+          <div className="border-t border-gray-200 pt-8 text-center text-gray-500">
             <p>&copy; 2024 Model Bridge. All rights reserved.</p>
           </div>
         </div>
       </footer>
+
+      {/* Contact Modal */}
+      {contactModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">Contact Sales</h3>
+                <button
+                  onClick={() => setContactModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <XMarkIcon className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={contactForm.name}
+                    onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Your name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={contactForm.email}
+                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    value={contactForm.company}
+                    onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Your company name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message *
+                  </label>
+                  <textarea
+                    required
+                    rows="4"
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Tell us about your AI needs..."
+                  />
+                </div>
+                
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setContactModalOpen(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
