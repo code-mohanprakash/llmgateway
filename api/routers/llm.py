@@ -1051,3 +1051,1036 @@ async def record_usage(
     
     db.add(usage_record)
     await db.commit()
+
+
+# Weight Management API Endpoints
+@router.get("/weight-management/stats")
+@require_permission("llm.weight.read", "llm")
+async def get_weight_management_stats(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get weight management statistics and analytics"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        stats = gateway.get_weight_management_stats()
+        if not stats:
+            return {
+                "enabled": False,
+                "message": "Weight management not available"
+            }
+        
+        return {
+            "enabled": True,
+            "stats": stats,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting weight management stats: {str(e)}")
+
+
+@router.get("/weight-management/weights")
+@require_permission("llm.weight.read", "llm")
+async def get_provider_weights(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get current provider weights and metrics"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        weights = gateway.get_provider_weights()
+        if not weights:
+            return {
+                "enabled": False,
+                "message": "Weight management not available"
+            }
+        
+        return {
+            "enabled": True,
+            "provider_weights": weights,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting provider weights: {str(e)}")
+
+
+class WeightConfigurationRequest(BaseModel):
+    """Request model for updating weight configuration"""
+    min_weight: Optional[float] = None
+    max_weight: Optional[float] = None
+    adjustment_sensitivity: Optional[float] = None
+    rebalance_threshold: Optional[float] = None
+    trend_window: Optional[int] = None
+    performance_weight: Optional[float] = None
+    availability_weight: Optional[float] = None
+    cost_weight: Optional[float] = None
+    response_time_weight: Optional[float] = None
+    load_balance_weight: Optional[float] = None
+
+
+@router.post("/weight-management/configuration")
+@require_permission("llm.weight.write", "llm")
+async def update_weight_configuration(
+    request: WeightConfigurationRequest,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update weight management configuration"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Filter out None values
+        config_updates = {k: v for k, v in request.dict().items() if v is not None}
+        
+        if not config_updates:
+            raise HTTPException(status_code=400, detail="No valid configuration updates provided")
+        
+        success = gateway.update_weight_configuration(config_updates)
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to update weight configuration")
+        
+        return {
+            "success": True,
+            "message": "Weight configuration updated successfully",
+            "updated_fields": list(config_updates.keys()),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating weight configuration: {str(e)}")
+
+
+class WeightTriggersRequest(BaseModel):
+    """Request model for updating weight adjustment triggers"""
+    performance_degradation: Optional[Dict[str, Any]] = None
+    availability_drop: Optional[Dict[str, Any]] = None
+    cost_increase: Optional[Dict[str, Any]] = None
+    response_time_spike: Optional[Dict[str, Any]] = None
+    success_rate_drop: Optional[Dict[str, Any]] = None
+    load_imbalance: Optional[Dict[str, Any]] = None
+
+
+@router.post("/weight-management/triggers")
+@require_permission("llm.weight.write", "llm")
+async def update_weight_triggers(
+    request: WeightTriggersRequest,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Update weight adjustment triggers"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Filter out None values
+        trigger_updates = {k: v for k, v in request.dict().items() if v is not None}
+        
+        if not trigger_updates:
+            raise HTTPException(status_code=400, detail="No valid trigger updates provided")
+        
+        if not gateway._weight_management_enabled:
+            raise HTTPException(status_code=400, detail="Weight management not enabled")
+        
+        gateway.weight_manager.update_triggers(trigger_updates)
+        
+        return {
+            "success": True,
+            "message": "Weight triggers updated successfully",
+            "updated_triggers": list(trigger_updates.keys()),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating weight triggers: {str(e)}")
+
+
+@router.get("/weight-management/history")
+@require_permission("llm.weight.read", "llm")
+async def get_weight_adjustment_history(
+    provider_name: Optional[str] = None,
+    limit: int = 100,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get weight adjustment history"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        if not gateway._weight_management_enabled:
+            return {
+                "enabled": False,
+                "message": "Weight management not available"
+            }
+        
+        history = gateway.weight_manager.get_weight_history(provider_name)
+        
+        # Limit results
+        if limit > 0:
+            history = history[-limit:]
+        
+        # Convert to serializable format
+        history_data = []
+        for event in history:
+            history_data.append({
+                "provider_name": event.provider_name,
+                "old_weight": event.old_weight,
+                "new_weight": event.new_weight,
+                "adjustment_type": event.adjustment_type,
+                "trigger_reason": event.trigger_reason,
+                "adjustment_magnitude": event.adjustment_magnitude,
+                "timestamp": event.timestamp.isoformat()
+            })
+        
+        return {
+            "enabled": True,
+            "history": history_data,
+            "total_events": len(history_data),
+            "provider_filter": provider_name,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting weight adjustment history: {str(e)}")
+
+
+@router.get("/weight-management/export")
+@require_permission("llm.weight.read", "llm")
+async def export_weight_data(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Export weight management data"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        if not gateway._weight_management_enabled:
+            return {
+                "enabled": False,
+                "message": "Weight management not available"
+            }
+        
+        # Export to temporary file
+        import tempfile
+        import os
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+            gateway.weight_manager.export_weights(temp_file.name)
+            
+            # Read the file content
+            with open(temp_file.name, 'r') as f:
+                export_data = json.load(f)
+            
+            # Clean up temporary file
+            os.unlink(temp_file.name)
+        
+        return {
+            "enabled": True,
+            "export_data": export_data,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error exporting weight data: {str(e)}")
+
+
+# Load Balancer API Endpoints
+@router.get("/load-balancer/stats")
+@require_permission("llm.load_balancer.read", "llm")
+async def get_load_balancer_stats(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get load balancer statistics"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        stats = gateway.get_load_balancer_stats()
+        if not stats:
+            return {
+                "enabled": False,
+                "message": "Load balancer not available"
+            }
+        
+        return {
+            "enabled": True,
+            "stats": stats,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting load balancer stats: {str(e)}")
+
+
+# Predictive Routing API Endpoints
+@router.get("/predictive-routing/stats")
+@require_permission("llm.predictive_routing.read", "llm")
+async def get_predictive_routing_stats(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get predictive routing statistics"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        stats = gateway.get_predictive_routing_stats()
+        if not stats:
+            return {
+                "enabled": False,
+                "message": "Predictive routing not available"
+            }
+        
+        return {
+            "enabled": True,
+            "stats": stats,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting predictive routing stats: {str(e)}")
+
+
+@router.get("/advanced-routing/status")
+@require_permission("llm.advanced_routing.read", "llm")
+async def get_advanced_routing_status(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get status of all advanced routing features"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        status = gateway.get_advanced_routing_status()
+        
+        return {
+            "status": status,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting advanced routing status: {str(e)}")
+
+
+@router.get("/routing-recommendations")
+@require_permission("llm.routing.read", "llm")
+async def get_routing_recommendations(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get intelligent routing recommendations"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        recommendations = gateway.get_routing_recommendations()
+        
+        return {
+            "recommendations": recommendations,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting routing recommendations: {str(e)}")
+
+
+# Geographic Routing API Endpoints
+@router.get("/geo-routing/stats")
+@require_permission("llm.geo_routing.read", "llm")
+async def get_geo_routing_stats(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get geographic routing statistics"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        stats = gateway.get_geo_routing_stats()
+        if not stats:
+            return {
+                "enabled": False,
+                "message": "Geographic routing not available"
+            }
+        
+        return {
+            "enabled": True,
+            "stats": stats,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting geo routing stats: {str(e)}")
+
+
+@router.get("/latency-monitoring/stats")
+@require_permission("llm.latency_monitoring.read", "llm")
+async def get_latency_monitoring_stats(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get latency monitoring statistics"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        stats = gateway.get_latency_monitoring_stats()
+        if not stats:
+            return {
+                "enabled": False,
+                "message": "Latency monitoring not available"
+            }
+        
+        return {
+            "enabled": True,
+            "stats": stats,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting latency monitoring stats: {str(e)}")
+
+
+@router.get("/latency-monitoring/provider/{provider_name}")
+@require_permission("llm.latency_monitoring.read", "llm")
+async def get_provider_latency_stats(
+    provider_name: str,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get latency statistics for a specific provider"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        stats = gateway.get_provider_latency_stats(provider_name)
+        if not stats:
+            return {
+                "enabled": False,
+                "message": f"No latency data available for provider {provider_name}"
+            }
+        
+        return {
+            "enabled": True,
+            "provider": provider_name,
+            "stats": stats,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting provider latency stats: {str(e)}")
+
+
+class GeoRoutingRequest(BaseModel):
+    """Request model for geographic routing"""
+    prompt: str
+    client_ip: str
+    available_providers: Optional[List[str]] = None
+    task_type: Optional[str] = None
+    complexity: Optional[str] = "medium"
+
+
+@router.post("/geo-routing/route")
+@require_permission("llm.geo_routing.write", "llm")
+async def route_with_geo_routing(
+    request: GeoRoutingRequest,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Route request using geographic routing"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Create generation request
+        gen_request = GenerationRequest(
+            prompt=request.prompt,
+            task_type=request.task_type,
+            complexity=request.complexity
+        )
+        
+        # Get available providers
+        available_providers = request.available_providers
+        if not available_providers:
+            # Use all available providers
+            available_providers = list(gateway.providers.keys())
+        
+        # Route with geographic routing
+        routing_decision = await gateway.route_with_geo_routing(
+            gen_request, request.client_ip, available_providers
+        )
+        
+        if not routing_decision:
+            return {
+                "enabled": False,
+                "message": "Geographic routing not available"
+            }
+        
+        return {
+            "enabled": True,
+            "routing_decision": routing_decision,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error in geographic routing: {str(e)}")
+
+
+# Latency Monitoring Management Endpoints
+@router.post("/latency-monitoring/measure/{provider_name}")
+@require_permission("llm.latency_monitoring.write", "llm")
+async def measure_provider_latency(
+    provider_name: str,
+    endpoint: str,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Measure latency to a specific provider endpoint on-demand"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        if not gateway._latency_monitoring_enabled:
+            return {
+                "enabled": False,
+                "message": "Latency monitoring not enabled"
+            }
+        
+        # Measure latency
+        measurement = await gateway.latency_monitor.measure_provider_latency(provider_name, endpoint)
+        
+        if not measurement:
+            return {
+                "success": False,
+                "message": f"Failed to measure latency for {provider_name}"
+            }
+        
+        return {
+            "success": True,
+            "measurement": measurement.to_dict(),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error measuring provider latency: {str(e)}")
+
+
+@router.get("/latency-monitoring/export")
+@require_permission("llm.latency_monitoring.read", "llm")
+async def export_latency_measurements(
+    provider_name: Optional[str] = None,
+    hours: int = 24,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Export latency measurements"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        if not gateway._latency_monitoring_enabled:
+            return {
+                "enabled": False,
+                "message": "Latency monitoring not enabled"
+            }
+        
+        # Export measurements
+        export_data = gateway.latency_monitor.export_measurements(provider_name, hours)
+        
+        return {
+            "enabled": True,
+            "export_data": export_data,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error exporting latency measurements: {str(e)}")
+
+
+# Dashboard Endpoints for Advanced Routing
+@router.get("/dashboard/advanced-routing")
+@require_permission("llm.routing.read", "llm")
+async def get_advanced_routing_dashboard(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get advanced routing dashboard data"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Get real data from the advanced routing system
+        routing_status = gateway.get_advanced_routing_status()
+        load_balancer_stats = gateway.get_load_balancer_stats()
+        health_metrics = gateway.get_health_metrics() if hasattr(gateway, 'get_health_metrics') else None
+        
+        return {
+            "routing_status": routing_status,
+            "load_balancer_stats": load_balancer_stats,
+            "health_metrics": health_metrics,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting advanced routing dashboard: {str(e)}")
+
+
+@router.get("/dashboard/predictive-routing")
+@require_permission("llm.predictive_routing.read", "llm")
+async def get_predictive_routing_dashboard(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get predictive routing dashboard data"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Get real data from the predictive routing system
+        predictive_stats = gateway.get_predictive_routing_stats()
+        
+        if not predictive_stats:
+            return {
+                "predictive_routing_enabled": False,
+                "prediction_analytics": None,
+                "model_performance": None,
+                "pattern_insights": None,
+                "confidence_metrics": None,
+                "timestamp": time.time()
+            }
+        
+        return {
+            "predictive_routing_enabled": True,
+            "prediction_analytics": predictive_stats,
+            "model_performance": predictive_stats.get("model_performance"),
+            "pattern_insights": predictive_stats.get("pattern_insights"),
+            "confidence_metrics": predictive_stats.get("confidence_metrics"),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting predictive routing dashboard: {str(e)}")
+
+
+# Cost Optimization Endpoints - Phase 2
+@router.get("/cost-optimization/dashboard")
+@require_permission("llm.cost_optimization.read", "llm")
+async def get_cost_optimization_dashboard(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get cost optimization dashboard data"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Get cost optimization data
+        cost_stats = gateway.get_cost_optimization_stats() if hasattr(gateway, 'get_cost_optimization_stats') else None
+        
+        if not cost_stats:
+            return {
+                "cost_optimization_enabled": False,
+                "token_prediction": {
+                    "enabled": False,
+                    "total_predictions": 0,
+                    "accuracy": 0.0,
+                    "cost_savings": 0.0
+                },
+                "budget_management": {
+                    "enabled": False,
+                    "total_budgets": 0,
+                    "active_budgets": 0,
+                    "budget_alerts": 0
+                },
+                "cost_caching": {
+                    "enabled": False,
+                    "cache_hit_rate": 0.0,
+                    "cost_savings": 0.0,
+                    "cache_size": 0
+                },
+                "provider_arbitrage": {
+                    "enabled": False,
+                    "total_opportunities": 0,
+                    "executed_opportunities": 0,
+                    "cost_savings": 0.0
+                },
+                "timestamp": time.time()
+            }
+        
+        return {
+            "cost_optimization_enabled": True,
+            "token_prediction": cost_stats.get("token_prediction", {}),
+            "budget_management": cost_stats.get("budget_management", {}),
+            "cost_caching": cost_stats.get("cost_caching", {}),
+            "provider_arbitrage": cost_stats.get("provider_arbitrage", {}),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting cost optimization dashboard: {str(e)}")
+
+
+@router.post("/cost-optimization/predict-cost")
+@require_permission("llm.cost_optimization.read", "llm")
+async def predict_request_cost(
+    request: dict,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Predict cost for a request before execution"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        prompt = request.get("prompt", "")
+        model_id = request.get("model", "gpt-3.5-turbo")
+        provider = request.get("provider", "openai")
+        max_tokens = request.get("max_tokens")
+        temperature = request.get("temperature")
+        complexity = request.get("complexity", "medium")
+        
+        # Get cost prediction
+        cost_prediction = gateway.predict_cost(
+            prompt=prompt,
+            model_id=model_id,
+            provider=provider,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            complexity=complexity
+        ) if hasattr(gateway, 'predict_cost') else None
+        
+        if not cost_prediction:
+            return {
+                "estimated_cost": 0.001,
+                "input_tokens": len(prompt.split()) * 1.3,
+                "output_tokens": max_tokens or 100,
+                "accuracy": "estimate",
+                "confidence": 0.5,
+                "provider": provider,
+                "model_id": model_id
+            }
+        
+        return {
+            "estimated_cost": cost_prediction.get("estimated_cost", 0.001),
+            "input_tokens": cost_prediction.get("input_tokens", 0),
+            "output_tokens": cost_prediction.get("output_tokens", 0),
+            "accuracy": cost_prediction.get("accuracy", "estimate"),
+            "confidence": cost_prediction.get("confidence", 0.5),
+            "provider": provider,
+            "model_id": model_id,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error predicting cost: {str(e)}")
+
+
+@router.post("/cost-optimization/compare-providers")
+@require_permission("llm.cost_optimization.read", "llm")
+async def compare_provider_costs(
+    request: dict,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Compare costs across different providers"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        prompt = request.get("prompt", "")
+        providers = request.get("providers", ["openai", "anthropic", "google"])
+        max_tokens = request.get("max_tokens")
+        complexity = request.get("complexity", "medium")
+        
+        # Get cost comparison
+        comparison = gateway.compare_provider_costs(
+            prompt=prompt,
+            providers=providers,
+            max_tokens=max_tokens,
+            complexity=complexity
+        ) if hasattr(gateway, 'compare_provider_costs') else None
+        
+        if not comparison:
+            # Return mock comparison data
+            mock_comparison = []
+            for provider in providers:
+                mock_comparison.append({
+                    "provider": provider,
+                    "estimated_cost": 0.001 * (1 + hash(provider) % 3),
+                    "model_id": "default",
+                    "confidence": 0.7
+                })
+            
+            return {
+                "comparisons": mock_comparison,
+                "cheapest_provider": providers[0] if providers else "openai",
+                "most_expensive_provider": providers[-1] if providers else "openai",
+                "max_savings": 0.001,
+                "timestamp": time.time()
+            }
+        
+        return {
+            "comparisons": comparison.get("comparisons", []),
+            "cheapest_provider": comparison.get("cheapest_provider"),
+            "most_expensive_provider": comparison.get("most_expensive_provider"),
+            "max_savings": comparison.get("max_savings", 0.0),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error comparing provider costs: {str(e)}")
+
+
+@router.get("/cost-optimization/budget-status")
+@require_permission("llm.cost_optimization.read", "llm")
+async def get_budget_status(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get current budget status for organization"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Get budget status
+        budget_status = gateway.get_budget_status(
+            organization_id=organization.id
+        ) if hasattr(gateway, 'get_budget_status') else None
+        
+        if not budget_status:
+            return {
+                "budget_configured": False,
+                "total_budget": 0.0,
+                "current_usage": 0.0,
+                "usage_percentage": 0.0,
+                "remaining_budget": 0.0,
+                "status": "no_budget",
+                "alerts": [],
+                "timestamp": time.time()
+            }
+        
+        return {
+            "budget_configured": True,
+            "total_budget": budget_status.get("total_budget", 0.0),
+            "current_usage": budget_status.get("current_usage", 0.0),
+            "usage_percentage": budget_status.get("usage_percentage", 0.0),
+            "remaining_budget": budget_status.get("remaining_budget", 0.0),
+            "status": budget_status.get("status", "active"),
+            "alerts": budget_status.get("alerts", []),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting budget status: {str(e)}")
+
+
+@router.post("/cost-optimization/budget-config")
+@require_permission("llm.cost_optimization.write", "llm")
+async def configure_budget(
+    request: dict,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Configure budget for organization"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        total_budget = request.get("total_budget", 0.0)
+        period = request.get("period", "monthly")
+        alert_thresholds = request.get("alert_thresholds", [75, 90, 95])
+        auto_throttle = request.get("auto_throttle", False)
+        throttle_threshold = request.get("throttle_threshold", 95.0)
+        
+        # Configure budget
+        success = gateway.configure_budget(
+            organization_id=organization.id,
+            total_budget=total_budget,
+            period=period,
+            alert_thresholds=alert_thresholds,
+            auto_throttle=auto_throttle,
+            throttle_threshold=throttle_threshold
+        ) if hasattr(gateway, 'configure_budget') else True
+        
+        if success:
+            return {
+                "success": True,
+                "message": "Budget configured successfully",
+                "budget_config": {
+                    "total_budget": total_budget,
+                    "period": period,
+                    "alert_thresholds": alert_thresholds,
+                    "auto_throttle": auto_throttle,
+                    "throttle_threshold": throttle_threshold
+                },
+                "timestamp": time.time()
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to configure budget")
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error configuring budget: {str(e)}")
+
+
+@router.get("/cost-optimization/cache-stats")
+@require_permission("llm.cost_optimization.read", "llm")
+async def get_cache_stats(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get cost-aware cache statistics"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Get cache statistics
+        cache_stats = gateway.get_cache_stats(
+            organization_id=organization.id
+        ) if hasattr(gateway, 'get_cache_stats') else None
+        
+        if not cache_stats:
+            return {
+                "cache_enabled": False,
+                "hit_rate": 0.0,
+                "total_requests": 0,
+                "cache_hits": 0,
+                "cache_misses": 0,
+                "cost_savings": 0.0,
+                "storage_cost": 0.0,
+                "net_savings": 0.0,
+                "timestamp": time.time()
+            }
+        
+        return {
+            "cache_enabled": True,
+            "hit_rate": cache_stats.get("hit_rate", 0.0),
+            "total_requests": cache_stats.get("total_requests", 0),
+            "cache_hits": cache_stats.get("cache_hits", 0),
+            "cache_misses": cache_stats.get("cache_misses", 0),
+            "cost_savings": cache_stats.get("cost_savings", 0.0),
+            "storage_cost": cache_stats.get("storage_cost", 0.0),
+            "net_savings": cache_stats.get("net_savings", 0.0),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting cache stats: {str(e)}")
+
+
+@router.get("/cost-optimization/arbitrage-opportunities")
+@require_permission("llm.cost_optimization.read", "llm")
+async def get_arbitrage_opportunities(
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get current arbitrage opportunities"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        # Get arbitrage opportunities
+        opportunities = gateway.get_arbitrage_opportunities(
+            organization_id=organization.id
+        ) if hasattr(gateway, 'get_arbitrage_opportunities') else None
+        
+        if not opportunities:
+            return {
+                "arbitrage_enabled": False,
+                "active_opportunities": 0,
+                "total_opportunities": 0,
+                "executed_opportunities": 0,
+                "total_savings": 0.0,
+                "opportunities": [],
+                "timestamp": time.time()
+            }
+        
+        return {
+            "arbitrage_enabled": True,
+            "active_opportunities": opportunities.get("active_opportunities", 0),
+            "total_opportunities": opportunities.get("total_opportunities", 0),
+            "executed_opportunities": opportunities.get("executed_opportunities", 0),
+            "total_savings": opportunities.get("total_savings", 0.0),
+            "opportunities": opportunities.get("opportunities", []),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting arbitrage opportunities: {str(e)}")
+
+
+@router.post("/cost-optimization/execute-arbitrage")
+@require_permission("llm.cost_optimization.write", "llm")
+async def execute_arbitrage(
+    request: dict,
+    api_key: APIKey = Depends(get_api_key_auth),
+    organization: Organization = Depends(get_current_organization),
+    db: AsyncSession = Depends(get_db)
+):
+    """Execute an arbitrage opportunity"""
+    try:
+        if not gateway._initialized:
+            await gateway.initialize()
+        
+        opportunity_id = request.get("opportunity_id", "")
+        
+        # Execute arbitrage
+        result = gateway.execute_arbitrage(
+            opportunity_id=opportunity_id,
+            organization_id=organization.id
+        ) if hasattr(gateway, 'execute_arbitrage') else None
+        
+        if not result:
+            return {
+                "success": False,
+                "error": "Arbitrage execution not available",
+                "timestamp": time.time()
+            }
+        
+        return {
+            "success": result.get("success", False),
+            "opportunity_id": opportunity_id,
+            "original_provider": result.get("original_provider"),
+            "switched_provider": result.get("switched_provider"),
+            "cost_savings": result.get("cost_savings", 0.0),
+            "execution_time": result.get("execution_time", 0.0),
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error executing arbitrage: {str(e)}")

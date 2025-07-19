@@ -132,7 +132,7 @@ const APIKeys = () => {
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Create API Key
@@ -152,18 +152,18 @@ const APIKeys = () => {
           <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>
           <p className="text-gray-600 mt-1">Manage your API keys for accessing the Model Bridge</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          <PlusIcon className="h-4 w-4 mr-2" />
-          Create API Key
-        </button>
+                  <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
+          >
+            <PlusIcon className="h-4 w-4 mr-2" />
+            Create API Key
+          </button>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="text-sm font-medium text-blue-800 mb-2">API Key Guidelines</h3>
-        <ul className="text-sm text-blue-700 space-y-1">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <h3 className="text-sm font-medium text-gray-800 mb-2">API Key Guidelines</h3>
+        <ul className="text-sm text-gray-700 space-y-1">
           <li>• Keep your API keys secure and never share them publicly</li>
           <li>• Use different keys for different environments (development, staging, production)</li>
           <li>• Regularly rotate your API keys for enhanced security</li>
@@ -188,7 +188,7 @@ const APIKeys = () => {
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 transition-all duration-200"
               >
                 <PlusIcon className="h-4 w-4 mr-2" />
                 Create your first API key
@@ -268,7 +268,7 @@ const APIKeys = () => {
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
                 placeholder="e.g., Production API Key"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
               />
               <p className="mt-2 text-sm text-gray-500">
                 Choose a descriptive name to help you identify this key later.
@@ -286,7 +286,7 @@ const APIKeys = () => {
               </button>
               <button
                 onClick={createApiKey}
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-gray-900 to-black rounded-md hover:from-black hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
               >
                 Create Key
               </button>

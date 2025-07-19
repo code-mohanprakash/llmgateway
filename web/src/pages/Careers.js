@@ -29,11 +29,11 @@ const Careers = () => {
         {/* Single Job Card */}
         <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#9B5967] to-[#8a4d5a] rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#000000] to-[#14213d] rounded-lg flex items-center justify-center mx-auto mb-4">
               <LightBulbIcon className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Founding Engineer</h2>
-            <p className="text-[#9B5967] font-medium">Model Bridge</p>
+            <p className="text-[#000000] font-medium">Model Bridge</p>
           </div>
 
           {/* Job Details */}
@@ -67,29 +67,29 @@ const Careers = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-start">
-                  <span className="text-[#9B5967] mr-2 mt-1">•</span>
+                  <span className="text-[#000000] mr-2 mt-1">•</span>
                   <span className="text-gray-700">Strong Python and FastAPI experience</span>
                 </div>
                 <div className="flex items-start">
-                  <span className="text-[#9B5967] mr-2 mt-1">•</span>
+                  <span className="text-[#000000] mr-2 mt-1">•</span>
                   <span className="text-gray-700">Deep understanding of AI/ML infrastructure</span>
                 </div>
                 <div className="flex items-start">
-                  <span className="text-[#9B5967] mr-2 mt-1">•</span>
+                  <span className="text-[#000000] mr-2 mt-1">•</span>
                   <span className="text-gray-700">Experience with cloud platforms (AWS/GCP/Azure)</span>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex items-start">
-                  <span className="text-[#9B5967] mr-2 mt-1">•</span>
+                  <span className="text-[#000000] mr-2 mt-1">•</span>
                   <span className="text-gray-700">Knowledge of LLM architectures and models</span>
                 </div>
                 <div className="flex items-start">
-                  <span className="text-[#9B5967] mr-2 mt-1">•</span>
+                  <span className="text-[#000000] mr-2 mt-1">•</span>
                   <span className="text-gray-700">Experience with API design and authentication</span>
                 </div>
                 <div className="flex items-start">
-                  <span className="text-[#9B5967] mr-2 mt-1">•</span>
+                  <span className="text-[#000000] mr-2 mt-1">•</span>
                   <span className="text-gray-700">Strong problem-solving skills</span>
                 </div>
               </div>
@@ -98,7 +98,7 @@ const Careers = () => {
 
           {/* Apply Button */}
           <div className="text-center">
-            <button className="bg-[#9B5967] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#8a4d5a] transition-colors duration-200">
+            <button className="bg-[#000000] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#14213d] transition-colors duration-200">
               Apply Now
             </button>
           </div>

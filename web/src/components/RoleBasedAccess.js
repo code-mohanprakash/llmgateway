@@ -21,10 +21,10 @@ const RoleBasedAccess = ({
     'owner': 4
   };
 
-  const userRoleLevel = roleHierarchy[user.role] || 0;
+  const userRoleLevel = roleHierarchy[user.role?.toLowerCase()] || 0;
 
   // Check specific requirements
-  if (requireOwner && user.role !== 'owner') {
+  if (requireOwner && user.role?.toLowerCase() !== 'owner') {
     return fallback;
   }
 
@@ -41,7 +41,7 @@ const RoleBasedAccess = ({
       if (role === 'member+') {
         return userRoleLevel >= roleHierarchy['member'];
       }
-      return user.role === role;
+      return user.role?.toLowerCase() === role?.toLowerCase();
     });
 
     if (!hasPermission) {

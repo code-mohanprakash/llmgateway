@@ -44,25 +44,76 @@ class AnthropicProvider(BaseModelProvider):
     def _get_default_models(self) -> Dict[str, Any]:
         """Get default Anthropic model configurations"""
         return {
+            # Claude 3.5 Series (Latest)
             "claude-3-5-sonnet-20241022": {
                 "context_length": 200000,
                 "cost_per_1k_tokens": 0.003,
-                "max_output_tokens": 8192
+                "max_output_tokens": 8192,
+                "category": "large",
+                "speed": "medium",
+                "reasoning": "superior"
             },
+            
+            # Claude 3 Series
             "claude-3-opus-20240229": {
                 "context_length": 200000,
                 "cost_per_1k_tokens": 0.015,
-                "max_output_tokens": 4096
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "slow",
+                "reasoning": "superior"
             },
             "claude-3-sonnet-20240229": {
                 "context_length": 200000,
                 "cost_per_1k_tokens": 0.003,
-                "max_output_tokens": 4096
+                "max_output_tokens": 4096,
+                "category": "medium",
+                "speed": "medium",
+                "reasoning": "excellent"
             },
             "claude-3-haiku-20240307": {
                 "context_length": 200000,
                 "cost_per_1k_tokens": 0.00025,
-                "max_output_tokens": 4096
+                "max_output_tokens": 4096,
+                "category": "small",
+                "speed": "fastest",
+                "reasoning": "good"
+            },
+            
+            # Claude 2 Series
+            "claude-2.1": {
+                "context_length": 100000,
+                "cost_per_1k_tokens": 0.008,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "slow",
+                "reasoning": "excellent"
+            },
+            "claude-2.0": {
+                "context_length": 100000,
+                "cost_per_1k_tokens": 0.008,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "slow",
+                "reasoning": "excellent"
+            },
+            
+            # Claude Instant Series
+            "claude-instant-1.2": {
+                "context_length": 100000,
+                "cost_per_1k_tokens": 0.00163,
+                "max_output_tokens": 4096,
+                "category": "small",
+                "speed": "fast",
+                "reasoning": "basic"
+            },
+            "claude-instant-1.1": {
+                "context_length": 100000,
+                "cost_per_1k_tokens": 0.00163,
+                "max_output_tokens": 4096,
+                "category": "small",
+                "speed": "fast",
+                "reasoning": "basic"
             }
         }
     
@@ -75,7 +126,7 @@ class AnthropicProvider(BaseModelProvider):
                 ModelCapability.FUNCTION_CALLING
             ]
             
-            # Add vision for newer Claude models
+            # Add vision for newer Claude models (Claude 3 and 3.5 series)
             if "claude-3" in model_id and model_id != "claude-3-haiku-20240307":
                 capabilities.append(ModelCapability.VISION)
             

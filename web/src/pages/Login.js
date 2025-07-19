@@ -123,13 +123,13 @@ const Login = () => {
           <div className="text-center space-y-3">
             <Link 
               to="/forgot-password" 
-              className="block text-[#9B5967] hover:text-[#8a4d5a] font-medium transition-colors"
+              className="block text-[#000000] hover:text-[#14213d] font-medium transition-colors"
             >
               Forgot your password?
             </Link>
             <div>
               <span className="text-gray-600">Don't have an account?</span>
-              <Link to="/register" className="ml-2 text-[#9B5967] hover:text-[#8a4d5a] font-medium transition-colors">
+              <Link to="/register" className="ml-2 text-[#000000] hover:text-[#14213d] font-medium transition-colors">
                 Sign up
               </Link>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -20,6 +20,10 @@ import Pricing from './pages/Pricing';
 import RBAC from './pages/RBAC';
 import APIPlayground from './pages/APIPlayground';
 import ABTesting from './pages/ABTesting';
+import AdvancedRouting from './pages/AdvancedRouting';
+import CostOptimization from './pages/CostOptimization';
+import Orchestration from './pages/Orchestration';
+import Monitoring from './pages/Monitoring';
 
 import Guides from './pages/Guides';
 import Support from './pages/Support';
@@ -103,6 +107,50 @@ function App() {
               }
             >
               <Route index element={<ABTesting />} />
+            </Route>
+            
+            <Route
+              path="/advanced-routing"
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<AdvancedRouting />} />
+            </Route>
+            
+            <Route
+              path="/cost-optimization"
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<CostOptimization />} />
+            </Route>
+            
+            <Route
+              path="/orchestration"
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Orchestration />} />
+            </Route>
+            
+            <Route
+              path="/monitoring"
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Monitoring />} />
             </Route>
           </Routes>
         </div>

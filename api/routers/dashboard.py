@@ -46,6 +46,25 @@ class IntelligentRoutingData(BaseModel):
     performance_trends: dict
 
 
+class AdvancedRoutingData(BaseModel):
+    """Advanced routing and load balancer metrics"""
+    load_balancer_enabled: bool
+    routing_status: dict
+    load_balancer_stats: Optional[dict]
+    health_metrics: dict
+    provider_weights: dict
+    connection_pools: dict
+
+
+class PredictiveRoutingData(BaseModel):
+    """Predictive routing analytics and insights"""
+    predictive_routing_enabled: bool
+    prediction_analytics: Optional[dict]
+    model_performance: dict
+    pattern_insights: dict
+    confidence_metrics: dict
+
+
 class ModelUsage(BaseModel):
     model_id: str
     provider: str
@@ -510,6 +529,108 @@ async def get_intelligent_routing_data(
         provider_performance=provider_performance,
         cost_optimization=cost_optimization,
         performance_trends=performance_trends
+    )
+
+
+@router.get("/advanced-routing", response_model=AdvancedRoutingData)
+@require_permission("analytics.read", "dashboard")
+async def get_advanced_routing_data(
+    current_user: User = Depends(get_current_user)
+):
+    """Get advanced routing and load balancer metrics"""
+    
+    # Get routing status
+    routing_status = enhanced_gateway.get_advanced_routing_status()
+    
+    # Get load balancer stats (if available)
+    load_balancer_stats = enhanced_gateway.get_load_balancer_stats()
+    
+    # Get health metrics from gateway
+    health_status = await enhanced_gateway.health_check()
+    health_metrics = {
+        "overall_status": health_status.get("status", "unknown"),
+        "healthy_providers": health_status.get("healthy_providers", 0),
+        "total_providers": health_status.get("total_providers", 0),
+        "providers": health_status.get("providers", {})
+    }
+    
+    # Extract provider weights and connection pools from load balancer stats
+    provider_weights = {}
+    connection_pools = {}
+    
+    if load_balancer_stats:
+        provider_weights = load_balancer_stats.get("provider_weights", {})
+        connection_pools = load_balancer_stats.get("connection_pools", {})
+    
+    return AdvancedRoutingData(
+        load_balancer_enabled=routing_status.get("load_balancer_enabled", False),
+        routing_status=routing_status,
+        load_balancer_stats=load_balancer_stats,
+        health_metrics=health_metrics,
+        provider_weights=provider_weights,
+        connection_pools=connection_pools
+    )
+
+
+@router.get("/predictive-routing", response_model=PredictiveRoutingData)
+@require_permission("analytics.read", "dashboard")
+async def get_predictive_routing_data(
+    current_user: User = Depends(get_current_user)
+):
+    """Get predictive routing analytics and insights"""
+    
+    # Get routing status
+    routing_status = enhanced_gateway.get_advanced_routing_status()
+    predictive_enabled = routing_status.get("predictive_routing_enabled", False)
+    
+    # Get prediction analytics
+    prediction_analytics = enhanced_gateway.get_predictive_routing_stats()
+    
+    # Extract model performance metrics
+    model_performance = {}
+    if prediction_analytics:
+        model_stats = prediction_analytics.get("model_stats", {})
+        model_performance = {
+            "providers_with_models": model_stats.get("providers_with_models", 0),
+            "total_training_data": model_stats.get("total_training_data", 0),
+            "feature_stats": model_stats.get("feature_stats", {}),
+            "last_training_times": model_stats.get("last_training_times", {})
+        }
+    
+    # Extract pattern insights
+    pattern_insights = {}
+    if prediction_analytics:
+        patterns = prediction_analytics.get("patterns_summary", {})
+        pattern_insights = {
+            "total_patterns": patterns.get("total_patterns", 0),
+            "requests_analyzed": patterns.get("total_requests_analyzed", 0),
+            "top_patterns": patterns.get("patterns", [])[:5],  # Top 5 patterns
+            "last_analysis": patterns.get("last_analysis", "")
+        }
+    
+    # Calculate confidence metrics
+    confidence_metrics = {}
+    if prediction_analytics:
+        cache_stats = prediction_analytics.get("cache_stats", {})
+        confidence_metrics = {
+            "cached_predictions": cache_stats.get("cached_predictions", 0),
+            "cache_hit_rate": 0.0,  # Would need to track this
+            "average_confidence": 0.0,  # Would need to calculate from predictions
+            "confidence_threshold": prediction_analytics.get("confidence_threshold", 0.6)
+        }
+        
+        # Calculate average confidence from pattern data
+        if pattern_insights.get("top_patterns"):
+            confidences = [p.get("confidence_score", 0.0) for p in pattern_insights["top_patterns"]]
+            if confidences:
+                confidence_metrics["average_confidence"] = sum(confidences) / len(confidences)
+    
+    return PredictiveRoutingData(
+        predictive_routing_enabled=predictive_enabled,
+        prediction_analytics=prediction_analytics,
+        model_performance=model_performance,
+        pattern_insights=pattern_insights,
+        confidence_metrics=confidence_metrics
     )
 
 

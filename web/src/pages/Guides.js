@@ -139,7 +139,7 @@ const Guides = () => {
                 onClick={() => setSelectedCategory(category.name)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                   selectedCategory === category.name
-                    ? 'bg-[#9B5967] text-white shadow-lg'
+                    ? 'bg-[#000000] text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -157,8 +157,8 @@ const Guides = () => {
               className="group border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#9B5967]/10 to-[#8a4d5a]/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <guide.icon className="h-6 w-6 text-[#9B5967]" />
+                <div className="w-12 h-12 bg-gradient-to-br from-[#000000]/10 to-[#14213d]/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <guide.icon className="h-6 w-6 text-[#000000]" />
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(guide.difficulty)}`}>
@@ -167,7 +167,7 @@ const Guides = () => {
                 </div>
               </div>
               
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#9B5967] transition-colors duration-300">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#000000] transition-colors duration-300">
                 {guide.title}
               </h3>
               
@@ -177,7 +177,7 @@ const Guides = () => {
               
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500">{guide.time}</span>
-                <div className="flex items-center text-[#9B5967] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="flex items-center text-[#000000] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   Read guide
                   <ChevronRightIcon className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -188,7 +188,7 @@ const Guides = () => {
 
         {/* Featured Guide */}
         <div className="mt-16">
-          <div className="bg-gradient-to-br from-[#9B5967] to-[#8a4d5a] rounded-2xl p-8 text-white">
+          <div className="bg-gradient-to-br from-[#000000] to-[#14213d] rounded-2xl p-8 text-white">
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center mb-4">
                 <StarIcon className="h-6 w-6 mr-2" />
@@ -219,7 +219,7 @@ const Guides = () => {
                 </span>
               </div>
               
-              <button className="mt-6 bg-white text-[#9B5967] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200 flex items-center">
+              <button className="mt-6 bg-white text-[#000000] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200 flex items-center">
                 Read Complete Guide
                 <ChevronRightIcon className="ml-2 h-5 w-5" />
               </button>

@@ -39,7 +39,7 @@ code {
 
 /* Modern gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #1e293b 0%, #9B5967 50%, #8a4d5a 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #000000 50%, #14213d 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -48,7 +48,7 @@ code {
 
 /* Professional button styles */
 .btn-primary {
-  background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+  background: linear-gradient(135deg, #000000 0%, #14213d 100%);
   color: white;
   font-weight: 600;
   padding: 0.75rem 1.5rem;
@@ -60,7 +60,7 @@ code {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #8a4d5a 0%, #7a4350 100%);
+  background: linear-gradient(135deg, #14213d 0%, #7a4350 100%);
   box-shadow: 0 8px 25px 0 rgba(155, 89, 103, 0.35);
   transform: translateY(-2px);
 }
@@ -78,7 +78,7 @@ code {
 
 .btn-secondary:hover {
   background: #f9fafb;
-  border-color: #9B5967;
+  border-color: #000000;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -145,7 +145,7 @@ code {
 
 .form-input:focus {
   outline: none;
-  border-color: #9B5967;
+  border-color: #000000;
   box-shadow: 0 0 0 3px rgba(155, 89, 103, 0.1);
   background: white;
 }
@@ -194,11 +194,11 @@ code {
 }
 
 .nav-link:hover {
-  color: #9B5967;
+  color: #000000;
 }
 
 .nav-link-active {
-  color: #9B5967;
+  color: #000000;
   background: rgba(155, 89, 103, 0.1);
   border-radius: 8px;
 }
@@ -216,7 +216,7 @@ code {
 /* Loading spinner */
 .spinner {
   border: 2px solid #f3f4f6;
-  border-top: 2px solid #9B5967;
+  border-top: 2px solid #000000;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -228,7 +228,7 @@ code {
 
 /* Progress bars */
 .progress-bar {
-  background: linear-gradient(90deg, #9B5967 0%, #8a4d5a 100%);
+  background: linear-gradient(90deg, #000000 0%, #14213d 100%);
   height: 8px;
   border-radius: 4px;
   transition: width 0.3s ease-in-out;
@@ -281,7 +281,7 @@ code {
 
 /* Custom gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+  background: linear-gradient(135deg, #000000 0%, #14213d 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -315,7 +315,7 @@ code {
 
 /* Button styling */
 .btn-primary {
-  background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+  background: linear-gradient(135deg, #000000 0%, #14213d 100%);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -597,7 +597,7 @@ code {
 }
 
 .focus-ring:focus {
-  outline: 2px solid #9B5967;
+  outline: 2px solid #000000;
   outline-offset: 2px;
 }
 
@@ -669,7 +669,7 @@ code {
 
 /* Gradient backgrounds */
 .bg-gradient-primary {
-  background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+  background: linear-gradient(135deg, #000000 0%, #14213d 100%);
 }
 
 .bg-gradient-secondary {
@@ -818,7 +818,7 @@ code {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%);
+  background: linear-gradient(135deg, #000000 0%, #14213d 100%);
   border-radius: 1px;
 }
 
@@ -852,7 +852,7 @@ code {
   
   /* Simplify backgrounds on mobile */
   .liquid-bg {
-    background: linear-gradient(135deg, #9B5967 0%, #8a4d5a 100%) !important;
+    background: linear-gradient(135deg, #000000 0%, #14213d 100%) !important;
     animation: none;
   }
   
@@ -1126,7 +1126,7 @@ code {
 
 /* Liquid morphing background */
 .liquid-bg {
-  background: linear-gradient(-45deg, #9B5967, #8a4d5a, #9B5967, #a16470);
+  background: linear-gradient(-45deg, #000000, #14213d, #000000, #2b2d42);
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
 }
@@ -1167,7 +1167,7 @@ code {
 /* Typewriter effect */
 .typewriter {
   overflow: hidden;
-  border-right: 2px solid #9B5967;
+  border-right: 2px solid #000000;
   white-space: nowrap;
   animation: typing 3.5s steps(30, end), blink-caret 0.75s step-end infinite;
 }
@@ -1179,7 +1179,7 @@ code {
 
 @keyframes blink-caret {
   from, to { border-color: transparent; }
-  50% { border-color: #9B5967; }
+  50% { border-color: #000000; }
 }
 
 /* Staggered fade-in animation */

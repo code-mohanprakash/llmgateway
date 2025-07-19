@@ -109,6 +109,30 @@ const Navigation = () => {
                     A/B Testing
                   </Link>
                 )}
+                {isAuthenticated && user && user.role === 'admin' && (
+                  <Link 
+                    to="/advanced-routing" 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive('/advanced-routing') 
+                        ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#000000]'
+                    }`}
+                  >
+                    Advanced Routing
+                  </Link>
+                )}
+                {isAuthenticated && user && user.role === 'admin' && (
+                  <Link 
+                    to="/monitoring" 
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive('/monitoring') 
+                        ? 'text-[#000000] bg-pink-50/50 rounded-lg' 
+                        : 'text-gray-900 hover:text-[#000000]'
+                    }`}
+                  >
+                    Monitoring
+                  </Link>
+                )}
               </div>
             </div>
           </div>

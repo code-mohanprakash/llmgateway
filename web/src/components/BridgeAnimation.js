@@ -17,11 +17,13 @@ const BridgeAnimation = () => {
 
       {/* Center Bridge Node - Icon */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-5">
-        <img 
-          src={process.env.PUBLIC_URL + '/images/icon.png'}
-          alt="Bridge Icon"
-          className="w-80 h-80 object-contain"
-        />
+        <div className="w-32 h-32 bg-white rounded-full shadow-lg border-2 border-gray-300 flex items-center justify-center">
+          <img 
+            src={process.env.PUBLIC_URL + '/images/icon.png'}
+            alt="Bridge Icon"
+            className="w-24 h-24 object-contain"
+          />
+        </div>
       </div>
 
       {/* Right Provider Nodes - Vertical Column */}
@@ -35,7 +37,7 @@ const BridgeAnimation = () => {
 
         {/* 2. Reddish-brown asterisk/starburst */}
         <div className="w-12 h-12 bg-white rounded-full shadow-lg border-2 border-gray-300 flex items-center justify-center">
-          <svg className="w-6 h-6 text-[#9B5967]" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-[#000000]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
         </div>

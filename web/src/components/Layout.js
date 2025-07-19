@@ -15,22 +15,21 @@ import {
   SparklesIcon,
   TrophyIcon,
   StarIcon,
-  ChevronDownIcon,
-  PlusIcon,
-  FolderIcon,
   ShieldCheckIcon,
   Cog6ToothIcon,
   BeakerIcon,
-  CommandLineIcon
+  CommandLineIcon,
+  BoltIcon,
+  CurrencyDollarIcon,
+  ServerIcon
 } from '@heroicons/react/24/outline';
-import api from '../services/api';
 
 const Layout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState('free');
+  const [, setCurrentPlan] = useState('free');
 
   useEffect(() => {
     // Set default plan - disable API call until billing integration is complete
@@ -98,6 +97,30 @@ const Layout = () => {
       href: '/api-playground', 
       icon: CommandLineIcon
     },
+    { 
+      name: 'Advanced Routing', 
+      href: '/advanced-routing', 
+      icon: BoltIcon,
+      requireAdmin: true 
+    },
+    { 
+      name: 'Cost Optimization', 
+      href: '/cost-optimization', 
+      icon: CurrencyDollarIcon,
+      requireAdmin: true 
+    },
+    { 
+      name: 'Orchestration', 
+      href: '/orchestration', 
+      icon: Cog6ToothIcon,
+      requireAdmin: true 
+    },
+    { 
+      name: 'Monitoring', 
+      href: '/monitoring', 
+      icon: ServerIcon,
+      requireAdmin: true 
+    },
   ];
 
   const handleLogout = async () => {
@@ -144,8 +167,8 @@ const Layout = () => {
                       to={item.href}
                       className={`${
                         isActive
-                          ? 'bg-pink-50/80 text-[#9B5967] border-r-2 border-[#9B5967]'
-                          : 'text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50'
+                          ? 'bg-pink-50/80 text-[#000000] border-r-2 border-[#000000]'
+                          : 'text-gray-600 hover:text-[#000000] hover:bg-pink-50/50'
                       } group flex items-center px-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
                         isSidebarExpanded ? 'justify-start' : 'justify-center'
                       }`}
@@ -168,8 +191,8 @@ const Layout = () => {
                   to={item.href}
                   className={`${
                     isActive
-                      ? 'bg-pink-50/80 text-[#9B5967] border-r-2 border-[#9B5967]'
-                      : 'text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50'
+                      ? 'bg-pink-50/80 text-[#000000] border-r-2 border-[#000000]'
+                      : 'text-gray-600 hover:text-[#000000] hover:bg-pink-50/50'
                   } group flex items-center px-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
                     isSidebarExpanded ? 'justify-start' : 'justify-center'
                   }`}
@@ -195,7 +218,7 @@ const Layout = () => {
               <div className="space-y-3">
                 {/* User Info */}
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#9B5967] to-[#8a4d5a] rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#000000] to-[#14213d] rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-white text-sm font-medium">
                       {user?.firstName?.[0] || user?.full_name?.[0] || 'U'}
                     </span>
@@ -209,14 +232,14 @@ const Layout = () => {
                       <span className="text-xs text-gray-400 capitalize">{user?.role || 'user'}</span>
                       {user?.role && (
                         <span className={`ml-2 px-1.5 py-0.5 text-xs rounded-full ${
-                          user.role === 'owner' ? 'bg-purple-100 text-purple-800' :
-                          user.role === 'admin' ? 'bg-blue-100 text-blue-800' :
-                          user.role === 'member' ? 'bg-green-100 text-green-800' :
+                          user.role?.toLowerCase() === 'owner' ? 'bg-purple-100 text-purple-800' :
+                          user.role?.toLowerCase() === 'admin' ? 'bg-blue-100 text-blue-800' :
+                          user.role?.toLowerCase() === 'member' ? 'bg-green-100 text-green-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
-                          {user.role === 'owner' ? '👑' :
-                           user.role === 'admin' ? '⚡' :
-                           user.role === 'member' ? '👤' : '👁️'}
+                          {user.role?.toLowerCase() === 'owner' ? '👑' :
+                           user.role?.toLowerCase() === 'admin' ? '⚡' :
+                           user.role?.toLowerCase() === 'member' ? '👤' : '👁️'}
                         </span>
                       )}
                     </div>
@@ -226,7 +249,7 @@ const Layout = () => {
                 {/* Sign Out Button */}
                 <button
                   onClick={handleLogout}
-                  className="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50 rounded-lg transition-all duration-200"
+                  className="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:text-[#000000] hover:bg-pink-50/50 rounded-lg transition-all duration-200"
                 >
                   <ArrowRightOnRectangleIcon className="mr-3 h-4 w-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">Sign out</span>
@@ -240,7 +263,7 @@ const Layout = () => {
             }`}>
               <div className="flex flex-col items-center space-y-3">
                 {/* User Avatar */}
-                <div className="w-8 h-8 bg-gradient-to-br from-[#9B5967] to-[#8a4d5a] rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#000000] to-[#14213d] rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">
                     {user?.firstName?.[0] || user?.full_name?.[0] || 'U'}
                   </span>
@@ -249,21 +272,21 @@ const Layout = () => {
                 {/* Role Badge */}
                 {user?.role && (
                   <div className={`px-1.5 py-0.5 text-xs rounded-full ${
-                    user.role === 'owner' ? 'bg-purple-100 text-purple-800' :
-                    user.role === 'admin' ? 'bg-blue-100 text-blue-800' :
-                    user.role === 'member' ? 'bg-green-100 text-green-800' :
+                    user.role?.toLowerCase() === 'owner' ? 'bg-purple-100 text-purple-800' :
+                    user.role?.toLowerCase() === 'admin' ? 'bg-blue-100 text-blue-800' :
+                    user.role?.toLowerCase() === 'member' ? 'bg-green-100 text-green-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>
-                    {user.role === 'owner' ? '👑' :
-                     user.role === 'admin' ? '⚡' :
-                     user.role === 'member' ? '👤' : '👁️'}
+                    {user.role?.toLowerCase() === 'owner' ? '👑' :
+                     user.role?.toLowerCase() === 'admin' ? '⚡' :
+                     user.role?.toLowerCase() === 'member' ? '👤' : '👁️'}
                   </div>
                 )}
                 
                 {/* Sign Out Button */}
                 <button
                   onClick={handleLogout}
-                  className="p-2 text-gray-600 hover:text-[#9B5967] hover:bg-pink-50/50 rounded-lg transition-all duration-200"
+                  className="p-2 text-gray-600 hover:text-[#000000] hover:bg-pink-50/50 rounded-lg transition-all duration-200"
                   title="Sign out"
                 >
                   <ArrowRightOnRectangleIcon className="h-4 w-4" />
@@ -280,17 +303,17 @@ const Layout = () => {
         {user?.role && (
           <div className="absolute top-4 right-4 z-10">
             <div className={`px-3 py-1.5 rounded-full text-sm font-medium shadow-sm ${
-              user.role === 'owner' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-              user.role === 'admin' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-              user.role === 'member' ? 'bg-green-100 text-green-800 border border-green-200' :
+              user.role?.toLowerCase() === 'owner' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+              user.role?.toLowerCase() === 'admin' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+              user.role?.toLowerCase() === 'member' ? 'bg-green-100 text-green-800 border border-green-200' :
               'bg-gray-100 text-gray-800 border border-gray-200'
             }`}>
               <span className="mr-1">
-                {user.role === 'owner' ? '👑' :
-                 user.role === 'admin' ? '⚡' :
-                 user.role === 'member' ? '👤' : '👁️'}
+                {user.role?.toLowerCase() === 'owner' ? '👑' :
+                 user.role?.toLowerCase() === 'admin' ? '⚡' :
+                 user.role?.toLowerCase() === 'member' ? '👤' : '👁️'}
               </span>
-              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              {user.role?.charAt(0).toUpperCase() + user.role?.slice(1).toLowerCase()}
             </div>
           </div>
         )}

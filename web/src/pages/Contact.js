@@ -110,7 +110,7 @@ const Contact = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                     placeholder="Enter your first name"
                   />
                 </div>
@@ -118,7 +118,7 @@ const Contact = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                     placeholder="Enter your last name"
                   />
                 </div>
@@ -128,14 +128,14 @@ const Contact = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                   placeholder="Enter your email address"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent">
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent">
                   <option>General Inquiry</option>
                   <option>Technical Support</option>
                   <option>Feature Request</option>
@@ -149,7 +149,7 @@ const Contact = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                 <textarea
                   rows={6}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                   placeholder="Tell us how we can help you..."
                 />
               </div>
@@ -158,7 +158,7 @@ const Contact = () => {
                 <input
                   type="checkbox"
                   id="newsletter"
-                  className="h-4 w-4 text-[#9B5967] focus:ring-[#9B5967] border-gray-300 rounded"
+                  className="h-4 w-4 text-[#000000] focus:ring-[#000000] border-gray-300 rounded"
                 />
                 <label htmlFor="newsletter" className="ml-2 text-sm text-gray-600">
                   Subscribe to our newsletter for project updates and insights
@@ -167,7 +167,7 @@ const Contact = () => {
               
               <button
                 type="submit"
-                className="w-full bg-[#9B5967] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8a4d5a] transition-colors duration-200"
+                className="w-full bg-[#000000] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#14213d] transition-colors duration-200"
               >
                 Send Message
               </button>

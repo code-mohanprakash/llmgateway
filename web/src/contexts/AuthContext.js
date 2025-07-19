@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error('No access token');
       }
       
-      const response = await api.get('/working-auth/me');
+      const response = await api.get('/auth/me');
       console.log('Auth check successful, user data:', response.data);
       setUser(response.data);
       return response.data;
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       formData.append('password', password);
       
       console.log('Attempting login for:', email);
-      const response = await api.post('/working-auth/login', formData, {
+      const response = await api.post('/auth/login', formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       
       console.log('Attempting registration for:', userData.email);
-      const response = await api.post('/working-auth/register', userData);
+      const response = await api.post('/auth/register', userData);
       
       const { access_token, refresh_token } = response.data;
       
@@ -154,7 +154,7 @@ export const AuthProvider = ({ children }) => {
 
   const forgotPassword = async (email) => {
     try {
-      const response = await api.post('/working-auth/forgot-password', { email });
+      const response = await api.post('/auth/forgot-password', { email });
       return {
         success: true,
         message: response.data.message || 'Password reset email sent'

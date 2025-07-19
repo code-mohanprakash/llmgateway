@@ -170,14 +170,14 @@ const Billing = () => {
     return (
       <div className={`clean-card p-6 relative ${
         isCurrentPlan 
-          ? 'ring-2 ring-[#9B5967] bg-[#9B5967]/5' 
+          ? 'ring-2 ring-[#000000] bg-[#000000]/5' 
           : plan.popular 
             ? 'ring-2 ring-blue-200' 
             : ''
       }`}>
         {plan.popular && !isCurrentPlan && (
           <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-            <span className="bg-[#9B5967] text-white px-3 py-1 rounded-full text-xs font-semibold">
+            <span className="bg-[#000000] text-white px-3 py-1 rounded-full text-xs font-semibold">
               Popular
             </span>
           </div>

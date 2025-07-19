@@ -2,7 +2,7 @@
 Main FastAPI application for Model Bridge SaaS
 """
 import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -12,7 +12,7 @@ from prometheus_client import Counter, Histogram, generate_latest
 from starlette.responses import Response
 
 # Import routers
-from api.routers import auth, dashboard, llm, admin, billing, rbac, workflow, sso, ab_testing
+from api.routers import auth, dashboard, llm, admin, billing, rbac, sso, ab_testing, contact, orchestration, documentation, api_playground, monitoring
 
 # Metrics
 REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
@@ -63,15 +63,19 @@ async def add_process_time_header(request: Request, call_next):
 
 
 # Include routers
+app.include_router(documentation.router, prefix="/api/documentation", tags=["documentation"])
+app.include_router(api_playground.router, prefix="/api/playground", tags=["playground"])
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
 app.include_router(llm.router, prefix="/api/v1", tags=["llm"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(rbac.router, prefix="/api/rbac", tags=["rbac"])
-app.include_router(workflow.router, prefix="/api/workflow", tags=["workflow"])
 app.include_router(sso.router, prefix="/api/sso", tags=["sso"])
 app.include_router(ab_testing.router, prefix="/api/ab-testing", tags=["ab-testing"])
+app.include_router(contact.router, prefix="/api/v1", tags=["contact"])
+app.include_router(orchestration.router, prefix="/api", tags=["orchestration"])
+app.include_router(monitoring.router, prefix="/api", tags=["monitoring"])
 
 # Serve static files (frontend) - only if directory exists
 import os
@@ -101,9 +105,6 @@ async def api_health_check():
 @app.get("/{path:path}")
 async def serve_frontend(path: str):
     """Serve React frontend"""
-    if path.startswith("api/"):
-        return {"error": "API endpoint not found"}, 404
-    
     # Serve index.html for client-side routing if it exists
     if os.path.exists("web/build/index.html"):
         return FileResponse("web/build/index.html")

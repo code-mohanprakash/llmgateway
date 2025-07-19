@@ -17,9 +17,9 @@ import Navigation from '../components/Navigation';
 
 const About = () => {
   const stats = [
-    { label: "Models Supported", value: "15+", icon: CogIcon },
-    { label: "Providers", value: "8+", icon: BoltIcon },
-    { label: "Active Development", value: "100%", icon: UserGroupIcon },
+    { label: "Models Supported", value: "80+", icon: CogIcon },
+    { label: "Providers", value: "12+", icon: BoltIcon },
+    { label: "Advanced Routing", value: "Phase 1", icon: LightBulbIcon },
     { label: "Open Source", value: "Yes", icon: ShieldCheckIcon }
   ];
 
@@ -61,6 +61,11 @@ const About = () => {
   ];
 
   const timeline = [
+    {
+      year: "2024",
+      title: "Phase 1: Advanced Routing Engine",
+      description: "Launched intelligent routing with real-time load balancing, predictive analytics, geographic optimization, and dynamic weight management"
+    },
     {
       year: "2024",
       title: "Model Bridge Development",
@@ -159,8 +164,8 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#9B5967]/10 to-[#8a4d5a]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="h-8 w-8 text-[#9B5967]" />
+                <div className="w-16 h-16 bg-gradient-to-br from-[#000000]/10 to-[#14213d]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <stat.icon className="h-8 w-8 text-[#000000]" />
                 </div>
                 <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
                 <div className="text-gray-600">{stat.label}</div>
@@ -191,11 +196,11 @@ const About = () => {
           <div className="max-w-2xl mx-auto">
             {team.map((member, index) => (
               <div key={index} className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-[#9B5967]/10 to-[#8a4d5a]/10 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                <div className="w-24 h-24 bg-gradient-to-br from-[#000000]/10 to-[#14213d]/10 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
                   {member.image}
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">{member.name}</h3>
-                <p className="text-[#9B5967] font-medium mb-4">{member.role}</p>
+                <p className="text-[#000000] font-medium mb-4">{member.role}</p>
                 <p className="text-gray-600 mb-4 leading-relaxed">{member.bio}</p>
                 <p className="text-sm text-gray-500 italic">{member.background}</p>
               </div>
@@ -211,7 +216,7 @@ const About = () => {
               {timeline.map((item, index) => (
                 <div key={index} className="flex items-start space-x-6">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#9B5967] to-[#8a4d5a] rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#000000] to-[#14213d] rounded-full flex items-center justify-center text-white font-bold">
                       {item.year}
                     </div>
                   </div>
@@ -264,13 +269,13 @@ const About = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="/docs"
-                className="bg-[#9B5967] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#8a4d5a] transition-colors duration-200"
+                className="bg-[#000000] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#14213d] transition-colors duration-200"
               >
                 Read Documentation
               </a>
               <a
                 href="/contact"
-                className="border border-[#9B5967] text-[#9B5967] px-8 py-3 rounded-lg font-semibold hover:bg-[#9B5967] hover:text-white transition-colors duration-200"
+                className="border border-[#000000] text-[#000000] px-8 py-3 rounded-lg font-semibold hover:bg-[#000000] hover:text-white transition-colors duration-200"
               >
                 Get in Touch
               </a>

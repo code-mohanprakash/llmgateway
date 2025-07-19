@@ -1,0 +1,402 @@
+# Geographic Routing Configuration
+# Configuration for geographic-based provider routing and latency optimization
+
+# Routing Configuration
+routing:
+  max_latency_threshold_ms: 5000          # Maximum acceptable latency in milliseconds
+  latency_weight: 0.4                     # Weight for latency in routing decisions
+  region_preference_weight: 0.3           # Weight for regional preference
+  performance_weight: 0.2                 # Weight for overall performance
+  availability_weight: 0.1                # Weight for provider availability
+  fallback_enabled: true                  # Enable fallback routing
+  max_providers_per_request: 3            # Maximum providers to return per request
+  confidence_threshold: 0.6               # Minimum confidence for routing decisions
+
+# Provider Regions
+# Maps providers to the regions they serve best
+provider_regions:
+  openai:
+    - "North America"
+    - "Europe"
+    - "Asia Pacific"
+  anthropic:
+    - "North America"
+    - "Europe"
+  google:
+    - "North America"
+    - "Europe"
+    - "Asia Pacific"
+  groq:
+    - "North America"
+    - "Europe"
+  cohere:
+    - "North America"
+    - "Europe"
+  mistral:
+    - "Europe"
+    - "North America"
+  together:
+    - "North America"
+    - "Europe"
+  perplexity:
+    - "North America"
+    - "Europe"
+  huggingface:
+    - "Europe"
+    - "North America"
+  deepseek:
+    - "Asia Pacific"
+    - "North America"
+  ollama:
+    - "North America"
+    - "Europe"
+    - "Asia Pacific"
+
+# Region Preferences
+# Provider priority order by region
+region_preferences:
+  "North America":
+    - "openai"
+    - "anthropic"
+    - "groq"
+    - "google"
+    - "cohere"
+    - "together"
+    - "perplexity"
+    - "mistral"
+    - "huggingface"
+    - "deepseek"
+    - "ollama"
+  "Europe":
+    - "mistral"
+    - "huggingface"
+    - "openai"
+    - "google"
+    - "anthropic"
+    - "groq"
+    - "cohere"
+    - "together"
+    - "perplexity"
+    - "deepseek"
+    - "ollama"
+  "Asia Pacific":
+    - "google"
+    - "deepseek"
+    - "openai"
+    - "anthropic"
+    - "groq"
+    - "cohere"
+    - "together"
+    - "mistral"
+    - "huggingface"
+    - "perplexity"
+    - "ollama"
+  "South America":
+    - "openai"
+    - "google"
+    - "anthropic"
+    - "groq"
+    - "cohere"
+    - "together"
+    - "mistral"
+    - "huggingface"
+    - "perplexity"
+    - "deepseek"
+    - "ollama"
+  "Africa":
+    - "google"
+    - "openai"
+    - "anthropic"
+    - "groq"
+    - "cohere"
+    - "together"
+    - "mistral"
+    - "huggingface"
+    - "perplexity"
+    - "deepseek"
+    - "ollama"
+  "Oceania":
+    - "google"
+    - "openai"
+    - "anthropic"
+    - "groq"
+    - "cohere"
+    - "together"
+    - "mistral"
+    - "huggingface"
+    - "perplexity"
+    - "deepseek"
+    - "ollama"
+
+# Routing Rules
+# Rules are applied in priority order (lower number = higher priority)
+routing_rules:
+  - rule_id: "ultra_low_latency"
+    name: "Ultra Low Latency Priority"
+    description: "Prioritize providers with ultra-low latency (<500ms)"
+    priority: 1
+    enabled: true
+    conditions:
+      latency_threshold_ms: 500
+    actions:
+      strategy: "latency_optimized"
+      max_providers: 2
+
+  - rule_id: "low_latency_priority"
+    name: "Low Latency Priority"
+    description: "Prioritize providers with low latency (<1000ms)"
+    priority: 2
+    enabled: true
+    conditions:
+      latency_threshold_ms: 1000
+    actions:
+      strategy: "latency_optimized"
+      max_providers: 3
+
+  - rule_id: "regional_preference"
+    name: "Regional Preference"
+    description: "Prefer providers in the same region as the client"
+    priority: 3
+    enabled: true
+    conditions:
+      region_match: true
+    actions:
+      strategy: "region_preferred"
+      max_providers: 3
+
+  - rule_id: "high_availability_fallback"
+    name: "High Availability Fallback"
+    description: "Use high availability providers when regional providers are unavailable"
+    priority: 4
+    enabled: true
+    conditions:
+      min_success_rate: 0.95
+    actions:
+      strategy: "availability_optimized"
+      max_providers: 2
+
+  - rule_id: "cost_optimized_fallback"
+    name: "Cost Optimized Fallback"
+    description: "Use cost-effective providers when other strategies fail"
+    priority: 5
+    enabled: true
+    conditions:
+      cost_threshold: 0.01
+    actions:
+      strategy: "cost_optimized"
+      max_providers: 3
+
+  - rule_id: "global_fallback"
+    name: "Global Fallback"
+    description: "Use all available providers as last resort"
+    priority: 10
+    enabled: true
+    conditions:
+      fallback: true
+    actions:
+      strategy: "global_fallback"
+      max_providers: 5
+
+# Latency Monitoring Configuration
+latency_monitoring:
+  measurement_interval_seconds: 300       # How often to measure latency (5 minutes)
+  timeout_seconds: 10                     # Timeout for latency measurements
+  retry_attempts: 3                       # Number of retry attempts for failed measurements
+  measurement_retention_hours: 24         # How long to keep latency measurements
+  percentiles: [50, 90, 95, 99]          # Percentiles to calculate for latency
+
+# Provider Endpoint Configuration
+# Endpoints used for latency monitoring
+provider_endpoints:
+  openai:
+    - "https://api.openai.com/v1/models"
+    - "https://api.openai.com/v1/chat/completions"
+  anthropic:
+    - "https://api.anthropic.com/v1/messages"
+    - "https://api.anthropic.com/v1/models"
+  google:
+    - "https://generativelanguage.googleapis.com/v1/models"
+    - "https://generativelanguage.googleapis.com/v1beta/models"
+  groq:
+    - "https://api.groq.com/openai/v1/models"
+    - "https://api.groq.com/openai/v1/chat/completions"
+  cohere:
+    - "https://api.cohere.ai/v1/models"
+    - "https://api.cohere.ai/v1/generate"
+  mistral:
+    - "https://api.mistral.ai/v1/models"
+    - "https://api.mistral.ai/v1/chat/completions"
+  together:
+    - "https://api.together.xyz/v1/models"
+    - "https://api.together.xyz/v1/chat/completions"
+  perplexity:
+    - "https://api.perplexity.ai/chat/completions"
+  huggingface:
+    - "https://api-inference.huggingface.co/models"
+  deepseek:
+    - "https://api.deepseek.com/v1/models"
+    - "https://api.deepseek.com/v1/chat/completions"
+
+# Geographic Regions
+# Mapping of continents to their geographic regions
+geographic_regions:
+  "North America":
+    countries:
+      - "United States"
+      - "Canada"
+      - "Mexico"
+    timezones:
+      - "America/New_York"
+      - "America/Chicago"
+      - "America/Denver"
+      - "America/Los_Angeles"
+      - "America/Toronto"
+      - "America/Mexico_City"
+  "Europe":
+    countries:
+      - "United Kingdom"
+      - "Germany"
+      - "France"
+      - "Italy"
+      - "Spain"
+      - "Netherlands"
+      - "Belgium"
+      - "Sweden"
+      - "Norway"
+      - "Denmark"
+      - "Finland"
+      - "Poland"
+      - "Czech Republic"
+      - "Austria"
+      - "Switzerland"
+      - "Portugal"
+      - "Ireland"
+    timezones:
+      - "Europe/London"
+      - "Europe/Berlin"
+      - "Europe/Paris"
+      - "Europe/Rome"
+      - "Europe/Madrid"
+      - "Europe/Amsterdam"
+      - "Europe/Stockholm"
+      - "Europe/Oslo"
+      - "Europe/Copenhagen"
+      - "Europe/Helsinki"
+      - "Europe/Warsaw"
+      - "Europe/Prague"
+      - "Europe/Vienna"
+      - "Europe/Zurich"
+      - "Europe/Lisbon"
+      - "Europe/Dublin"
+  "Asia Pacific":
+    countries:
+      - "China"
+      - "Japan"
+      - "South Korea"
+      - "India"
+      - "Singapore"
+      - "Australia"
+      - "New Zealand"
+      - "Thailand"
+      - "Malaysia"
+      - "Indonesia"
+      - "Philippines"
+      - "Vietnam"
+      - "Taiwan"
+      - "Hong Kong"
+    timezones:
+      - "Asia/Shanghai"
+      - "Asia/Tokyo"
+      - "Asia/Seoul"
+      - "Asia/Kolkata"
+      - "Asia/Singapore"
+      - "Australia/Sydney"
+      - "Pacific/Auckland"
+      - "Asia/Bangkok"
+      - "Asia/Kuala_Lumpur"
+      - "Asia/Jakarta"
+      - "Asia/Manila"
+      - "Asia/Ho_Chi_Minh"
+      - "Asia/Taipei"
+      - "Asia/Hong_Kong"
+  "South America":
+    countries:
+      - "Brazil"
+      - "Argentina"
+      - "Chile"
+      - "Colombia"
+      - "Peru"
+      - "Venezuela"
+      - "Ecuador"
+      - "Bolivia"
+      - "Paraguay"
+      - "Uruguay"
+    timezones:
+      - "America/Sao_Paulo"
+      - "America/Buenos_Aires"
+      - "America/Santiago"
+      - "America/Bogota"
+      - "America/Lima"
+      - "America/Caracas"
+      - "America/Guayaquil"
+      - "America/La_Paz"
+      - "America/Asuncion"
+      - "America/Montevideo"
+  "Africa":
+    countries:
+      - "South Africa"
+      - "Nigeria"
+      - "Kenya"
+      - "Egypt"
+      - "Morocco"
+      - "Ghana"
+      - "Ethiopia"
+      - "Tanzania"
+      - "Uganda"
+      - "Algeria"
+    timezones:
+      - "Africa/Johannesburg"
+      - "Africa/Lagos"
+      - "Africa/Nairobi"
+      - "Africa/Cairo"
+      - "Africa/Casablanca"
+      - "Africa/Accra"
+      - "Africa/Addis_Ababa"
+      - "Africa/Dar_es_Salaam"
+      - "Africa/Kampala"
+      - "Africa/Algiers"
+  "Oceania":
+    countries:
+      - "Australia"
+      - "New Zealand"
+      - "Fiji"
+      - "Papua New Guinea"
+      - "Samoa"
+      - "Tonga"
+      - "Vanuatu"
+      - "Solomon Islands"
+    timezones:
+      - "Australia/Sydney"
+      - "Australia/Melbourne"
+      - "Australia/Brisbane"
+      - "Australia/Perth"
+      - "Pacific/Auckland"
+      - "Pacific/Fiji"
+      - "Pacific/Port_Moresby"
+      - "Pacific/Apia"
+      - "Pacific/Tongatapu"
+      - "Pacific/Efate"
+      - "Pacific/Guadalcanal"
+
+# Performance Thresholds
+# Thresholds for routing decisions
+performance_thresholds:
+  excellent_latency_ms: 500
+  good_latency_ms: 1000
+  acceptable_latency_ms: 2000
+  poor_latency_ms: 5000
+  minimum_success_rate: 0.80
+  preferred_success_rate: 0.95
+  maximum_jitter_ms: 200
+  connection_timeout_ms: 5000
+  request_timeout_ms: 10000

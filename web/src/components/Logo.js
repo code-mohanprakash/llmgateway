@@ -58,8 +58,8 @@ const Logo = ({
         <h1 className={`font-bold tracking-tight whitespace-nowrap ${textSizes[size]} ${
           variant === 'white' ? 'text-white' : ''
         }`}>
-          <span className={variant === 'white' ? 'text-white' : 'text-[#9B5967] drop-shadow-sm'}>Model</span>
-          <span className={variant === 'white' ? 'text-white' : 'text-black drop-shadow-sm'}> Bridge</span>
+          <span className={variant === 'white' ? 'text-white' : 'bg-gradient-to-r from-black via-gray-800 to-green-800 bg-clip-text text-transparent drop-shadow-sm'}>Model</span>
+          <span className={variant === 'white' ? 'text-white' : 'bg-gradient-to-r from-green-800 via-gray-800 to-black bg-clip-text text-transparent drop-shadow-sm'}> Bridge</span>
         </h1>
       )}
     </div>

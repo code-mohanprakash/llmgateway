@@ -655,46 +655,46 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
   const [billingCycle, setBillingCycle] = <span class="cstat-no" title="statement not covered" >useState('monthly');</span>
 &nbsp;
   const pricingTiers = <span class="cstat-no" title="statement not covered" >{</span>
-    free: {
-      name: 'Free',
-      price: { monthly: 0, yearly: 0 },
-      description: 'Perfect for getting started and testing',
+    basic: {
+      name: 'Basic',
+      price: { monthly: 'Custom', yearly: 'Custom' },
+      description: 'Perfect for smaller teams and startups',
       features: [
-        { text: '1,000 tokens per month', included: true },
-        { text: 'Basic models only (Ollama)', included: true },
-        { text: 'Community support', included: true },
-        { text: 'Basic analytics', included: true },
-        { text: 'API access', included: true },
-        { text: 'Premium models', included: false },
-        { text: 'API keys', included: false },
-        { text: 'Team features', included: false },
-        { text: 'Priority routing', included: false },
-        { text: 'Advanced analytics', included: false },
-        { text: 'Email support', included: false },
-        { text: 'White-label options', included: false }
-      ],
-      cta: 'Get Started Free',
-      popular: false
-    },
-    pro: {
-      name: 'Pro',
-      price: { monthly: 29, yearly: 290 },
-      description: 'For developers and small teams',
-      features: [
-        { text: '100,000 tokens per month', included: true },
-        { text: 'All models (50+ providers)', included: true },
+        { text: '50,000 tokens per month', included: true },
+        { text: 'Core models (OpenAI, Anthropic, Google)', included: true },
         { text: 'API keys', included: true },
-        { text: 'Priority routing', included: true },
-        { text: 'Advanced analytics', included: true },
+        { text: 'Basic analytics', included: true },
         { text: 'Email support', included: true },
-        { text: '15% platform fee', included: true },
+        { text: '20% platform fee', included: true },
+        { text: 'Advanced routing', included: false },
         { text: 'Team management', included: false },
         { text: 'Custom integrations', included: false },
         { text: 'White-label options', included: false },
         { text: 'Dedicated support', included: false },
         { text: 'SLA guarantee', included: false }
       ],
-      cta: 'Start Pro Trial',
+      cta: 'Contact Sales',
+      popular: false
+    },
+    pro: {
+      name: 'Pro',
+      price: { monthly: 'Custom', yearly: 'Custom' },
+      description: 'For mid-market teams and growing companies',
+      features: [
+        { text: '500,000 tokens per month', included: true },
+        { text: 'All models (50+ providers)', included: true },
+        { text: 'Advanced routing &amp; load balancing', included: true },
+        { text: 'Team management (up to 10 users)', included: true },
+        { text: 'Advanced analytics &amp; insights', included: true },
+        { text: 'Priority support', included: true },
+        { text: '15% platform fee', included: true },
+        { text: 'Custom integrations', included: false },
+        { text: 'White-label options', included: false },
+        { text: 'Dedicated support', included: false },
+        { text: 'SLA guarantee', included: false },
+        { text: 'On-premise deployment', included: false }
+      ],
+      cta: 'Contact Sales',
       popular: true
     },
     enterprise: {
@@ -704,7 +704,8 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
       features: [
         { text: 'Unlimited tokens', included: true },
         { text: 'All models (50+ providers)', included: true },
-        { text: 'Team management', included: true },
+        { text: 'Advanced routing &amp; load balancing', included: true },
+        { text: 'Unlimited team management', included: true },
         { text: 'Custom integrations', included: true },
         { text: 'White-label options', included: true },
         { text: 'Dedicated support', included: true },
@@ -712,8 +713,7 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
         { text: '10% platform fee', included: true },
         { text: 'Custom billing', included: true },
         { text: 'On-premise deployment', included: true },
-        { text: 'Security audit', included: true },
-        { text: 'Training &amp; onboarding', included: true }
+        { text: 'Security audit &amp; compliance', included: true }
       ],
       cta: 'Contact Sales',
       popular: false
@@ -759,7 +759,7 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
             &lt;button
               onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}</span>
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                billingCycle === 'yearly' ? 'bg-[#9B5967]' : 'bg-gray-200'
+                billingCycle === 'yearly' ? 'bg-[#000000]' : 'bg-gray-200'
               }`}
             &gt;
               &lt;span
@@ -784,13 +784,13 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
               key={tierKey}
               className={`relative bg-white rounded-2xl shadow-lg border-2 transition-all duration-300 hover:shadow-xl ${
                 tier.popular
-                  ? 'border-[#9B5967] scale-105'
+                  ? 'border-[#000000] scale-105'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             &gt;
               {tier.popular &amp;&amp; (
                 &lt;div className="absolute -top-4 left-1/2 transform -translate-x-1/2"&gt;
-                  &lt;span className="bg-[#9B5967] text-white px-4 py-1 rounded-full text-sm font-medium"&gt;
+                  &lt;span className="bg-[#000000] text-white px-4 py-1 rounded-full text-sm font-medium"&gt;
                     Most Popular
                   &lt;/span&gt;
                 &lt;/div&gt;
@@ -801,7 +801,7 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
                   &lt;h3 className="text-2xl font-bold text-gray-900 mb-2"&gt;{tier.name}&lt;/h3&gt;
                   &lt;p className="text-gray-600 mb-4"&gt;{tier.description}&lt;/p&gt;
                   &lt;div className="mb-2"&gt;
-                    &lt;span className="text-4xl font-bold text-[#9B5967]"&gt;{getPrice(tier)}&lt;/span&gt;
+                    &lt;span className="text-4xl font-bold text-[#000000]"&gt;{getPrice(tier)}&lt;/span&gt;
                   &lt;/div&gt;
                   {getSavings(tier) &amp;&amp; (
                     &lt;span className="text-sm text-green-600 font-medium"&gt;{getSavings(tier)}&lt;/span&gt;
@@ -826,7 +826,7 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
                 &lt;button
                   className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${
                     tier.popular
-                      ? 'bg-[#9B5967] hover:bg-[#8a4d5a] text-white shadow-lg'
+                      ? 'bg-[#000000] hover:bg-[#14213d] text-white shadow-lg'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                   }`}
                 &gt;
@@ -842,13 +842,13 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
           {/* Platform Fees */}
           &lt;div className="bg-white rounded-xl p-6 shadow-sm"&gt;
             &lt;h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center"&gt;
-              &lt;CpuChipIcon className="h-6 w-6 text-[#9B5967] mr-2" /&gt;
+              &lt;CpuChipIcon className="h-6 w-6 text-[#000000] mr-2" /&gt;
               Platform Fees
             &lt;/h3&gt;
             &lt;div className="space-y-3"&gt;
               &lt;div className="flex justify-between"&gt;
-                &lt;span className="text-gray-600"&gt;Free Tier&lt;/span&gt;
-                &lt;span className="font-semibold"&gt;0% markup&lt;/span&gt;
+                &lt;span className="text-gray-600"&gt;Basic Tier&lt;/span&gt;
+                &lt;span className="font-semibold"&gt;20% markup&lt;/span&gt;
               &lt;/div&gt;
               &lt;div className="flex justify-between"&gt;
                 &lt;span className="text-gray-600"&gt;Pro Tier&lt;/span&gt;
@@ -867,7 +867,7 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
           {/* Value Proposition */}
           &lt;div className="bg-white rounded-xl p-6 shadow-sm"&gt;
             &lt;h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center"&gt;
-              &lt;SparklesIcon className="h-6 w-6 text-[#9B5967] mr-2" /&gt;
+              &lt;SparklesIcon className="h-6 w-6 text-[#000000] mr-2" /&gt;
               What You Get
             &lt;/h3&gt;
             &lt;div className="space-y-3"&gt;
@@ -912,14 +912,14 @@ const Pricing = <span class="cstat-no" title="statement not covered" ><span clas
             &lt;div className="bg-white rounded-xl p-6 shadow-sm"&gt;
               &lt;h3 className="font-semibold text-gray-900 mb-2"&gt;What happens if I exceed my token limit?&lt;/h3&gt;
               &lt;p className="text-gray-600 text-sm"&gt;
-                For Free and Pro plans, you'll be notified when approaching your limit. You can upgrade 
-                or wait for the next billing cycle. Enterprise plans have unlimited usage.
+                For Basic and Pro plans, you'll be notified when approaching your limit. You can upgrade 
+                or contact our sales team to discuss options. Enterprise plans have unlimited usage.
               &lt;/p&gt;
             &lt;/div&gt;
             &lt;div className="bg-white rounded-xl p-6 shadow-sm"&gt;
               &lt;h3 className="font-semibold text-gray-900 mb-2"&gt;Do you offer refunds?&lt;/h3&gt;
               &lt;p className="text-gray-600 text-sm"&gt;
-                We offer a 30-day money-back guarantee for Pro and Enterprise plans. If you're not satisfied, 
+                We offer a 30-day money-back guarantee for all plans. If you're not satisfied, 
                 contact our support team for a full refund.
               &lt;/p&gt;
             &lt;/div&gt;
@@ -937,7 +937,7 @@ export default Pricing;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T20:19:07.019Z
+                at 2025-07-19T01:41:57.158Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

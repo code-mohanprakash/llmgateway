@@ -38,25 +38,140 @@ class OpenAIProvider(BaseModelProvider):
     def _get_default_models(self) -> Dict[str, Any]:
         """Get default OpenAI model configurations"""
         return {
+            # GPT-4o Series (Latest)
             "gpt-4o": {
                 "context_length": 128000,
                 "cost_per_1k_tokens": 0.015,
-                "max_output_tokens": 4096
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "medium",
+                "reasoning": "excellent"
             },
             "gpt-4o-mini": {
                 "context_length": 128000,
                 "cost_per_1k_tokens": 0.00015,
-                "max_output_tokens": 16384
+                "max_output_tokens": 16384,
+                "category": "small",
+                "speed": "fastest",
+                "reasoning": "basic"
             },
+            
+            # GPT-4 Turbo Series
             "gpt-4-turbo": {
                 "context_length": 128000,
                 "cost_per_1k_tokens": 0.01,
-                "max_output_tokens": 4096
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "medium",
+                "reasoning": "excellent"
             },
+            "gpt-4-turbo-preview": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.01,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "medium",
+                "reasoning": "excellent"
+            },
+            "gpt-4-1106-preview": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.01,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "medium",
+                "reasoning": "excellent"
+            },
+            "gpt-4-0613": {
+                "context_length": 8192,
+                "cost_per_1k_tokens": 0.03,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "slow",
+                "reasoning": "excellent"
+            },
+            "gpt-4-0314": {
+                "context_length": 8192,
+                "cost_per_1k_tokens": 0.03,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "slow",
+                "reasoning": "excellent"
+            },
+            "gpt-4": {
+                "context_length": 8192,
+                "cost_per_1k_tokens": 0.03,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "slow",
+                "reasoning": "excellent"
+            },
+            
+            # GPT-3.5 Turbo Series
             "gpt-3.5-turbo": {
                 "context_length": 16385,
                 "cost_per_1k_tokens": 0.002,
-                "max_output_tokens": 4096
+                "max_output_tokens": 4096,
+                "category": "small",
+                "speed": "fast",
+                "reasoning": "basic"
+            },
+            "gpt-3.5-turbo-16k": {
+                "context_length": 16385,
+                "cost_per_1k_tokens": 0.004,
+                "max_output_tokens": 4096,
+                "category": "small",
+                "speed": "fast",
+                "reasoning": "basic"
+            },
+            "gpt-3.5-turbo-0613": {
+                "context_length": 4096,
+                "cost_per_1k_tokens": 0.002,
+                "max_output_tokens": 4096,
+                "category": "small",
+                "speed": "fast",
+                "reasoning": "basic"
+            },
+            "gpt-3.5-turbo-0301": {
+                "context_length": 4096,
+                "cost_per_1k_tokens": 0.002,
+                "max_output_tokens": 4096,
+                "category": "small",
+                "speed": "fast",
+                "reasoning": "basic"
+            },
+            
+            # Legacy Models
+            "text-davinci-003": {
+                "context_length": 4097,
+                "cost_per_1k_tokens": 0.02,
+                "max_output_tokens": 4096,
+                "category": "large",
+                "speed": "slow",
+                "reasoning": "good"
+            },
+            "text-curie-001": {
+                "context_length": 2049,
+                "cost_per_1k_tokens": 0.002,
+                "max_output_tokens": 2048,
+                "category": "medium",
+                "speed": "medium",
+                "reasoning": "basic"
+            },
+            "text-babbage-001": {
+                "context_length": 2049,
+                "cost_per_1k_tokens": 0.0005,
+                "max_output_tokens": 2048,
+                "category": "small",
+                "speed": "fast",
+                "reasoning": "basic"
+            },
+            "text-ada-001": {
+                "context_length": 2049,
+                "cost_per_1k_tokens": 0.0004,
+                "max_output_tokens": 2048,
+                "category": "small",
+                "speed": "fastest",
+                "reasoning": "basic"
             }
         }
     
@@ -70,11 +185,14 @@ class OpenAIProvider(BaseModelProvider):
             ]
             
             # Add function calling for newer models
-            if model_id in ["gpt-4", "gpt-4-turbo", "gpt-4o", "gpt-3.5-turbo"]:
+            if model_id in ["gpt-4", "gpt-4-turbo", "gpt-4-turbo-preview", "gpt-4-1106-preview", 
+                           "gpt-4-0613", "gpt-4-0314", "gpt-4o", "gpt-4o-mini", 
+                           "gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-0301"]:
                 capabilities.append(ModelCapability.FUNCTION_CALLING)
             
             # Add vision for vision-capable models
-            if model_id in ["gpt-4-turbo", "gpt-4o"]:
+            if model_id in ["gpt-4-turbo", "gpt-4-turbo-preview", "gpt-4-1106-preview", 
+                           "gpt-4-0613", "gpt-4-0314", "gpt-4", "gpt-4o", "gpt-4o-mini"]:
                 capabilities.append(ModelCapability.VISION)
             
             self._models_metadata[model_id] = ModelMetadata(

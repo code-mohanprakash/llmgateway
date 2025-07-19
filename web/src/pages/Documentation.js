@@ -76,7 +76,7 @@ const Documentation = () => {
           onClick={() => onLanguageChange(lang.key)}
           className={`px-4 py-2 text-sm font-medium transition-colors ${
             activeLanguage === lang.key
-              ? 'border-b-2 border-[#9B5967] text-[#9B5967]'
+              ? 'border-b-2 border-[#000000] text-[#000000]'
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
@@ -91,68 +91,48 @@ const Documentation = () => {
       python: `from model_bridge import ModelBridge
 
 # Initialize the client
-client = ModelBridge(
-    api_key="YOUR_API_KEY",
-    base_url="https://api.modelbridge.com/v1"
+client = ModelBridge(api_key="YOUR_API_KEY")
+
+# Make your first request with intelligent routing
+response = await client.generate_text(
+    prompt="Hello! How are you?",
+    model="balanced"  # Let the router choose the best model
 )
 
-# Make your first request
-response = client.chat.completions.create(
-    model="gpt-4",
-    messages=[
-        {"role": "user", "content": "Hello! How are you?"}
-    ]
-)
-
-print(response.choices[0].message.content)`,
+print(response.content)`,
       
       typescript: `import { ModelBridge } from '@model-bridge/client';
 
 // Initialize the client
-const client = new ModelBridge({
-  apiKey: 'YOUR_API_KEY',
-  baseURL: 'https://api.modelbridge.com/v1'
+const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
+
+// Make your first request with intelligent routing
+const response = await client.generateText({
+  prompt: 'Hello! How are you?',
+  model: 'balanced'  // Let the router choose the best model
 });
 
-// Make your first request
-const response = await client.chat.completions.create({
-  model: 'gpt-4',
-  messages: [
-    { role: 'user', content: 'Hello! How are you?' }
-  ]
-});
-
-console.log(response.choices[0].message.content);`,
+console.log(response.content);`,
       
       javascript: `import { ModelBridge } from '@model-bridge/client';
 
 // Initialize the client
-const client = new ModelBridge({
-  apiKey: 'YOUR_API_KEY',
-  baseURL: 'https://api.modelbridge.com/v1'
+const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
+
+// Make your first request with intelligent routing
+const response = await client.generateText({
+  prompt: 'Hello! How are you?',
+  model: 'balanced'  // Let the router choose the best model
 });
 
-// Make your first request
-const response = await client.chat.completions.create({
-  model: 'gpt-4',
-  messages: [
-    { role: 'user', content: 'Hello! How are you?' }
-  ]
-});
-
-console.log(response.choices[0].message.content);`,
+console.log(response.content);`,
       
-      curl: `curl -X POST "https://api.modelbridge.com/v1/chat/completions" \\
+      curl: `curl -X POST "https://api.modelbridge.com/v1/llm/completion" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "model": "gpt-4",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Hello! How are you?"
-      }
-    ]
+    "prompt": "Hello! How are you?",
+    "model": "balanced"
   }'`
     },
     
@@ -210,30 +190,28 @@ curl -X POST "https://api.modelbridge.com/v1/chat/completions" \\
 client = ModelBridge(api_key="YOUR_API_KEY")
 
 # Stream the response
-stream = client.chat.completions.create(
-    model="gpt-4",
-    messages=[{"role": "user", "content": "Tell me a story"}],
+async for chunk in client.generate_text(
+    prompt="Tell me a story",
+    model="fastest",
     stream=True
-)
-
-for chunk in stream:
-    if chunk.choices[0].delta.content:
-        print(chunk.choices[0].delta.content, end='')`,
+):
+    if chunk.content:
+        print(chunk.content, end='')`,
       
       typescript: `import { ModelBridge } from '@model-bridge/client';
 
 const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
 
 // Stream the response
-const stream = await client.chat.completions.create({
-  model: 'gpt-4',
-  messages: [{ role: 'user', content: 'Tell me a story' }],
+const stream = await client.generateText({
+  prompt: 'Tell me a story',
+  model: 'fastest',
   stream: true
 });
 
 for await (const chunk of stream) {
-  if (chunk.choices[0].delta.content) {
-    process.stdout.write(chunk.choices[0].delta.content);
+  if (chunk.content) {
+    process.stdout.write(chunk.content);
   }
 }`,
       
@@ -242,75 +220,133 @@ for await (const chunk of stream) {
 const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
 
 // Stream the response
-const stream = await client.chat.completions.create({
-  model: 'gpt-4',
-  messages: [{ role: 'user', content: 'Tell me a story' }],
+const stream = await client.generateText({
+  prompt: 'Tell me a story',
+  model: 'fastest',
   stream: true
 });
 
 for await (const chunk of stream) {
-  if (chunk.choices[0].delta.content) {
-    process.stdout.write(chunk.choices[0].delta.content);
+  if (chunk.content) {
+    process.stdout.write(chunk.content);
   }
 }`,
       
-      curl: `curl -X POST "https://api.modelbridge.com/v1/chat/completions" \\
+      curl: `curl -X POST "https://api.modelbridge.com/v1/llm/completion" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "model": "gpt-4",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Tell me a story"
-      }
-    ],
+    "prompt": "Tell me a story",
+    "model": "fastest",
     "stream": true
   }'`
     },
     
     models: {
+      python: "from model_bridge import ModelBridge\n\nclient = ModelBridge(api_key=\"YOUR_API_KEY\")\n\n# List available models\nmodels = await client.get_models()\nfor model in models:\n    print(f\"Model: {model['model_id']}\")\n    print(f\"Provider: {model['provider_name']}\")\n    print(f\"Context Length: {model['context_length']}\")\n    print(f\"Cost: ${model['cost_per_1k_tokens']}/1K tokens\")\n    print(\"---\")",
+      
+      typescript: "import { ModelBridge } from '@model-bridge/client';\n\nconst client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });\n\n// List available models\nconst models = await client.getModels();\nfor (const model of models) {\n  console.log(`Model: \\${model.model_id}`);\n  console.log(`Provider: \\${model.provider_name}`);\n  console.log(`Context: \\${model.context_length}`);\n  console.log(`Cost: $\\${model.cost_per_1k_tokens}/1K tokens`);\n  console.log('---');\n}",
+      
+      javascript: "import { ModelBridge } from '@model-bridge/client';\n\nconst client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });\n\n// List available models\nconst models = await client.getModels();\nfor (const model of models) {\n  console.log(`Model: \\${model.model_id}`);\n  console.log(`Provider: \\${model.provider_name}`);\n  console.log(`Context: \\${model.context_length}`);\n  console.log(`Cost: $\\${model.cost_per_1k_tokens}/1K tokens`);\n  console.log('---');\n}",
+      
+      curl: `curl -X GET "https://api.modelbridge.com/v1/llm/models" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`
+
+    },
+    
+    intelligent_routing: {
       python: `from model_bridge import ModelBridge
 
 client = ModelBridge(api_key="YOUR_API_KEY")
 
-# List available models
-models = client.models.list()
-for model in models.data:
-    print(f"Model: {model.id}")
-    print(f"Provider: {model.provider}")
-    print(f"Context Length: {model.context_length}")
-    print("---")`,
+# Use intelligent routing with model aliases
+response1 = await client.generate_text(
+    prompt="Quick summary of this text",
+    model="fastest"  # Router picks fastest available model
+)
+
+# Use task-based routing
+response2 = await client.generate_text(
+    prompt="Analyze this complex report",
+    model="critique",  # Router picks best model for analysis
+    task_type="critique",
+    complexity="complex"
+)
+
+# Use specific model
+response3 = await client.generate_text(
+    prompt="Write creative content",
+    model="openai:gpt-4o"  # Use specific OpenAI model
+)`,
       
       typescript: `import { ModelBridge } from '@model-bridge/client';
 
 const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
 
-// List available models
-const models = await client.models.list();
-for (const model of models.data) {
-  console.log(\`Model: \${model.id}\`);
-  console.log(\`Provider: \${model.provider}\`);
-  console.log(\`Context: \${model.context_length}\`);
-  console.log('---');
-}`,
+// Use intelligent routing with model aliases
+const response1 = await client.generateText({
+  prompt: 'Quick summary of this text',
+  model: 'fastest'  // Router picks fastest available model
+});
+
+// Use task-based routing
+const response2 = await client.generateText({
+  prompt: 'Analyze this complex report',
+  model: 'critique',  // Router picks best model for analysis
+  taskType: 'critique',
+  complexity: 'complex'
+});
+
+// Use specific model
+const response3 = await client.generateText({
+  prompt: 'Write creative content',
+  model: 'openai:gpt-4o'  // Use specific OpenAI model
+});`,
       
       javascript: `import { ModelBridge } from '@model-bridge/client';
 
 const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
 
-// List available models
-const models = await client.models.list();
-for (const model of models.data) {
-  console.log(\`Model: \${model.id}\`);
-  console.log(\`Provider: \${model.provider}\`);
-  console.log(\`Context: \${model.context_length}\`);
-  console.log('---');
-}`,
+// Use intelligent routing with model aliases
+const response1 = await client.generateText({
+  prompt: 'Quick summary of this text',
+  model: 'fastest'  // Router picks fastest available model
+});
+
+// Use task-based routing
+const response2 = await client.generateText({
+  prompt: 'Analyze this complex report',
+  model: 'critique',  // Router picks best model for analysis
+  taskType: 'critique',
+  complexity: 'complex'
+});
+
+// Use specific model
+const response3 = await client.generateText({
+  prompt: 'Write creative content',
+  model: 'openai:gpt-4o'  // Use specific OpenAI model
+});`,
       
-      curl: `curl -X GET "https://api.modelbridge.com/v1/models" \\
+      curl: `# Use intelligent routing
+curl -X POST "https://api.modelbridge.com/v1/llm/completion" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`
+  -H "Content-Type: application/json" \\
+  -d '{
+    "prompt": "Quick summary of this text",
+    "model": "fastest"
+  }'
+
+# Use task-based routing
+curl -X POST "https://api.modelbridge.com/v1/llm/completion" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "prompt": "Analyze this complex report",
+    "model": "critique",
+    "task_type": "critique",
+    "complexity": "complex"
+  }'`
 
     },
     
@@ -330,14 +366,13 @@ schema = {
     }
 }
 
-response = client.chat.completions.create(
-    model="gpt-4",
-    messages=[{"role": "user", "content": "Extract John's information: John is 25 years old and lives in New York."}],
-    response_format={"type": "json_object"},
-    tools=[{"type": "function", "function": {"name": "extract_info", "parameters": schema}}]
+response = await client.generate_structured_output(
+    prompt="Extract John's information: John is 25 years old and lives in New York.",
+    schema=schema,
+    model="balanced"
 )
 
-print(json.loads(response.choices[0].message.content))`,
+print(json.loads(response.content))`,
       
       typescript: `import { ModelBridge } from '@model-bridge/client';
 
@@ -353,14 +388,13 @@ const schema = {
   }
 };
 
-const response = await client.chat.completions.create({
-  model: 'gpt-4',
-  messages: [{ role: 'user', content: 'Extract John\'s information: John is 25 years old and lives in New York.' }],
-  response_format: { type: 'json_object' },
-  tools: [{ type: 'function', function: { name: 'extract_info', parameters: schema } }]
+const response = await client.generateStructuredOutput({
+  prompt: 'Extract John\'s information: John is 25 years old and lives in New York.',
+  schema: schema,
+  model: 'balanced'
 });
 
-console.log(JSON.parse(response.choices[0].message.content));`,
+console.log(JSON.parse(response.content));`,
       
       javascript: `import { ModelBridge } from '@model-bridge/client';
 
@@ -376,43 +410,28 @@ const schema = {
   }
 };
 
-const response = await client.chat.completions.create({
-  model: 'gpt-4',
-  messages: [{ role: 'user', content: 'Extract John\'s information: John is 25 years old and lives in New York.' }],
-  response_format: { type: 'json_object' },
-  tools: [{ type: 'function', function: { name: 'extract_info', parameters: schema } }]
+const response = await client.generateStructuredOutput({
+  prompt: 'Extract John\'s information: John is 25 years old and lives in New York.',
+  schema: schema,
+  model: 'balanced'
 });
 
-console.log(JSON.parse(response.choices[0].message.content));`,
+console.log(JSON.parse(response.content));`,
       
-             curl: `curl -X POST "https://api.modelbridge.com/v1/chat/completions" \\
+             curl: `curl -X POST "https://api.modelbridge.com/v1/llm/structured-output" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "model": "gpt-4",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Extract John information: John is 25 years old and lives in New York."
+    "prompt": "Extract John information: John is 25 years old and lives in New York.",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "age": {"type": "integer"},
+        "city": {"type": "string"}
       }
-    ],
-    "response_format": {"type": "json_object"},
-    "tools": [
-      {
-        "type": "function",
-        "function": {
-          "name": "extract_info",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "name": {"type": "string"},
-              "age": {"type": "integer"},
-              "city": {"type": "string"}
-            }
-          }
-        }
-      }
-    ]
+    },
+    "model": "balanced"
   }'`
     },
     
@@ -423,11 +442,11 @@ from model_bridge.errors import ModelBridgeError, RateLimitError
 client = ModelBridge(api_key="YOUR_API_KEY")
 
 try:
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": "Hello!"}]
+    response = await client.generate_text(
+        prompt="Hello!",
+        model="balanced"
     )
-    print(response.choices[0].message.content)
+    print(response.content)
     
 except RateLimitError as e:
     print(f"Rate limit exceeded: {e}")
@@ -446,21 +465,21 @@ except Exception as e:
 const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
 
 try {
-  const response = await client.chat.completions.create({
-    model: 'gpt-4',
-    messages: [{ role: 'user', content: 'Hello!' }]
+  const response = await client.generateText({
+    prompt: 'Hello!',
+    model: 'balanced'
   });
-  console.log(response.choices[0].message.content);
+  console.log(response.content);
   
 } catch (error) {
   if (error instanceof RateLimitError) {
-    console.log(\`Rate limit exceeded: \${error}\`);
+    console.log(\`Rate limit exceeded: \$\{error\}\`);
     // Wait and retry
     await new Promise(resolve => setTimeout(resolve, error.retryAfter * 1000));
   } else if (error instanceof ModelBridgeError) {
-    console.log(\`API error: \${error}\`);
+    console.log(\`API error: \$\{error\}\`);
   } else {
-    console.log(\`Unexpected error: \${error}\`);
+    console.log(\`Unexpected error: \$\{error\}\`);
   }
 }`,
       
@@ -469,40 +488,35 @@ try {
 const client = new ModelBridge({ apiKey: 'YOUR_API_KEY' });
 
 try {
-  const response = await client.chat.completions.create({
-    model: 'gpt-4',
-    messages: [{ role: 'user', content: 'Hello!' }]
+  const response = await client.generateText({
+    prompt: 'Hello!',
+    model: 'balanced'
   });
-  console.log(response.choices[0].message.content);
+  console.log(response.content);
   
 } catch (error) {
   if (error instanceof RateLimitError) {
-    console.log(\`Rate limit exceeded: \${error}\`);
+    console.log(\`Rate limit exceeded: \$\{error\}\`);
     // Wait and retry
     await new Promise(resolve => setTimeout(resolve, error.retryAfter * 1000));
   } else if (error instanceof ModelBridgeError) {
-    console.log(\`API error: \${error}\`);
+    console.log(\`API error: \$\{error\}\`);
   } else {
-    console.log(\`Unexpected error: \${error}\`);
+    console.log(\`Unexpected error: \$\{error\}\`);
   }
 }`,
       
       curl: `# Handle errors in curl
-response=$(curl -s -w "%{http_code}" -X POST "https://api.modelbridge.com/v1/chat/completions" \\
+response=$(curl -s -w "%{http_code}" -X POST "https://api.modelbridge.com/v1/llm/completion" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "model": "gpt-4",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Hello!"
-      }
-    ]
+    "prompt": "Hello!",
+    "model": "balanced"
   }')
 
-http_code="\${response: -3}"
-body="\${response%???}"
+http_code="\$\{response: -3\}"
+body="\$\{response%???\}"
 
 if [ "\$http_code" = "200" ]; then
     echo "Success: \$body"
@@ -523,6 +537,7 @@ fi`
     { id: 'quickstart', label: 'Quick Start', icon: PlayIcon },
     { id: 'authentication', label: 'Authentication', icon: KeyIcon },
     { id: 'models', label: 'Models', icon: CpuChipIcon },
+    { id: 'intelligent_routing', label: 'Intelligent Routing', icon: BoltIcon },
     { id: 'streaming', label: 'Streaming', icon: BoltIcon },
     { id: 'structured_output', label: 'Structured Output', icon: DocumentTextIcon },
     { id: 'error_handling', label: 'Error Handling', icon: ExclamationTriangleIcon }
@@ -533,8 +548,8 @@ fi`
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Get Started in Minutes</h2>
         <p className="text-gray-600 mb-6">
-          Model Bridge provides a unified API for accessing 50+ AI models from leading providers. 
-          Get started with a simple API call.
+          Model Bridge provides a unified API for accessing 80+ AI models from 12+ leading providers. 
+          Get started with intelligent routing and automatic model selection.
         </p>
       </div>
 
@@ -627,8 +642,8 @@ fi`
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Available Models</h2>
         <p className="text-gray-600 mb-6">
-          Model Bridge provides access to 50+ models from leading AI providers. Each model has different 
-          capabilities, pricing, and performance characteristics.
+          Model Bridge provides access to 80+ models from 12+ leading AI providers. Each model has different 
+          capabilities, pricing, and performance characteristics with intelligent routing for optimal cost and performance.
         </p>
       </div>
 
@@ -636,21 +651,48 @@ fi`
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <h3 className="font-semibold text-gray-900 mb-2">Model Categories</h3>
           <ul className="text-sm text-gray-600 space-y-1">
-            <li>• GPT-4 and GPT-3.5 (OpenAI)</li>
-            <li>• Claude 3 (Anthropic)</li>
-            <li>• Gemini (Google)</li>
-            <li>• Llama models (Meta)</li>
-            <li>• And many more...</li>
+            <li>• GPT-4o, GPT-4 Turbo, GPT-3.5 (OpenAI - 16 models)</li>
+            <li>• Claude 3.5, Claude 3, Claude 2 (Anthropic - 8 models)</li>
+            <li>• Gemini 1.5 Pro, Gemini Flash, Gemini Ultra (Google - 7 models)</li>
+            <li>• Groq, Together, Mistral, Cohere, Perplexity</li>
+            <li>• Ollama (Local), HuggingFace, DeepSeek, OpenRouter</li>
           </ul>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <h3 className="font-semibold text-gray-900 mb-2">Model Selection</h3>
           <ul className="text-sm text-gray-600 space-y-1">
-            <li>• Choose based on your use case</li>
-            <li>• Consider cost vs. performance</li>
-            <li>• Check context length limits</li>
-            <li>• Test different models</li>
+            <li>• Use model aliases: "fastest", "cheapest", "best", "balanced"</li>
+            <li>• Let intelligent router choose optimal model</li>
+            <li>• Specify exact model: "openai:gpt-4o"</li>
+            <li>• Task-based routing: "triage", "critique", "refinement"</li>
           </ul>
+        </div>
+      </div>
+
+      {/* Intelligent Routing Section */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+        <div className="flex items-start">
+          <div className="flex-shrink-0">
+            <BoltIcon className="h-6 w-6 text-blue-600" />
+          </div>
+          <div className="ml-3">
+            <h3 className="text-lg font-semibold text-blue-800 mb-2">Intelligent Routing</h3>
+            <div className="text-sm text-blue-700 space-y-2">
+              <p><strong>Model Aliases:</strong> Use pre-configured routing strategies</p>
+              <ul className="ml-4 space-y-1">
+                <li>• <code className="bg-blue-100 px-1 rounded">"fastest"</code> - DeepSeek R1 → Groq → Ollama</li>
+                <li>• <code className="bg-blue-100 px-1 rounded">"cheapest"</code> - Ollama (free) → Google Gemini Flash</li>
+                <li>• <code className="bg-blue-100 px-1 rounded">"best"</code> - Claude 3 Opus → GPT-4 Turbo → Gemini Pro</li>
+                <li>• <code className="bg-blue-100 px-1 rounded">"balanced"</code> - Claude 3 Sonnet → GPT-4o → Gemini Pro</li>
+              </ul>
+              <p className="mt-3"><strong>Task-Based Routing:</strong> Automatic model selection based on task type</p>
+              <ul className="ml-4 space-y-1">
+                <li>• <code className="bg-blue-100 px-1 rounded">"triage"</code> - Fast classification tasks</li>
+                <li>• <code className="bg-blue-100 px-1 rounded">"critique"</code> - Complex analysis tasks</li>
+                <li>• <code className="bg-blue-100 px-1 rounded">"refinement"</code> - Content improvement tasks</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -664,6 +706,45 @@ fi`
         code={codeExamples.models[activeLanguage]} 
         language={activeLanguage}
         title="Listing Available Models"
+      />
+    </div>
+  );
+
+  const renderIntelligentRouting = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Intelligent Routing</h2>
+        <p className="text-gray-600 mb-6">
+          Model Bridge's intelligent router automatically selects the best model for your task, 
+          optimizing for cost, speed, and quality. No need to manually choose models!
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <h3 className="font-semibold text-green-900 mb-2">Model Aliases</h3>
+          <p className="text-sm text-green-700">Pre-configured routing strategies for common use cases</p>
+        </div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h3 className="font-semibold text-blue-900 mb-2">Task-Based Routing</h3>
+          <p className="text-sm text-blue-700">Automatic model selection based on task type and complexity</p>
+        </div>
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+          <h3 className="font-semibold text-purple-900 mb-2">Performance Learning</h3>
+          <p className="text-sm text-purple-700">Router learns from success rates and response times</p>
+        </div>
+      </div>
+
+      <LanguageTabs 
+        languages={languages} 
+        activeLanguage={activeLanguage} 
+        onLanguageChange={setActiveLanguage} 
+      />
+
+      <CodeBlock 
+        code={codeExamples.intelligent_routing[activeLanguage]} 
+        language={activeLanguage}
+        title="Intelligent Routing Examples"
       />
     </div>
   );
@@ -807,7 +888,7 @@ fi`
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                         activeTab === tab.id
-                          ? 'bg-[#9B5967] text-white'
+                          ? 'bg-[#000000] text-white'
                           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                       }`}
                     >
@@ -821,9 +902,9 @@ fi`
               <div className="mt-6 p-3 bg-white border border-gray-200 rounded-lg">
                 <h3 className="text-sm font-semibold text-gray-900 mb-2">Need Help?</h3>
                 <div className="space-y-1 text-sm text-gray-600">
-                  <p>• <a href="/pricing" className="text-[#9B5967] hover:underline">View Pricing</a></p>
-                  <p>• <a href="/models" className="text-[#9B5967] hover:underline">Browse Models</a></p>
-                  <p>• <a href="/register" className="text-[#9B5967] hover:underline">Get API Key</a></p>
+                  <p>• <a href="/pricing" className="text-[#000000] hover:underline">View Pricing</a></p>
+                  <p>• <a href="/models" className="text-[#000000] hover:underline">Browse Models</a></p>
+                  <p>• <a href="/register" className="text-[#000000] hover:underline">Get API Key</a></p>
                 </div>
               </div>
             </div>
@@ -835,6 +916,7 @@ fi`
               {activeTab === 'quickstart' && renderQuickStart()}
               {activeTab === 'authentication' && renderAuthentication()}
               {activeTab === 'models' && renderModels()}
+              {activeTab === 'intelligent_routing' && renderIntelligentRouting()}
               {activeTab === 'streaming' && renderStreaming()}
               {activeTab === 'structured_output' && renderStructuredOutput()}
               {activeTab === 'error_handling' && renderErrorHandling()}

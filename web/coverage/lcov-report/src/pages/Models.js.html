@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/60</span>
+                <span class='fraction'>0/66</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/55</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
@@ -344,7 +344,20 @@
 <a name='L279'></a><a href='#L279'>279</a>
 <a name='L280'></a><a href='#L280'>280</a>
 <a name='L281'></a><a href='#L281'>281</a>
-<a name='L282'></a><a href='#L282'>282</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -527,6 +540,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -681,10 +707,10 @@ const Models = <span class="cstat-no" title="statement not covered" ><span class
         ]
       });
 <span class="cstat-no" title="statement not covered" >      setStats({</span>
-        total_models: 50,
+        total_models: 80,
         total_providers: 10,
         free_models: 12,
-        paid_models: 38
+        paid_models: 68
       });
     } finally {
 <span class="cstat-no" title="statement not covered" >      setLoading(false);</span>
@@ -693,21 +719,21 @@ const Models = <span class="cstat-no" title="statement not covered" ><span class
 &nbsp;
   const getProviderIcon = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>rovider) =&gt; {</span>
     const icons = <span class="cstat-no" title="statement not covered" >{</span>
-      groq: '⚡',
-      'inference.net': '🧠',
-      'kluster.ai': '{K}',
-      openai: '🤖',
-      anthropic: '🧠',
-      google: '🔍',
-      together: '🤝',
-      mistral: '🌪️',
-      cohere: '💬',
-      perplexity: '🔮',
-      ollama: '🦙',
-      huggingface: '🤗',
-      deepseek: '🔍'
+      groq: `${process.env.PUBLIC_URL}/images/icons8-grok-48.png`,
+      'inference.net': `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      'kluster.ai': `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      openai: `${process.env.PUBLIC_URL}/images/openaiiconq.png`,
+      anthropic: `${process.env.PUBLIC_URL}/images/icons8-anthropic-48.png`,
+      google: `${process.env.PUBLIC_URL}/images/google-color.png`,
+      together: `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      mistral: `${process.env.PUBLIC_URL}/images/mistral-color.png`,
+      cohere: `${process.env.PUBLIC_URL}/images/cohere-color.png`,
+      perplexity: `${process.env.PUBLIC_URL}/images/deepseek-color.png`,
+      ollama: `${process.env.PUBLIC_URL}/images/ollama.png`,
+      huggingface: `${process.env.PUBLIC_URL}/images/meta-color.png`,
+      deepseek: `${process.env.PUBLIC_URL}/images/deepseek-color.png`
     };
-<span class="cstat-no" title="statement not covered" >    return icons[provider] || '🤖';</span>
+<span class="cstat-no" title="statement not covered" >    return icons[provider] || `${process.env.PUBLIC_URL}/images/openai.png`;</span>
   };
 &nbsp;
   const formatCost = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>ost, isFree = <span class="branch-0 cbranch-no" title="branch not covered" >false)</span> =&gt; {</span>
@@ -762,7 +788,7 @@ const Models = <span class="cstat-no" title="statement not covered" ><span class
       &lt;div className="min-h-screen bg-white"&gt;
         &lt;Navigation /&gt;
         &lt;div className="flex items-center justify-center h-64"&gt;
-          &lt;div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-[#9B5967]"&gt;&lt;/div&gt;
+          &lt;div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-[#000000]"&gt;&lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
     );
@@ -793,7 +819,7 @@ const Models = <span class="cstat-no" title="statement not covered" ><span class
                 placeholder="Search models or providers..."
                 value={searchTerm}
                 onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setSearchTerm(e.target.value)}</span>
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#9B5967] focus:border-transparent transition-all duration-200 bg-white"
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#000000] focus:border-transparent transition-all duration-200 bg-white"
               /&gt;
             &lt;/div&gt;
           &lt;/div&gt;
@@ -808,8 +834,21 @@ const Models = <span class="cstat-no" title="statement not covered" ><span class
                 &lt;div key={provider} className="space-y-6"&gt;
                   {/* Provider Header */}
                   &lt;div className="flex items-center space-x-4"&gt;
-                    &lt;div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-white text-lg font-bold"&gt;
-                      {getProviderIcon(provider)}
+                    &lt;div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200 shadow-sm"&gt;
+                      &lt;img 
+                        src={getProviderIcon(provider)} 
+                        alt={`${provider} logo`}
+                        className="w-6 h-6 object-contain"
+                        onError={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="cstat-no" title="statement not covered" >                          console.log(`Failed to load icon for ${provider}:`, getProviderIcon(provider));</span>
+<span class="cstat-no" title="statement not covered" >                          e.target.style.display = 'none';</span>
+                          // Show fallback text
+                          const fallback = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
+<span class="cstat-no" title="statement not covered" >                          fallback.textContent = provider.charAt(0).toUpperCase();</span>
+<span class="cstat-no" title="statement not covered" >                          fallback.className = 'text-gray-600 font-bold text-lg';</span>
+<span class="cstat-no" title="statement not covered" >                          e.target.parentNode.appendChild(fallback);</span>
+                        }}
+                      /&gt;
                     &lt;/div&gt;
                     &lt;div className="flex items-center space-x-3"&gt;
                       &lt;h2 className="text-2xl font-bold text-gray-900 capitalize"&gt;
@@ -834,7 +873,7 @@ const Models = <span class="cstat-no" title="statement not covered" ><span class
                           {/* Copy Button */}
                           &lt;button
                             onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >copyModelId(model.model_id)}</span>
-                            className="absolute top-3 right-3 p-1 text-gray-400 hover:text-[#9B5967] transition-colors"
+                            className="absolute top-3 right-3 p-1 text-gray-400 hover:text-[#000000] transition-colors"
                           &gt;
                             &lt;ClipboardIcon className="h-4 w-4" /&gt;
                           &lt;/button&gt;
@@ -913,7 +952,7 @@ export default Models;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T20:19:07.019Z
+                at 2025-07-19T01:41:57.158Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

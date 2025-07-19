@@ -197,11 +197,11 @@ const Support = () => {
                 href={resource.href}
                 className="group border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-[#9B5967]/10 to-[#8a4d5a]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <resource.icon className="h-6 w-6 text-[#9B5967]" />
+                <div className="w-12 h-12 bg-gradient-to-br from-[#000000]/10 to-[#14213d]/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <resource.icon className="h-6 w-6 text-[#000000]" />
                 </div>
                 
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#9B5967] transition-colors duration-300">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#000000] transition-colors duration-300">
                   {resource.title}
                 </h3>
                 
@@ -227,7 +227,7 @@ const Support = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                     placeholder="Enter your first name"
                   />
                 </div>
@@ -235,7 +235,7 @@ const Support = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                     placeholder="Enter your last name"
                   />
                 </div>
@@ -245,14 +245,14 @@ const Support = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                   placeholder="Enter your email"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent">
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent">
                   <option>General Inquiry</option>
                   <option>Technical Support</option>
                   <option>Billing Question</option>
@@ -265,14 +265,14 @@ const Support = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                 <textarea
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9B5967] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#000000] focus:border-transparent"
                   placeholder="Describe your issue or question..."
                 />
               </div>
               
               <button
                 type="submit"
-                className="w-full bg-[#9B5967] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8a4d5a] transition-colors duration-200"
+                className="w-full bg-[#000000] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#14213d] transition-colors duration-200"
               >
                 Send Message
               </button>

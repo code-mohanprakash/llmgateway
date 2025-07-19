@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10% </span>
+                <span class="strong">8.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/30</span>
+                <span class='fraction'>3/36</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10.34% </span>
+                <span class="strong">8.82% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/29</span>
+                <span class='fraction'>3/34</span>
             </div>
         
             
@@ -126,7 +126,20 @@
 <a name='L61'></a><a href='#L61'>61</a>
 <a name='L62'></a><a href='#L62'>62</a>
 <a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -177,11 +190,24 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -222,30 +248,43 @@ api.interceptors.response.use(
       const protectedRoutes = <span class="cstat-no" title="statement not covered" >['/auth/me', '/auth/refresh', '/dashboard', '/analytics', '/api-keys', '/billing', '/settings', '/team'];</span>
       const isProtectedRoute = <span class="cstat-no" title="statement not covered" >protectedRoutes.some(<span class="fstat-no" title="function not covered" >ro</span>ute =&gt; <span class="cstat-no" title="statement not covered" >originalRequest.url.includes(route))</span>;</span>
       
-<span class="cstat-no" title="statement not covered" >              if (isProtectedRoute) {</span>
-          const refreshToken = <span class="cstat-no" title="statement not covered" >Cookies.get('refresh_token');</span>
-<span class="cstat-no" title="statement not covered" >          if (refreshToken) {</span>
-<span class="cstat-no" title="statement not covered" >            try {</span>
-              const response = <span class="cstat-no" title="statement not covered" >await axios.post('/api/auth/refresh', {</span>
-                refresh_token: refreshToken
-              });
-              
-              const { access_token, refresh_token } = <span class="cstat-no" title="statement not covered" >response.data;</span>
-<span class="cstat-no" title="statement not covered" >              Cookies.set('access_token', access_token, { expires: 1 });</span>
-<span class="cstat-no" title="statement not covered" >              Cookies.set('refresh_token', refresh_token, { expires: 7 });</span>
-              
-<span class="cstat-no" title="statement not covered" >              originalRequest.headers.Authorization = `Bearer ${access_token}`;</span>
-<span class="cstat-no" title="statement not covered" >              return api(originalRequest);</span>
-            } catch (refreshError) {
-<span class="cstat-no" title="statement not covered" >              console.error('Token refresh failed:', refreshError);</span>
-<span class="cstat-no" title="statement not covered" >              Cookies.remove('access_token');</span>
-<span class="cstat-no" title="statement not covered" >              Cookies.remove('refresh_token');</span>
-<span class="cstat-no" title="statement not covered" >              window.location.href = '/login';</span>
-            }
-          } else {
-<span class="cstat-no" title="statement not covered" >            window.location.href = '/login';</span>
+<span class="cstat-no" title="statement not covered" >      if (isProtectedRoute) {</span>
+        const refreshToken = <span class="cstat-no" title="statement not covered" >Cookies.get('refresh_token');</span>
+<span class="cstat-no" title="statement not covered" >        if (refreshToken) {</span>
+<span class="cstat-no" title="statement not covered" >          try {</span>
+            const response = <span class="cstat-no" title="statement not covered" >await axios.post('/api/auth/refresh', {</span>
+              refresh_token: refreshToken
+            });
+            
+            const { access_token, refresh_token } = <span class="cstat-no" title="statement not covered" >response.data;</span>
+<span class="cstat-no" title="statement not covered" >            Cookies.set('access_token', access_token, { expires: 1 });</span>
+<span class="cstat-no" title="statement not covered" >            Cookies.set('refresh_token', refresh_token, { expires: 7 });</span>
+            
+<span class="cstat-no" title="statement not covered" >            originalRequest.headers.Authorization = `Bearer ${access_token}`;</span>
+<span class="cstat-no" title="statement not covered" >            return api(originalRequest);</span>
+          } catch (refreshError) {
+<span class="cstat-no" title="statement not covered" >            console.error('Token refresh failed:', refreshError);</span>
+<span class="cstat-no" title="statement not covered" >            Cookies.remove('access_token');</span>
+<span class="cstat-no" title="statement not covered" >            Cookies.remove('refresh_token');</span>
+            // Don't auto-redirect, let the app handle it
+<span class="cstat-no" title="statement not covered" >            console.log('Tokens cleared due to refresh failure');</span>
           }
+        } else {
+<span class="cstat-no" title="statement not covered" >          console.log('No refresh token available');</span>
+          // Don't auto-redirect, let the app handle it
         }
+      }
+    }
+    
+    // Don't show error notifications for 401 errors on public routes
+<span class="cstat-no" title="statement not covered" >    if (error.response?.status === 401) {</span>
+      const publicRoutes = <span class="cstat-no" title="statement not covered" >['/auth/login', '/auth/register', '/auth/forgot-password'];</span>
+      const isPublicRoute = <span class="cstat-no" title="statement not covered" >publicRoutes.some(<span class="fstat-no" title="function not covered" >ro</span>ute =&gt; <span class="cstat-no" title="statement not covered" >originalRequest.url.includes(route))</span>;</span>
+      
+<span class="cstat-no" title="statement not covered" >      if (!isPublicRoute) {</span>
+        // Only log the error, don't show notification
+<span class="cstat-no" title="statement not covered" >        console.log('Authentication required for:', originalRequest.url);</span>
+      }
     }
     
 <span class="cstat-no" title="statement not covered" >    return Promise.reject(error);</span>
@@ -259,7 +298,7 @@ export default api;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-17T20:19:07.019Z
+                at 2025-07-19T01:41:57.158Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

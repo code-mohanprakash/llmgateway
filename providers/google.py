@@ -48,21 +48,7 @@ class GoogleProvider(BaseModelProvider):
             
             # Define available models with metadata
             self._models_metadata = {
-                "gemini-pro": ModelMetadata(
-                    model_id="gemini-pro",
-                    model_name="gemini-pro",
-                    provider_name=self.provider_name,
-                    capabilities=[
-                        ModelCapability.TEXT_GENERATION,
-                        ModelCapability.STRUCTURED_OUTPUT,
-                        ModelCapability.FUNCTION_CALLING
-                    ],
-                    context_length=30720,
-                    cost_per_1k_tokens=0.0005,
-                    max_output_tokens=2048,
-                    supports_system_messages=True,
-                    supports_temperature=True
-                ),
+                # Gemini 1.5 Series (Latest)
                 "gemini-1.5-pro": ModelMetadata(
                     model_id="gemini-1.5-pro",
                     model_name="gemini-1.5-pro",
@@ -70,10 +56,11 @@ class GoogleProvider(BaseModelProvider):
                     capabilities=[
                         ModelCapability.TEXT_GENERATION,
                         ModelCapability.STRUCTURED_OUTPUT,
-                        ModelCapability.FUNCTION_CALLING
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION
                     ],
-                    context_length=128000,
-                    cost_per_1k_tokens=0.00125,
+                    context_length=2000000,
+                    cost_per_1k_tokens=0.0035,
                     max_output_tokens=8192,
                     supports_system_messages=True,
                     supports_temperature=True
@@ -85,11 +72,95 @@ class GoogleProvider(BaseModelProvider):
                     capabilities=[
                         ModelCapability.TEXT_GENERATION,
                         ModelCapability.STRUCTURED_OUTPUT,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION
+                    ],
+                    context_length=1000000,
+                    cost_per_1k_tokens=0.0002,
+                    max_output_tokens=8192,
+                    supports_system_messages=True,
+                    supports_temperature=True
+                ),
+                "gemini-1.5-pro-latest": ModelMetadata(
+                    model_id="gemini-1.5-pro-latest",
+                    model_name="gemini-1.5-pro-latest",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.STRUCTURED_OUTPUT,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION
+                    ],
+                    context_length=2000000,
+                    cost_per_1k_tokens=0.0035,
+                    max_output_tokens=8192,
+                    supports_system_messages=True,
+                    supports_temperature=True
+                ),
+                
+                # Gemini Pro Series
+                "gemini-pro": ModelMetadata(
+                    model_id="gemini-pro",
+                    model_name="gemini-pro",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.STRUCTURED_OUTPUT,
                         ModelCapability.FUNCTION_CALLING
                     ],
                     context_length=32768,
                     cost_per_1k_tokens=0.0005,
                     max_output_tokens=2048,
+                    supports_system_messages=True,
+                    supports_temperature=True
+                ),
+                "gemini-pro-vision": ModelMetadata(
+                    model_id="gemini-pro-vision",
+                    model_name="gemini-pro-vision",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.STRUCTURED_OUTPUT,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION
+                    ],
+                    context_length=32768,
+                    cost_per_1k_tokens=0.0005,
+                    max_output_tokens=2048,
+                    supports_system_messages=True,
+                    supports_temperature=True
+                ),
+                
+                # Gemini Ultra Series
+                "gemini-ultra": ModelMetadata(
+                    model_id="gemini-ultra",
+                    model_name="gemini-ultra",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.STRUCTURED_OUTPUT,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION
+                    ],
+                    context_length=32768,
+                    cost_per_1k_tokens=0.01,
+                    max_output_tokens=4096,
+                    supports_system_messages=True,
+                    supports_temperature=True
+                ),
+                "gemini-ultra-vision": ModelMetadata(
+                    model_id="gemini-ultra-vision",
+                    model_name="gemini-ultra-vision",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.STRUCTURED_OUTPUT,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION
+                    ],
+                    context_length=32768,
+                    cost_per_1k_tokens=0.01,
+                    max_output_tokens=4096,
                     supports_system_messages=True,
                     supports_temperature=True
                 )

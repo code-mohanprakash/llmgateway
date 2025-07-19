@@ -697,7 +697,7 @@ const Analytics = () => {
                 onClick={() => setTimeRange(option.value)}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
                   timeRange === option.value
-                    ? 'bg-white text-[#9B5967] shadow-sm'
+                    ? 'bg-white text-[#000000] shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >

@@ -28,7 +28,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       // Check if this is a protected route that requires auth
-      const protectedRoutes = ['/auth/me', '/working-auth/me', '/auth/refresh', '/dashboard', '/analytics', '/api-keys', '/billing', '/settings', '/team'];
+      const protectedRoutes = ['/auth/me', '/auth/refresh', '/dashboard', '/analytics', '/api-keys', '/billing', '/settings', '/team'];
       const isProtectedRoute = protectedRoutes.some(route => originalRequest.url.includes(route));
       
       if (isProtectedRoute) {

@@ -12,10 +12,10 @@ const TestLanding = () => {
           Enterprise-grade AI infrastructure for modern applications
         </p>
         <div className="space-x-4">
-          <button className="bg-[#9B5967] text-white px-6 py-3 rounded-lg">
+          <button className="bg-[#000000] text-white px-6 py-3 rounded-lg">
             Get Started
           </button>
-          <button className="border border-[#9B5967] text-[#9B5967] px-6 py-3 rounded-lg">
+          <button className="border border-[#000000] text-[#000000] px-6 py-3 rounded-lg">
             Learn More
           </button>
         </div>

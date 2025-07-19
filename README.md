@@ -6,7 +6,11 @@ A production-ready, intelligent Model Bridge that manages multiple AI providers 
 
 ### Multi-Provider Support
 - **12+ Providers**: OpenAI, Anthropic, Google, Groq, Together, Mistral, Cohere, Perplexity, HuggingFace, Ollama, OpenRouter, DeepSeek
-- **100+ Models**: Access to hundreds of models through unified interface
+- **80+ Models**: Access to comprehensive model ranges including:
+  - **OpenAI**: 16 models (GPT-4o, GPT-4 Turbo series, GPT-3.5 Turbo series, legacy models)
+  - **Anthropic**: 8 models (Claude 3.5, Claude 3 series, Claude 2 series, Claude Instant series)
+  - **Google**: 7 models (Gemini 1.5 Pro/Flash, Gemini Pro/Vision, Gemini Ultra/Vision)
+  - **Other Providers**: 50+ additional models across all providers
 - **Automatic Fallback**: Graceful degradation when providers fail
 - **Dynamic Configuration**: Auto-discovery of available API keys
 

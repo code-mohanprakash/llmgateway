@@ -101,6 +101,19 @@ except ImportError:
 from utils.config import Config
 from utils.logging_setup import get_logger
 
+# Import advanced routing components
+try:
+    from advanced_routing import LoadBalancer, LoadBalancingStrategy, PredictiveRouter, WeightManager, GeoRouter, LatencyMonitor
+    ADVANCED_ROUTING_AVAILABLE = True
+except ImportError:
+    LoadBalancer = None
+    LoadBalancingStrategy = None
+    PredictiveRouter = None
+    WeightManager = None
+    GeoRouter = None
+    LatencyMonitor = None
+    ADVANCED_ROUTING_AVAILABLE = False
+
 logger = get_logger(__name__)
 
 
@@ -322,6 +335,44 @@ class EnhancedModelBridge:
         # Enhanced intelligent routing
         self.intelligent_router = IntelligentRouter()
         
+        # Advanced load balancer (if available)
+        if ADVANCED_ROUTING_AVAILABLE:
+            self.load_balancer = LoadBalancer(LoadBalancingStrategy.INTELLIGENT)
+            self._load_balancer_enabled = True
+            logger.info("Advanced load balancer enabled")
+            
+            # Predictive router
+            self.predictive_router = PredictiveRouter()
+            self._predictive_routing_enabled = True
+            logger.info("Predictive routing enabled")
+            
+            # Weight manager
+            self.weight_manager = WeightManager()
+            self._weight_management_enabled = True
+            logger.info("Dynamic weight management enabled")
+            
+            # Geographic router
+            self.geo_router = GeoRouter()
+            self._geo_routing_enabled = True
+            logger.info("Geographic routing enabled")
+            
+            # Latency monitor
+            self.latency_monitor = LatencyMonitor()
+            self._latency_monitoring_enabled = True
+            logger.info("Latency monitoring enabled")
+        else:
+            self.load_balancer = None
+            self._load_balancer_enabled = False
+            self.predictive_router = None
+            self._predictive_routing_enabled = False
+            self.weight_manager = None
+            self._weight_management_enabled = False
+            self.geo_router = None
+            self._geo_routing_enabled = False
+            self.latency_monitor = None
+            self._latency_monitoring_enabled = False
+            logger.info("Advanced routing not available, using fallback routing")
+        
         # Performance tracking
         self.performance_stats: Dict[str, Dict[str, Any]] = {}
         
@@ -378,6 +429,22 @@ class EnhancedModelBridge:
             self._fallback_enabled = gateway_config.get("gateway", {}).get("fallback_enabled", True)
             self._cost_optimization = gateway_config.get("gateway", {}).get("cost_optimization", True)
             self._performance_tracking = gateway_config.get("gateway", {}).get("performance_tracking", True)
+            
+            # Initialize load balancer if available
+            if self._load_balancer_enabled:
+                await self.load_balancer.initialize()
+            
+            # Initialize weight manager if available
+            if self._weight_management_enabled:
+                await self.weight_manager.start()
+            
+            # Initialize latency monitor if available
+            if self._latency_monitoring_enabled:
+                await self.latency_monitor.start_monitoring()
+                
+            # Connect geo router to latency monitor
+            if self._geo_routing_enabled and self._latency_monitoring_enabled:
+                self.geo_router.set_latency_monitor(self.latency_monitor)
             
             # Initialize only providers with valid API keys
             initialization_results = []
@@ -598,6 +665,42 @@ class EnhancedModelBridge:
             if success:
                 self.providers[provider_name] = provider
                 self.provider_configs[provider_name] = provider_config
+                
+                # Register with load balancer if available
+                if self._load_balancer_enabled:
+                    base_weight = provider_config.get("priority", 1)
+                    # Convert priority to weight (lower priority = higher weight)
+                    weight = 1.0 / max(base_weight, 0.1)
+                    self.load_balancer.register_provider(provider_name, provider, weight)
+                
+                # Register with predictive router if available
+                if self._predictive_routing_enabled:
+                    self.predictive_router.register_provider(provider_name, provider)
+                
+                # Register with weight manager if available
+                if self._weight_management_enabled:
+                    base_weight = provider_config.get("priority", 1)
+                    # Convert priority to weight (lower priority = higher weight)
+                    weight = 1.0 / max(base_weight, 0.1)
+                    self.weight_manager.register_provider(provider_name, weight)
+                
+                # Register with latency monitor if available
+                if self._latency_monitoring_enabled:
+                    # Get provider endpoints from config or use defaults
+                    endpoints = provider_config.get("endpoints", [])
+                    if not endpoints:
+                        # Use default endpoints based on provider
+                        default_endpoints = {
+                            'openai': ['https://api.openai.com/v1/models'],
+                            'anthropic': ['https://api.anthropic.com/v1/models'],
+                            'google': ['https://generativelanguage.googleapis.com/v1/models'],
+                            'groq': ['https://api.groq.com/openai/v1/models']
+                        }
+                        endpoints = default_endpoints.get(provider_name, [])
+                    
+                    if endpoints:
+                        self.latency_monitor.register_provider(provider_name, endpoints)
+                
                 logger.info(f"Provider {provider_name} initialized successfully")
                 return True
             else:
@@ -702,6 +805,343 @@ class EnhancedModelBridge:
         # Analyze request characteristics for intelligent routing
         characteristics = self.intelligent_router.analyze_request_characteristics(request)
         
+        # Use predictive routing if available
+        if self._predictive_routing_enabled:
+            return await self._route_with_predictive_routing(request, model_spec, method_name, characteristics)
+        elif self._load_balancer_enabled:
+            return await self._route_with_load_balancer(request, model_spec, method_name, characteristics)
+        
+        # Fallback to original routing logic
+        # Get provider rankings based on characteristics
+        provider_rankings = self.intelligent_router.get_provider_ranking(characteristics, self.providers)
+        
+        # Resolve model specification to provider/model pairs
+        model_options = self._resolve_model_spec(model_spec)
+        
+        # Reorder model options based on intelligent routing
+        if provider_rankings:
+            # Create a mapping of provider names to their rankings
+            provider_rank_map = {name: rank for name, rank in provider_rankings}
+            
+            # Sort model options by provider ranking
+            model_options.sort(key=lambda alias: provider_rank_map.get(alias.provider, 0), reverse=True)
+        
+        last_error = None
+        
+        for alias in model_options:
+            provider = self.providers.get(alias.provider)
+            if not provider:
+                continue
+            
+            try:
+                # Check if provider supports required capability
+                if hasattr(request, 'output_schema') and request.output_schema:
+                    if not provider.supports_capability(alias.model_id, ModelCapability.STRUCTURED_OUTPUT):
+                        continue
+                
+                # Track performance
+                start_time = time.time()
+                
+                # Make request
+                method = getattr(provider, method_name)
+                response = await method(request, alias.model_id)
+                
+                # Update performance stats
+                if self._performance_tracking:
+                    self._update_performance_stats(
+                        alias.provider, 
+                        alias.model_id, 
+                        response.response_time or (time.time() - start_time),
+                        response.cost or 0,
+                        not response.error
+                    )
+                
+                # Update intelligent router performance history
+                if response.response_time is not None:
+                    await self.intelligent_router.update_performance_history(
+                        alias.provider, 
+                        response.response_time, 
+                        response.cost or 0, 
+                        not response.error
+                    )
+                
+                # Update provider health cache
+                if response.error:
+                    await self.intelligent_router.update_provider_health(
+                        alias.provider, 
+                        {"status": "unhealthy", "error": response.error}
+                    )
+                else:
+                    await self.intelligent_router.update_provider_health(
+                        alias.provider, 
+                        {"status": "healthy"}
+                    )
+                
+                # Return successful response
+                if not response.error:
+                    return response
+                
+                last_error = response.error
+                
+                # If fallback is disabled, return first response
+                if not self._fallback_enabled:
+                    return response
+                    
+            except Exception as e:
+                last_error = str(e)
+                logger.error(f"Error with provider {alias.provider}, model {alias.model_id}: {str(e)}")
+                continue
+        
+        # All providers failed
+        return GenerationResponse(
+            content="",
+            model_id=model_spec,
+            provider_name="gateway",
+            error=f"All providers failed. Last error: {last_error}"
+        )
+    
+    async def _route_with_load_balancer(
+        self, 
+        request: GenerationRequest, 
+        model_spec: str, 
+        method_name: str, 
+        characteristics: Dict[str, Any]
+    ) -> GenerationResponse:
+        """Route request using the advanced load balancer"""
+        
+        # Resolve model specification to provider/model pairs
+        model_options = self._resolve_model_spec(model_spec)
+        
+        # Try each model option with load balancer provider selection
+        last_error = None
+        
+        for alias in model_options:
+            try:
+                # Check if model supports required capability
+                provider = self.providers.get(alias.provider)
+                if not provider:
+                    continue
+                
+                if hasattr(request, 'output_schema') and request.output_schema:
+                    if not provider.supports_capability(alias.model_id, ModelCapability.STRUCTURED_OUTPUT):
+                        continue
+                
+                # Use load balancer to select optimal provider for this model type
+                selected_provider = await self.load_balancer.select_provider(characteristics)
+                if not selected_provider or selected_provider != alias.provider:
+                    continue
+                
+                # Execute request through load balancer
+                response = await self.load_balancer.execute_request(
+                    selected_provider, request, alias.model_id, method_name
+                )
+                
+                # Update performance stats
+                if self._performance_tracking and response.response_time is not None:
+                    self._update_performance_stats(
+                        alias.provider, 
+                        alias.model_id, 
+                        response.response_time,
+                        response.cost or 0,
+                        not response.error
+                    )
+                
+                # Update intelligent router performance history
+                if response.response_time is not None:
+                    await self.intelligent_router.update_performance_history(
+                        alias.provider, 
+                        response.response_time, 
+                        response.cost or 0, 
+                        not response.error
+                    )
+                
+                # Return successful response
+                if not response.error:
+                    return response
+                
+                last_error = response.error
+                
+                # If fallback is disabled, return first response
+                if not self._fallback_enabled:
+                    return response
+                    
+            except Exception as e:
+                last_error = str(e)
+                logger.error(f"Error with load balanced provider {alias.provider}, model {alias.model_id}: {str(e)}")
+                continue
+        
+        # All providers failed
+        return GenerationResponse(
+            content="",
+            model_id=model_spec,
+            provider_name="gateway",
+            error=f"All load balanced providers failed. Last error: {last_error}"
+        )
+    
+    async def _route_with_predictive_routing(
+        self, 
+        request: GenerationRequest, 
+        model_spec: str, 
+        method_name: str, 
+        characteristics: Dict[str, Any]
+    ) -> GenerationResponse:
+        """Route request using predictive routing with ML-based predictions"""
+        
+        # Resolve model specification to provider/model pairs
+        model_options = self._resolve_model_spec(model_spec)
+        
+        # Get available providers for prediction
+        available_providers = []
+        provider_model_map = {}
+        
+        for alias in model_options:
+            if alias.provider in self.providers:
+                available_providers.append(alias.provider)
+                provider_model_map[alias.provider] = alias.model_id
+        
+        if not available_providers:
+            return GenerationResponse(
+                content="",
+                model_id=model_spec,
+                provider_name="gateway",
+                error="No available providers for predictive routing"
+            )
+        
+        # Get predictive routing recommendation
+        try:
+            prediction = await self.predictive_router.predict_optimal_routing(
+                request, available_providers
+            )
+            
+            # Try providers in order of prediction confidence
+            providers_to_try = [
+                (prediction.primary_provider, prediction.primary_confidence, provider_model_map[prediction.primary_provider])
+            ]
+            
+            # Add alternatives
+            for alt in prediction.alternative_providers:
+                if alt['provider'] in provider_model_map:
+                    providers_to_try.append((
+                        alt['provider'], 
+                        alt['confidence'], 
+                        provider_model_map[alt['provider']]
+                    ))
+            
+            last_error = None
+            
+            for provider_name, confidence, model_id in providers_to_try:
+                try:
+                    provider = self.providers[provider_name]
+                    
+                    # Check if provider supports required capability
+                    if hasattr(request, 'output_schema') and request.output_schema:
+                        if not provider.supports_capability(model_id, ModelCapability.STRUCTURED_OUTPUT):
+                            continue
+                    
+                    # Execute request
+                    start_time = time.time()
+                    method = getattr(provider, method_name)
+                    response = await method(request, model_id)
+                    execution_time = time.time() - start_time
+                    
+                    # Update predictive router with training data
+                    self.predictive_router.add_training_data(
+                        provider_name, request, execution_time, not response.error
+                    )
+                    
+                    # Update weight manager with performance data
+                    if self._weight_management_enabled:
+                        self.weight_manager.record_performance(
+                            provider_name, execution_time, not response.error, 
+                            response.cost or 0.0, 1.0  # availability
+                        )
+                    
+                    # Update performance stats
+                    if self._performance_tracking and response.response_time is not None:
+                        self._update_performance_stats(
+                            provider_name, 
+                            model_id, 
+                            response.response_time,
+                            response.cost or 0,
+                            not response.error
+                        )
+                    
+                    # Update intelligent router performance history
+                    if response.response_time is not None:
+                        await self.intelligent_router.update_performance_history(
+                            provider_name, 
+                            response.response_time, 
+                            response.cost or 0, 
+                            not response.error
+                        )
+                    
+                    # Add prediction metadata to response
+                    if hasattr(response, 'metadata'):
+                        response.metadata = response.metadata or {}
+                    else:
+                        response.metadata = {}
+                    
+                    response.metadata.update({
+                        'prediction_confidence': confidence,
+                        'predicted_response_time': prediction.predicted_response_time,
+                        'predicted_success_rate': prediction.predicted_success_rate,
+                        'prediction_reasoning': prediction.reasoning,
+                        'pattern_match': prediction.pattern_match
+                    })
+                    
+                    # Return successful response
+                    if not response.error:
+                        logger.info(f"Predictive routing successful: {provider_name} (confidence: {confidence:.2f})")
+                        return response
+                    
+                    last_error = response.error
+                    
+                    # If fallback is disabled, return first response
+                    if not self._fallback_enabled:
+                        return response
+                        
+                except Exception as e:
+                    last_error = str(e)
+                    logger.error(f"Error with predictive routing provider {provider_name}: {str(e)}")
+                    
+                    # Still add training data for failures
+                    execution_time = time.time() - start_time if 'start_time' in locals() else 0
+                    self.predictive_router.add_training_data(
+                        provider_name, request, execution_time, False
+                    )
+                    
+                    # Update weight manager with failure data
+                    if self._weight_management_enabled:
+                        self.weight_manager.record_performance(
+                            provider_name, execution_time, False, 0.0, 0.0  # Failed request
+                        )
+                    continue
+            
+            # All providers failed
+            return GenerationResponse(
+                content="",
+                model_id=model_spec,
+                provider_name="gateway",
+                error=f"All predictive routing providers failed. Last error: {last_error}",
+                metadata={'prediction_reasoning': prediction.reasoning}
+            )
+            
+        except Exception as e:
+            logger.error(f"Error in predictive routing: {str(e)}")
+            # Fallback to load balancer or original routing
+            if self._load_balancer_enabled:
+                return await self._route_with_load_balancer(request, model_spec, method_name, characteristics)
+            else:
+                return await self._route_original(request, model_spec, method_name, characteristics)
+    
+    async def _route_original(
+        self, 
+        request: GenerationRequest, 
+        model_spec: str, 
+        method_name: str, 
+        characteristics: Dict[str, Any]
+    ) -> GenerationResponse:
+        """Original routing logic as fallback"""
         # Get provider rankings based on characteristics
         provider_rankings = self.intelligent_router.get_provider_ranking(characteristics, self.providers)
         
@@ -922,6 +1362,121 @@ class EnhancedModelBridge:
     def get_routing_recommendations(self) -> Dict[str, Any]:
         """Get routing recommendations for dashboard"""
         return self.intelligent_router.get_routing_recommendations()
+    
+    def get_load_balancer_stats(self) -> Optional[Dict[str, Any]]:
+        """Get load balancer statistics if available"""
+        if self._load_balancer_enabled and self.load_balancer:
+            return self.load_balancer.get_load_balancer_stats()
+        return None
+    
+    def get_advanced_routing_status(self) -> Dict[str, Any]:
+        """Get status of advanced routing features"""
+        return {
+            "load_balancer_enabled": self._load_balancer_enabled,
+            "load_balancer_available": ADVANCED_ROUTING_AVAILABLE,
+            "predictive_routing_enabled": self._predictive_routing_enabled,
+            "weight_management_enabled": self._weight_management_enabled,
+            "geo_routing_enabled": self._geo_routing_enabled,
+            "latency_monitoring_enabled": self._latency_monitoring_enabled,
+            "intelligent_routing_enabled": True,
+            "fallback_enabled": self._fallback_enabled,
+            "performance_tracking": self._performance_tracking
+        }
+    
+    def get_predictive_routing_stats(self) -> Optional[Dict[str, Any]]:
+        """Get predictive routing statistics if available"""
+        if self._predictive_routing_enabled and self.predictive_router:
+            return self.predictive_router.get_prediction_analytics()
+        return None
+    
+    def save_predictive_models(self, filepath: str) -> bool:
+        """Save predictive models to file"""
+        if self._predictive_routing_enabled and self.predictive_router:
+            try:
+                self.predictive_router.save_models(filepath)
+                return True
+            except Exception as e:
+                logger.error(f"Error saving predictive models: {str(e)}")
+                return False
+        return False
+    
+    def load_predictive_models(self, filepath: str) -> bool:
+        """Load predictive models from file"""
+        if self._predictive_routing_enabled and self.predictive_router:
+            try:
+                self.predictive_router.load_models(filepath)
+                return True
+            except Exception as e:
+                logger.error(f"Error loading predictive models: {str(e)}")
+                return False
+        return False
+    
+    def get_weight_management_stats(self) -> Optional[Dict[str, Any]]:
+        """Get weight management statistics if available"""
+        if self._weight_management_enabled and self.weight_manager:
+            return self.weight_manager.get_weight_analytics()
+        return None
+    
+    def get_provider_weights(self) -> Optional[Dict[str, Any]]:
+        """Get current provider weights if available"""
+        if self._weight_management_enabled and self.weight_manager:
+            weights = self.weight_manager.get_provider_weights()
+            return {name: metrics.to_dict() for name, metrics in weights.items()}
+        return None
+    
+    def update_weight_configuration(self, new_config: Dict[str, Any]) -> bool:
+        """Update weight manager configuration"""
+        if self._weight_management_enabled and self.weight_manager:
+            try:
+                self.weight_manager.update_configuration(new_config)
+                return True
+            except Exception as e:
+                logger.error(f"Error updating weight configuration: {str(e)}")
+                return False
+        return False
+    
+    def get_geo_routing_stats(self) -> Optional[Dict[str, Any]]:
+        """Get geographic routing statistics if available"""
+        if self._geo_routing_enabled and self.geo_router:
+            return self.geo_router.get_geo_routing_analytics()
+        return None
+    
+    def get_latency_monitoring_stats(self) -> Optional[Dict[str, Any]]:
+        """Get latency monitoring statistics if available"""
+        if self._latency_monitoring_enabled and self.latency_monitor:
+            return self.latency_monitor.get_latency_analytics()
+        return None
+    
+    def get_provider_latency_stats(self, provider_name: str) -> Optional[Dict[str, Any]]:
+        """Get latency statistics for a specific provider"""
+        if self._latency_monitoring_enabled and self.latency_monitor:
+            stats = self.latency_monitor.get_provider_latency_stats(provider_name)
+            return stats.to_dict() if stats else None
+        return None
+    
+    async def route_with_geo_routing(self, request: GenerationRequest, 
+                                   client_ip: str, 
+                                   available_providers: List[str]) -> Optional[Dict[str, Any]]:
+        """Route request using geographic routing"""
+        if not self._geo_routing_enabled or not self.geo_router:
+            return None
+        
+        try:
+            decision = await self.geo_router.route_request(request, client_ip, available_providers)
+            return decision.to_dict()
+        except Exception as e:
+            logger.error(f"Error in geographic routing: {str(e)}")
+            return None
+    
+    async def shutdown(self):
+        """Shutdown the gateway and cleanup resources"""
+        if self._load_balancer_enabled and self.load_balancer:
+            await self.load_balancer.shutdown()
+        if self._weight_management_enabled and self.weight_manager:
+            await self.weight_manager.stop()
+        if self._latency_monitoring_enabled and self.latency_monitor:
+            await self.latency_monitor.stop_monitoring()
+        logger.info("Enhanced Model Bridge shutdown complete")
 
 
 # Global gateway instance

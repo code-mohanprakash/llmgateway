@@ -12,46 +12,46 @@ const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState('monthly');
 
   const pricingTiers = {
-    free: {
-      name: 'Free',
-      price: { monthly: 0, yearly: 0 },
-      description: 'Perfect for getting started and testing',
+    basic: {
+      name: 'Basic',
+      price: { monthly: 'Custom', yearly: 'Custom' },
+      description: 'Perfect for smaller teams and startups',
       features: [
-        { text: '1,000 tokens per month', included: true },
-        { text: 'Basic models only (Ollama)', included: true },
-        { text: 'Community support', included: true },
-        { text: 'Basic analytics', included: true },
-        { text: 'API access', included: true },
-        { text: 'Premium models', included: false },
-        { text: 'API keys', included: false },
-        { text: 'Team features', included: false },
-        { text: 'Priority routing', included: false },
-        { text: 'Advanced analytics', included: false },
-        { text: 'Email support', included: false },
-        { text: 'White-label options', included: false }
-      ],
-      cta: 'Get Started Free',
-      popular: false
-    },
-    pro: {
-      name: 'Pro',
-      price: { monthly: 29, yearly: 290 },
-      description: 'For developers and small teams',
-      features: [
-        { text: '100,000 tokens per month', included: true },
-        { text: 'All models (50+ providers)', included: true },
+        { text: '50,000 tokens per month', included: true },
+        { text: 'Core models (OpenAI, Anthropic, Google)', included: true },
         { text: 'API keys', included: true },
-        { text: 'Priority routing', included: true },
-        { text: 'Advanced analytics', included: true },
+        { text: 'Basic analytics', included: true },
         { text: 'Email support', included: true },
-        { text: '15% platform fee', included: true },
+        { text: '20% platform fee', included: true },
+        { text: 'Advanced routing', included: false },
         { text: 'Team management', included: false },
         { text: 'Custom integrations', included: false },
         { text: 'White-label options', included: false },
         { text: 'Dedicated support', included: false },
         { text: 'SLA guarantee', included: false }
       ],
-      cta: 'Start Pro Trial',
+      cta: 'Contact Sales',
+      popular: false
+    },
+    pro: {
+      name: 'Pro',
+      price: { monthly: 'Custom', yearly: 'Custom' },
+      description: 'For mid-market teams and growing companies',
+      features: [
+        { text: '500,000 tokens per month', included: true },
+        { text: 'All models (50+ providers)', included: true },
+        { text: 'Advanced routing & load balancing', included: true },
+        { text: 'Team management (up to 10 users)', included: true },
+        { text: 'Advanced analytics & insights', included: true },
+        { text: 'Priority support', included: true },
+        { text: '15% platform fee', included: true },
+        { text: 'Custom integrations', included: false },
+        { text: 'White-label options', included: false },
+        { text: 'Dedicated support', included: false },
+        { text: 'SLA guarantee', included: false },
+        { text: 'On-premise deployment', included: false }
+      ],
+      cta: 'Contact Sales',
       popular: true
     },
     enterprise: {
@@ -61,7 +61,8 @@ const Pricing = () => {
       features: [
         { text: 'Unlimited tokens', included: true },
         { text: 'All models (50+ providers)', included: true },
-        { text: 'Team management', included: true },
+        { text: 'Advanced routing & load balancing', included: true },
+        { text: 'Unlimited team management', included: true },
         { text: 'Custom integrations', included: true },
         { text: 'White-label options', included: true },
         { text: 'Dedicated support', included: true },
@@ -69,8 +70,7 @@ const Pricing = () => {
         { text: '10% platform fee', included: true },
         { text: 'Custom billing', included: true },
         { text: 'On-premise deployment', included: true },
-        { text: 'Security audit', included: true },
-        { text: 'Training & onboarding', included: true }
+        { text: 'Security audit & compliance', included: true }
       ],
       cta: 'Contact Sales',
       popular: false
@@ -116,7 +116,7 @@ const Pricing = () => {
             <button
               onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                billingCycle === 'yearly' ? 'bg-[#9B5967]' : 'bg-gray-200'
+                billingCycle === 'yearly' ? 'bg-[#000000]' : 'bg-gray-200'
               }`}
             >
               <span
@@ -141,13 +141,13 @@ const Pricing = () => {
               key={tierKey}
               className={`relative bg-white rounded-2xl shadow-lg border-2 transition-all duration-300 hover:shadow-xl ${
                 tier.popular
-                  ? 'border-[#9B5967] scale-105'
+                  ? 'border-[#000000] scale-105'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
               {tier.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-[#9B5967] text-white px-4 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-[#000000] text-white px-4 py-1 rounded-full text-sm font-medium">
                     Most Popular
                   </span>
                 </div>
@@ -158,7 +158,7 @@ const Pricing = () => {
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{tier.name}</h3>
                   <p className="text-gray-600 mb-4">{tier.description}</p>
                   <div className="mb-2">
-                    <span className="text-4xl font-bold text-[#9B5967]">{getPrice(tier)}</span>
+                    <span className="text-4xl font-bold text-[#000000]">{getPrice(tier)}</span>
                   </div>
                   {getSavings(tier) && (
                     <span className="text-sm text-green-600 font-medium">{getSavings(tier)}</span>
@@ -183,7 +183,7 @@ const Pricing = () => {
                 <button
                   className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${
                     tier.popular
-                      ? 'bg-[#9B5967] hover:bg-[#8a4d5a] text-white shadow-lg'
+                      ? 'bg-[#000000] hover:bg-[#14213d] text-white shadow-lg'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                   }`}
                 >
@@ -199,13 +199,13 @@ const Pricing = () => {
           {/* Platform Fees */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
             <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-              <CpuChipIcon className="h-6 w-6 text-[#9B5967] mr-2" />
+              <CpuChipIcon className="h-6 w-6 text-[#000000] mr-2" />
               Platform Fees
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">Free Tier</span>
-                <span className="font-semibold">0% markup</span>
+                <span className="text-gray-600">Basic Tier</span>
+                <span className="font-semibold">20% markup</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Pro Tier</span>
@@ -224,7 +224,7 @@ const Pricing = () => {
           {/* Value Proposition */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
             <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-              <SparklesIcon className="h-6 w-6 text-[#9B5967] mr-2" />
+              <SparklesIcon className="h-6 w-6 text-[#000000] mr-2" />
               What You Get
             </h3>
             <div className="space-y-3">
@@ -269,14 +269,14 @@ const Pricing = () => {
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-2">What happens if I exceed my token limit?</h3>
               <p className="text-gray-600 text-sm">
-                For Free and Pro plans, you'll be notified when approaching your limit. You can upgrade 
-                or wait for the next billing cycle. Enterprise plans have unlimited usage.
+                For Basic and Pro plans, you'll be notified when approaching your limit. You can upgrade 
+                or contact our sales team to discuss options. Enterprise plans have unlimited usage.
               </p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-2">Do you offer refunds?</h3>
               <p className="text-gray-600 text-sm">
-                We offer a 30-day money-back guarantee for Pro and Enterprise plans. If you're not satisfied, 
+                We offer a 30-day money-back guarantee for all plans. If you're not satisfied, 
                 contact our support team for a full refund.
               </p>
             </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ResetPassword from '../pages/ResetPassword';
+import { AuthProvider } from '../contexts/AuthContext';
 import api from '../services/api';
 
 // Mock the API service
@@ -26,7 +27,9 @@ jest.mock('react-router-dom', () => ({
 const renderResetPassword = () => {
   return render(
     <BrowserRouter>
-      <ResetPassword />
+      <AuthProvider>
+        <ResetPassword />
+      </AuthProvider>
     </BrowserRouter>
   );
 };

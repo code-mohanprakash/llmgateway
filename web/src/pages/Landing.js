@@ -80,8 +80,8 @@ const Landing = () => {
     },
     {
       icon: BoltIcon,
-      title: 'Intelligent Routing',
-      description: 'Smart algorithm automatically selects the optimal model for each request, balancing cost, speed, and quality.',
+      title: 'Advanced Routing Engine',
+      description: 'AI-powered routing with real-time load balancing, predictive analytics, geographic optimization, and dynamic weight management.',
       highlight: 'Save 50-80% on costs'
     },
     {
@@ -223,101 +223,64 @@ const Landing = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-green-600/20 rounded-full blur-xl"></div>
               <div className="relative bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-full px-6 py-2 shadow-lg">
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    Where AI-First Companies Scale
-                  </span>
-                  <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-gray-700">Remember when search got smarter with Perplexity?</span>
+                  <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
                 </div>
               </div>
             </div>
 
-            {/* Main Title with Advanced Typography */}
-            <h1 className="relative text-5xl md:text-7xl font-bold mb-8 leading-tight">
-              <span className="text-gray-900">One API for</span>
-              <span className="block relative mt-2">
-                <span className="absolute inset-0 bg-gradient-to-r from-yellow-700 via-yellow-800 to-gray-900 bg-clip-text text-transparent blur-sm opacity-40">
-                  Every AI Model
-                </span>
-                <span className="relative bg-gradient-to-r from-yellow-800 via-amber-900 to-black bg-clip-text text-transparent">
-                  Every AI Model
-                </span>
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              <span className="block relative">
+                <span className="text-black">Model</span>
+                <span className="text-green-900"> Bridge</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" style={{ animationDuration: '3s' }}></span>
+              </span>
+              <span className="block text-2xl md:text-3xl font-medium text-gray-600 mt-2">
+                The Perplexity of AI APIs
               </span>
             </h1>
 
-            {/* Decorative Elements */}
+            {/* Visual Separator */}
             <div className="flex items-center justify-center mb-8">
-              <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent w-20"></div>
-              <div className="mx-4 w-3 h-3 bg-gradient-to-r from-blue-500 to-green-500 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
-              <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent w-20"></div>
+              <div className="w-16 h-px bg-gradient-to-r from-transparent via-teal-500 to-transparent"></div>
+              <div className="w-2 h-2 bg-teal-500 rounded-full mx-4"></div>
+              <div className="w-16 h-px bg-gradient-to-r from-transparent via-teal-500 to-transparent"></div>
             </div>
-            
-            <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Watch how Model Bridge connects your application to 80+ AI models through intelligent routing, 
-              automatic failover, and enterprise-grade security.
-            </p>
-          </div>
-          
-          {/* Video with story around it */}
-          <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 items-center mb-20">
-            {/* Left side story */}
-            <div className="lg:col-span-2 space-y-12">
-              <div className="text-center lg:text-right p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '0s' }}>
-                <div className="inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-4 animate-pulse">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-ping"></span>
-                  Your App
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Single Request</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">Send one API call to our unified endpoint</p>
-              </div>
-              
-              <div className="text-center lg:text-right p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '1s' }}>
-                <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium mb-4 animate-pulse">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-ping"></span>
-                  Smart Routing
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">AI Decides</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">Our system picks the best model for your specific task</p>
-              </div>
+
+
+
+            {/* Video Animation - Replaced bridge animation with video */}
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+              className="w-full h-auto mb-12"
+            >
+              <source src="/images/ani5.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+
+            {/* Compelling Story - Moved below animation */}
+            <div className="text-xl text-gray-600 mb-8 leading-relaxed max-w-4xl mx-auto">
+              <p className="mb-4">
+                <span className="font-semibold text-gray-800">Just like </span>
+                <span className="font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent animate-pulse">
+                  Perplexity
+                </span>
+                <span className="font-semibold text-gray-800"> revolutionized search by intelligently routing queries to the best sources,</span> we're doing the same for AI.
+              </p>
+              <p className="mb-6">
+                Advanced model router that chooses the best model (OpenAI, Claude, Gemini, Llama, Mistral & 80+) for every prompt.
+              </p>
+              <p className="text-lg font-medium text-gray-800">
+                No more guessing. No more manual switching. Just intelligent decisions.
+              </p>
             </div>
-            
-            {/* Center video - bigger */}
-            <div className="lg:col-span-6">
-              <div className="relative mx-auto">
-                <video 
-                  src="/images/Untitled1.mp4" 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline
-                  className="w-full h-auto rounded-lg"
-                  style={{ maxHeight: '600px' }}
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </div>
-            
-            {/* Right side story */}
-            <div className="lg:col-span-2 space-y-12">
-              <div className="text-center lg:text-left p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '2s' }}>
-                <div className="inline-flex items-center px-4 py-2 bg-purple-50 text-purple-700 rounded-full text-sm font-medium mb-4 animate-pulse">
-                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 animate-ping"></span>
-                  Multiple Providers
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">80+ Models</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">OpenAI, Anthropic, Google, and 9+ more providers</p>
-              </div>
-              
-              <div className="text-center lg:text-left p-3 transform hover:scale-105 transition-all duration-300 hover:bg-white hover:shadow-lg rounded-xl animate-bounce" style={{ animationDuration: '6s', animationDelay: '3s' }}>
-                <div className="inline-flex items-center px-4 py-2 bg-orange-50 text-orange-700 rounded-full text-sm font-medium mb-4 animate-pulse">
-                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-ping"></span>
-                  Best Response
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Optimized Result</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">Get the perfect balance of cost, speed, and quality</p>
-              </div>
-            </div>
+
+
           </div>
           
           {/* CTA below video */}

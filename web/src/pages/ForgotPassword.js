@@ -69,7 +69,7 @@ const ForgotPassword = () => {
             </p>
             <Link
               to="/login"
-              className="inline-flex items-center text-[#9B5967] hover:text-[#8a4d5a] font-medium"
+              className="inline-flex items-center text-[#000000] hover:text-[#14213d] font-medium"
             >
               <ArrowLeftIcon className="w-4 h-4 mr-2" />
               Back to login
@@ -105,7 +105,7 @@ const ForgotPassword = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#9B5967] focus:border-transparent transition-all"
+              className="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#000000] focus:border-transparent transition-all"
               placeholder="Enter your email"
             />
           </div>
@@ -114,7 +114,7 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary py-3 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-[#9B5967] to-[#8a4d5a] hover:from-[#8a4d5a] hover:to-[#7a4350] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full btn-primary py-3 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-[#000000] to-[#14213d] hover:from-[#14213d] hover:to-[#7a4350] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {loading ? 'Sending...' : 'Send Reset Link'}
             </button>
@@ -123,7 +123,7 @@ const ForgotPassword = () => {
           <div className="text-center">
             <Link
               to="/login"
-              className="inline-flex items-center text-gray-600 hover:text-[#9B5967] font-medium transition-colors"
+              className="inline-flex items-center text-gray-600 hover:text-[#000000] font-medium transition-colors"
             >
               <ArrowLeftIcon className="w-4 h-4 mr-2" />
               Back to login
