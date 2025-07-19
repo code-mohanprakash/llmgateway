@@ -30,6 +30,22 @@ class RedisCache:
             decode_responses=True
         )
     
+    async def __aenter__(self):
+        """Async context manager entry"""
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit - cleanup connections"""
+        if hasattr(self.redis_client, 'close'):
+            await self.redis_client.close()
+        elif hasattr(self.redis_client, 'connection_pool'):
+            self.redis_client.connection_pool.disconnect()
+    
+    def close(self):
+        """Close Redis connections"""
+        if hasattr(self.redis_client, 'connection_pool'):
+            self.redis_client.connection_pool.disconnect()
+    
     def _generate_cache_key(self, prompt: str, model: str, **kwargs) -> str:
         """Generate a cache key for the request"""
         # Create a hash of the request parameters

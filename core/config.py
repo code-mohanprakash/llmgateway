@@ -2,6 +2,7 @@
 Configuration management using environment variables
 """
 import os
+import secrets
 from typing import List, Optional
 from dotenv import load_dotenv
 
@@ -15,7 +16,10 @@ class Config:
     ASYNC_DATABASE_URL: str = os.getenv("ASYNC_DATABASE_URL", "sqlite+aiosqlite:///./model_bridge.db")
     
     # Security
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-super-secret-jwt-key-change-in-production")
+    _jwt_secret = os.getenv("JWT_SECRET_KEY")
+    if not _jwt_secret:
+        raise ValueError("JWT_SECRET_KEY environment variable is required for production")
+    JWT_SECRET_KEY: str = _jwt_secret
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7"))

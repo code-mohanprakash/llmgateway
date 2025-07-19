@@ -44,14 +44,39 @@ class AnthropicProvider(BaseModelProvider):
     def _get_default_models(self) -> Dict[str, Any]:
         """Get default Anthropic model configurations"""
         return {
-            # Claude 3.5 Series (Latest)
+            # Claude 3.5 Series (REAL - Latest Available)
             "claude-3-5-sonnet-20241022": {
                 "context_length": 200000,
                 "cost_per_1k_tokens": 0.003,
                 "max_output_tokens": 8192,
                 "category": "large",
-                "speed": "medium",
-                "reasoning": "superior"
+                "speed": "fast",
+                "reasoning": "excellent",
+                "capabilities": ["text", "vision", "code", "analysis", "tool_use"],
+                "knowledge_cutoff": "2024-04",
+                "multimodal": True
+            },
+            "claude-3-5-sonnet-20240620": {
+                "context_length": 200000,
+                "cost_per_1k_tokens": 0.003,
+                "max_output_tokens": 8192,
+                "category": "large",
+                "speed": "fast",
+                "reasoning": "excellent",
+                "capabilities": ["text", "vision", "code", "analysis", "tool_use"],
+                "knowledge_cutoff": "2024-04",
+                "multimodal": True
+            },
+            "claude-3-5-haiku-20241022": {
+                "context_length": 200000,
+                "cost_per_1k_tokens": 0.0008,
+                "max_output_tokens": 8192,
+                "category": "small",
+                "speed": "fastest",
+                "reasoning": "good",
+                "capabilities": ["text", "vision", "tool_use"],
+                "knowledge_cutoff": "2024-07",
+                "multimodal": True
             },
             
             # Claude 3 Series

@@ -38,14 +38,58 @@ class OpenAIProvider(BaseModelProvider):
     def _get_default_models(self) -> Dict[str, Any]:
         """Get default OpenAI model configurations"""
         return {
-            # GPT-4o Series (Latest)
-            "gpt-4o": {
+            # O-Series Reasoning Models (REAL - Available now)
+            "o1": {
+                "context_length": 200000,
+                "cost_per_1k_tokens": 0.015,
+                "max_output_tokens": 65536,
+                "category": "reasoning",
+                "speed": "slow",
+                "reasoning": "exceptional",
+                "capabilities": ["text", "advanced_reasoning", "mathematics", "coding"],
+                "knowledge_cutoff": "2023-10"
+            },
+            "o1-mini": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.003,
+                "max_output_tokens": 65536,
+                "category": "reasoning",
+                "speed": "medium",
+                "reasoning": "excellent",
+                "capabilities": ["text", "reasoning", "mathematics", "coding"],
+                "knowledge_cutoff": "2023-10"
+            },
+            "o1-preview": {
                 "context_length": 128000,
                 "cost_per_1k_tokens": 0.015,
-                "max_output_tokens": 4096,
+                "max_output_tokens": 32768,
+                "category": "reasoning",
+                "speed": "slow",
+                "reasoning": "exceptional",
+                "capabilities": ["text", "advanced_reasoning", "mathematics", "coding"],
+                "knowledge_cutoff": "2023-10"
+            },
+            
+            # GPT-4o Series (REAL - Current models)
+            "gpt-4o": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.0025,
+                "max_output_tokens": 16384,
                 "category": "large",
-                "speed": "medium",
-                "reasoning": "excellent"
+                "speed": "fast",
+                "reasoning": "excellent",
+                "capabilities": ["text", "vision", "function_calling", "json_mode"],
+                "knowledge_cutoff": "2024-04"
+            },
+            "gpt-4o-2024-11-20": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.00250,
+                "max_output_tokens": 16384,
+                "category": "large",
+                "speed": "fast",
+                "reasoning": "excellent",
+                "capabilities": ["text", "vision", "function_calling"],
+                "knowledge_cutoff": "2024-04"
             },
             "gpt-4o-mini": {
                 "context_length": 128000,
@@ -53,7 +97,19 @@ class OpenAIProvider(BaseModelProvider):
                 "max_output_tokens": 16384,
                 "category": "small",
                 "speed": "fastest",
-                "reasoning": "basic"
+                "reasoning": "good",
+                "capabilities": ["text", "vision", "function_calling"],
+                "knowledge_cutoff": "2024-07"
+            },
+            "gpt-4o-mini-2024-07-18": {
+                "context_length": 128000,
+                "cost_per_1k_tokens": 0.00015,
+                "max_output_tokens": 16384,
+                "category": "small",
+                "speed": "fastest",
+                "reasoning": "good",
+                "capabilities": ["text", "vision", "function_calling"],
+                "knowledge_cutoff": "2024-07"
             },
             
             # GPT-4 Turbo Series

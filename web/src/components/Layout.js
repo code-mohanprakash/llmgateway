@@ -47,24 +47,26 @@ const Layout = () => {
     // fetchPlan();
   }, []);
 
-  const getPlanIcon = (planId) => {
-    switch (planId) {
-      case 'free': return <RocketLaunchIcon className="h-4 w-4 mr-1" />;
-      case 'starter': return <StarIcon className="h-4 w-4 mr-1" />;
-      case 'professional': return <SparklesIcon className="h-4 w-4 mr-1" />;
-      case 'enterprise': return <TrophyIcon className="h-4 w-4 mr-1" />;
-      default: return <RocketLaunchIcon className="h-4 w-4 mr-1" />;
-    }
-  };
-  const getPlanName = (planId) => {
-    switch (planId) {
-      case 'free': return 'Shuttle Launch';
-      case 'starter': return 'Star Cruiser';
-      case 'professional': return 'Galaxy Explorer';
-      case 'enterprise': return 'Cosmic Enterprise';
-      default: return 'Shuttle Launch';
-    }
-  };
+  // Commented out unused functions - can be restored when needed
+  // const getPlanIcon = (planId) => {
+  //   switch (planId) {
+  //     case 'free': return <RocketLaunchIcon className="h-4 w-4 mr-1" />;
+  //     case 'starter': return <StarIcon className="h-4 w-4 mr-1" />;
+  //     case 'professional': return <SparklesIcon className="h-4 w-4 mr-1" />;
+  //     case 'enterprise': return <TrophyIcon className="h-4 w-4 mr-1" />;
+  //     default: return <RocketLaunchIcon className="h-4 w-4 mr-1" />;
+  //   }
+  // };
+  
+  // const getPlanName = (planId) => {
+  //   switch (planId) {
+  //     case 'free': return 'Shuttle Launch';
+  //     case 'starter': return 'Star Cruiser';
+  //     case 'professional': return 'Galaxy Explorer';
+  //     case 'enterprise': return 'Cosmic Enterprise';
+  //     default: return 'Shuttle Launch';
+  //   }
+  // };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },

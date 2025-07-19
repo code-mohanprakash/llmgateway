@@ -62,9 +62,19 @@ const About = () => {
 
   const timeline = [
     {
+      year: "2025",
+      title: "Latest Model Integration",
+      description: "Added support for Claude 4 series, GPT-4.1, o3/o4-mini reasoning models, and Gemini 2.0 series with dynamic model discovery"
+    },
+    {
       year: "2024",
-      title: "Phase 1: Advanced Routing Engine",
-      description: "Launched intelligent routing with real-time load balancing, predictive analytics, geographic optimization, and dynamic weight management"
+      title: "Production Launch",
+      description: "Launched production-ready platform with advanced routing, enterprise features, and comprehensive security"
+    },
+    {
+      year: "2024",
+      title: "Advanced Routing Engine",
+      description: "Developed intelligent routing with real-time load balancing, predictive analytics, and geographic optimization"
     },
     {
       year: "2024",
@@ -75,11 +85,6 @@ const About = () => {
       year: "2023",
       title: "Problem Identified",
       description: "Recognized the need for a unified API to access multiple AI providers"
-    },
-    {
-      year: "2022",
-      title: "AI Infrastructure Research",
-      description: "Deep dive into AI model serving, routing, and infrastructure challenges"
     }
   ];
 

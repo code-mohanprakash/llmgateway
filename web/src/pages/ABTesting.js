@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
 const ABTesting = () => {
-    const { user } = useAuth();
+    const { /* user */ } = useAuth(); // User available but not currently used
     const [tests, setTests] = useState([]);
     const [selectedTest, setSelectedTest] = useState(null);
     const [testResults, setTestResults] = useState(null);

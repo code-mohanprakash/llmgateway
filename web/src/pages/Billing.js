@@ -12,10 +12,14 @@ const Billing = () => {
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
+    console.log('Billing component - Auth state:', { isAuthenticated, user: user?.email });
+    
     if (isAuthenticated && user) {
+      console.log('User is authenticated, fetching billing data...');
       fetchBillingData();
       fetchCurrentPlan();
     } else {
+      console.log('User is not authenticated, setting loading to false');
       setLoading(false);
     }
   }, [isAuthenticated, user]);
@@ -25,24 +29,21 @@ const Billing = () => {
       setLoading(true);
       console.log('Fetching billing data for user:', user?.email);
       
-      // TODO: Enable when backend endpoints are integrated with working auth
-      // const [usageRes, invoicesRes] = await Promise.all([
-      //   api.get('/billing/usage'),
-      //   api.get('/billing/invoices')
-      // ]);
-      // setUsageData(usageRes.data);
-      // setInvoices(invoicesRes.data || []);
+      const [usageRes, invoicesRes] = await Promise.all([
+        api.get('/billing/usage'),
+        api.get('/billing/invoices')
+      ]);
       
-      // For now, set null to show empty state
-      setUsageData(null);
-      setInvoices([]);
-      
+      console.log('Billing data received:', usageRes.data);
+      setUsageData(usageRes.data);
+      setInvoices(invoicesRes.data || []);
     } catch (error) {
       console.error('Billing data fetch error:', error);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
       
-      if (error.response?.status === 401) {
-        console.log('Authentication failed - user needs to log in');
-      } else {
+      // Completely suppress toast notifications for 401 errors
+      if (error.response?.status !== 401) {
         let message = error.response?.data?.detail;
         if (!message && error.response?.data && typeof error.response.data === 'object') {
           if (Array.isArray(error.response.data)) {
@@ -54,6 +55,8 @@ const Billing = () => {
           }
         }
         toast.error(message || 'Failed to load billing data');
+      } else {
+        console.log('Authentication failed - user needs to log in');
       }
       setUsageData(null);
       setInvoices([]);
@@ -64,12 +67,8 @@ const Billing = () => {
 
   const fetchCurrentPlan = async () => {
     try {
-      // TODO: Enable when backend endpoints are integrated with working auth
-      // const res = await api.get('/billing/current-plan');
-      // setCurrentPlan(res.data?.plan_id || 'free');
-      
-      // For now, set default plan
-      setCurrentPlan('free');
+      const res = await api.get('/billing/current-plan');
+      setCurrentPlan(res.data?.plan_id || 'free');
     } catch (error) {
       console.error('Failed to fetch current plan:', error);
       setCurrentPlan('free');
@@ -170,14 +169,14 @@ const Billing = () => {
     return (
       <div className={`clean-card p-6 relative ${
         isCurrentPlan 
-          ? 'ring-2 ring-[#000000] bg-[#000000]/5' 
+          ? 'ring-2 ring-[#9B5967] bg-[#9B5967]/5' 
           : plan.popular 
             ? 'ring-2 ring-blue-200' 
             : ''
       }`}>
         {plan.popular && !isCurrentPlan && (
           <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-            <span className="bg-[#000000] text-white px-3 py-1 rounded-full text-xs font-semibold">
+            <span className="bg-[#9B5967] text-white px-3 py-1 rounded-full text-xs font-semibold">
               Popular
             </span>
           </div>

@@ -48,60 +48,117 @@ class GoogleProvider(BaseModelProvider):
             
             # Define available models with metadata
             self._models_metadata = {
-                # Gemini 1.5 Series (Latest)
+                # Gemini 1.5 Series (REAL - Current Available)
                 "gemini-1.5-pro": ModelMetadata(
                     model_id="gemini-1.5-pro",
-                    model_name="gemini-1.5-pro",
+                    model_name="Gemini 1.5 Pro",
                     provider_name=self.provider_name,
                     capabilities=[
                         ModelCapability.TEXT_GENERATION,
                         ModelCapability.STRUCTURED_OUTPUT,
                         ModelCapability.FUNCTION_CALLING,
-                        ModelCapability.VISION
+                        ModelCapability.VISION,
+                        ModelCapability.MULTIMODAL
                     ],
                     context_length=2000000,
-                    cost_per_1k_tokens=0.0035,
+                    cost_per_1k_tokens=0.00125,
                     max_output_tokens=8192,
                     supports_system_messages=True,
-                    supports_temperature=True
+                    supports_temperature=True,
+                    knowledge_cutoff="2024-04"
+                ),
+                "gemini-1.5-pro-002": ModelMetadata(
+                    model_id="gemini-1.5-pro-002",
+                    model_name="Gemini 1.5 Pro 002",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.STRUCTURED_OUTPUT,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION,
+                        ModelCapability.MULTIMODAL
+                    ],
+                    context_length=2000000,
+                    cost_per_1k_tokens=0.00125,
+                    max_output_tokens=8192,
+                    supports_system_messages=True,
+                    supports_temperature=True,
+                    knowledge_cutoff="2024-10"
                 ),
                 "gemini-1.5-flash": ModelMetadata(
                     model_id="gemini-1.5-flash",
-                    model_name="gemini-1.5-flash",
+                    model_name="Gemini 1.5 Flash",
                     provider_name=self.provider_name,
                     capabilities=[
                         ModelCapability.TEXT_GENERATION,
-                        ModelCapability.STRUCTURED_OUTPUT,
                         ModelCapability.FUNCTION_CALLING,
-                        ModelCapability.VISION
+                        ModelCapability.VISION,
+                        ModelCapability.MULTIMODAL
                     ],
                     context_length=1000000,
-                    cost_per_1k_tokens=0.0002,
+                    cost_per_1k_tokens=0.000075,
                     max_output_tokens=8192,
                     supports_system_messages=True,
-                    supports_temperature=True
+                    supports_temperature=True,
+                    knowledge_cutoff="2024-12"
+                ),
+                "gemini-1.5-flash-002": ModelMetadata(
+                    model_id="gemini-1.5-flash-002",
+                    model_name="Gemini 1.5 Flash 002",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION,
+                        ModelCapability.MULTIMODAL
+                    ],
+                    context_length=1000000,
+                    cost_per_1k_tokens=0.000075,
+                    max_output_tokens=8192,
+                    supports_system_messages=True,
+                    supports_temperature=True,
+                    knowledge_cutoff="2024-10"
                 ),
                 "gemini-1.5-pro-latest": ModelMetadata(
                     model_id="gemini-1.5-pro-latest",
-                    model_name="gemini-1.5-pro-latest",
+                    model_name="Gemini 1.5 Pro Latest",
                     provider_name=self.provider_name,
                     capabilities=[
                         ModelCapability.TEXT_GENERATION,
                         ModelCapability.STRUCTURED_OUTPUT,
                         ModelCapability.FUNCTION_CALLING,
-                        ModelCapability.VISION
+                        ModelCapability.VISION,
+                        ModelCapability.MULTIMODAL
                     ],
                     context_length=2000000,
-                    cost_per_1k_tokens=0.0035,
+                    cost_per_1k_tokens=0.00125,
                     max_output_tokens=8192,
                     supports_system_messages=True,
-                    supports_temperature=True
+                    supports_temperature=True,
+                    knowledge_cutoff="2024-04"
+                ),
+                "gemini-1.5-flash-latest": ModelMetadata(
+                    model_id="gemini-1.5-flash-latest",
+                    model_name="Gemini 1.5 Flash Latest",
+                    provider_name=self.provider_name,
+                    capabilities=[
+                        ModelCapability.TEXT_GENERATION,
+                        ModelCapability.FUNCTION_CALLING,
+                        ModelCapability.VISION,
+                        ModelCapability.MULTIMODAL
+                    ],
+                    context_length=1000000,
+                    cost_per_1k_tokens=0.000075,
+                    max_output_tokens=8192,
+                    supports_system_messages=True,
+                    supports_temperature=True,
+                    knowledge_cutoff="2024-12"
                 ),
                 
-                # Gemini Pro Series
+                # Gemini Pro Series (Legacy)
                 "gemini-pro": ModelMetadata(
                     model_id="gemini-pro",
-                    model_name="gemini-pro",
+                    model_name="Gemini Pro",
                     provider_name=self.provider_name,
                     capabilities=[
                         ModelCapability.TEXT_GENERATION,
@@ -112,11 +169,12 @@ class GoogleProvider(BaseModelProvider):
                     cost_per_1k_tokens=0.0005,
                     max_output_tokens=2048,
                     supports_system_messages=True,
-                    supports_temperature=True
+                    supports_temperature=True,
+                    knowledge_cutoff="2023-08"
                 ),
                 "gemini-pro-vision": ModelMetadata(
                     model_id="gemini-pro-vision",
-                    model_name="gemini-pro-vision",
+                    model_name="Gemini Pro Vision",
                     provider_name=self.provider_name,
                     capabilities=[
                         ModelCapability.TEXT_GENERATION,
@@ -128,41 +186,8 @@ class GoogleProvider(BaseModelProvider):
                     cost_per_1k_tokens=0.0005,
                     max_output_tokens=2048,
                     supports_system_messages=True,
-                    supports_temperature=True
-                ),
-                
-                # Gemini Ultra Series
-                "gemini-ultra": ModelMetadata(
-                    model_id="gemini-ultra",
-                    model_name="gemini-ultra",
-                    provider_name=self.provider_name,
-                    capabilities=[
-                        ModelCapability.TEXT_GENERATION,
-                        ModelCapability.STRUCTURED_OUTPUT,
-                        ModelCapability.FUNCTION_CALLING,
-                        ModelCapability.VISION
-                    ],
-                    context_length=32768,
-                    cost_per_1k_tokens=0.01,
-                    max_output_tokens=4096,
-                    supports_system_messages=True,
-                    supports_temperature=True
-                ),
-                "gemini-ultra-vision": ModelMetadata(
-                    model_id="gemini-ultra-vision",
-                    model_name="gemini-ultra-vision",
-                    provider_name=self.provider_name,
-                    capabilities=[
-                        ModelCapability.TEXT_GENERATION,
-                        ModelCapability.STRUCTURED_OUTPUT,
-                        ModelCapability.FUNCTION_CALLING,
-                        ModelCapability.VISION
-                    ],
-                    context_length=32768,
-                    cost_per_1k_tokens=0.01,
-                    max_output_tokens=4096,
-                    supports_system_messages=True,
-                    supports_temperature=True
+                    supports_temperature=True,
+                    knowledge_cutoff="2023-08"
                 )
             }
             

@@ -12,7 +12,11 @@ from prometheus_client import Counter, Histogram, generate_latest
 from starlette.responses import Response
 
 # Import routers
-from api.routers import auth, dashboard, llm, admin, billing, rbac, sso, ab_testing, contact, orchestration, documentation, api_playground, monitoring
+from api.routers import auth, dashboard, llm, admin, billing, rbac, sso, ab_testing, contact, orchestration, documentation, api_playground, monitoring, models_discovery
+from api.routers.current_models import router as current_models_router
+
+# Import security middleware
+from middleware.security_headers import SecurityHeadersMiddleware, RateLimitSecurityMiddleware
 
 # Metrics
 REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
@@ -26,15 +30,30 @@ description="Enhanced Multi-Provider Model Bridge with Intelligent Routing",
     redoc_url="/api/redoc",
 )
 
-# CORS middleware
+# CORS middleware - Secure configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure this properly for production
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000", 
+        "https://yourproductiondomain.com"  # Add your production domain
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language", 
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-API-Key"
+    ],
 )
 
+# Add security middleware
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitSecurityMiddleware, requests_per_minute=120)  # Allow 120 requests per minute
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
@@ -76,6 +95,8 @@ app.include_router(ab_testing.router, prefix="/api/ab-testing", tags=["ab-testin
 app.include_router(contact.router, prefix="/api/v1", tags=["contact"])
 app.include_router(orchestration.router, prefix="/api", tags=["orchestration"])
 app.include_router(monitoring.router, prefix="/api", tags=["monitoring"])
+app.include_router(models_discovery.router, prefix="/api/v1", tags=["models"])
+app.include_router(current_models_router, prefix="/api/v1", tags=["current-models"])
 
 # Serve static files (frontend) - only if directory exists
 import os

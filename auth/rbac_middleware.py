@@ -48,22 +48,28 @@ class RBACMiddleware:
         if not db:
             return False
         
-        # TEMPORARY: Allow all access for OWNER users during development
-        if user.role == UserRoleEnum.OWNER or str(user.role).lower() == "owner":
-            return True
-        
         try:
-            # Check if user has wildcard permission
+            # Check if user has wildcard permission for this organization
             if await self._has_wildcard_permission(user, organization, db):
                 return True
             
-            # Check specific permission
+            # Check specific permission for this organization
             user_permissions = await self._get_user_permissions(user, organization, db)
+            
+            # For owner role, verify they actually own this organization
+            if user.role == UserRoleEnum.OWNER:
+                # Verify organization ownership before granting full access
+                if await self._verify_organization_ownership(user, organization, db):
+                    return True
+            
             return permission in user_permissions
         except Exception as e:
-            print(f"Permission check error: {e}")
-            # For now, allow access if there's an error (fail open for development)
-            return True
+            # Log the error properly and fail closed for security
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Permission check error for user {user.id}, permission {permission}: {e}")
+            # Fail closed - deny access on errors
+            return False
     
     async def _has_wildcard_permission(
         self,
@@ -216,6 +222,30 @@ class RBACMiddleware:
         
         db.add(audit_log)
         await db.commit()
+
+    async def _verify_organization_ownership(
+        self,
+        user: User,
+        organization: Organization,
+        db: AsyncSession
+    ) -> bool:
+        """
+        Verify that the user actually owns/created the organization
+        """
+        try:
+            # Check if user is the creator/owner of the organization
+            if hasattr(organization, 'created_by_id') and organization.created_by_id == user.id:
+                return True
+            
+            # Additional ownership checks can be added here
+            # For example, checking a specific ownership table
+            
+            return False
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Organization ownership verification error: {e}")
+            return False
 
 
 # Global RBAC middleware instance

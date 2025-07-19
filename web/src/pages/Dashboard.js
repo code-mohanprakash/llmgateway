@@ -22,15 +22,14 @@ const Dashboard = () => {
     try {
       setLoading(true);
       
-      // TODO: Enable when backend endpoints are integrated with working auth
-      // const analyticsResponse = await api.get('/dashboard/analytics');
-      // const usageResponse = await api.get('/billing/usage');
-      // setAnalytics(analyticsResponse.data);
-      // setUsage(usageResponse.data);
+      // Fetch analytics data from the backend
+      const analyticsResponse = await api.get('/dashboard/analytics');
       
-      // For now, set null to show empty state
-      setAnalytics(null);
-      setUsage(null);
+      // Fetch usage data from the backend
+      const usageResponse = await api.get('/billing/usage');
+      
+      setAnalytics(analyticsResponse.data);
+      setUsage(usageResponse.data);
       
     } catch (error) {
       // Don't show toast for 401 errors
@@ -38,6 +37,7 @@ const Dashboard = () => {
         toast.error('Failed to load dashboard data');
       }
       
+      // Don't set any fake data - leave as null
       setAnalytics(null);
       setUsage(null);
     } finally {

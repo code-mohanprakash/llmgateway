@@ -1,7 +1,7 @@
 """
 User and organization models for multi-tenancy
 """
-from sqlalchemy import Column, String, Boolean, ForeignKey, Integer, Text, JSON, Enum, Numeric
+from sqlalchemy import Column, String, Boolean, ForeignKey, Integer, Text, JSON, Enum, Numeric, DateTime
 from sqlalchemy.orm import relationship
 import enum
 from models.base import BaseModel
@@ -49,7 +49,6 @@ class Organization(BaseModel):
     users = relationship("User", back_populates="organization")
     api_keys = relationship("APIKey", back_populates="organization")
     usage_records = relationship("UsageRecord", back_populates="organization")
-    usage_records = relationship("UsageRecord", back_populates="organization")
 
 
 class User(BaseModel):
@@ -72,15 +71,15 @@ class User(BaseModel):
     preferences = Column(JSON, default=dict)
     
     # Login tracking
-    last_login_at = Column(String, nullable=True)
+    last_login_at = Column(DateTime, nullable=True)
     
     # Password reset
     reset_token = Column(String(100), nullable=True)
-    reset_token_expires = Column(String, nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
     
     # Email verification
     verification_token = Column(String(100), nullable=True)
-    verification_token_expires = Column(String, nullable=True)
+    verification_token_expires = Column(DateTime, nullable=True)
     
     # Relationships
     organization = relationship("Organization", back_populates="users")
@@ -106,7 +105,7 @@ class APIKey(BaseModel):
     rate_limit_per_day = Column(Integer, default=10000)
     
     # Usage tracking
-    last_used_at = Column(String)
+    last_used_at = Column(DateTime, nullable=True)
     usage_count = Column(Integer, default=0)
     
     # Relationships

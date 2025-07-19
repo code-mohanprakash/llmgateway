@@ -15,7 +15,7 @@ const APIPlayground = () => {
     const [authToken, setAuthToken] = useState('');
     const [endpointHistory, setEndpointHistory] = useState([]);
     const [isStreaming, setIsStreaming] = useState(false);
-    const streamRef = useRef(null);
+    // const streamRef = useRef(null); // Reserved for future streaming functionality
     
     // Documentation state
     const [documentationData, setDocumentationData] = useState({});
@@ -133,7 +133,7 @@ const APIPlayground = () => {
         if (endpoint) {
             setRequestData(JSON.stringify(endpoint.defaultData, null, 2));
         }
-    }, [selectedEndpoint]);
+    }, [selectedEndpoint, endpoints]);
 
     // Load documentation data
     useEffect(() => {

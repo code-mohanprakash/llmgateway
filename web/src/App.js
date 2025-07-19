@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -24,6 +25,11 @@ import AdvancedRouting from './pages/AdvancedRouting';
 import CostOptimization from './pages/CostOptimization';
 import Orchestration from './pages/Orchestration';
 import Monitoring from './pages/Monitoring';
+import Product from './pages/Product';
+import IntelligentRouting from './pages/IntelligentRouting';
+import EnterpriseFeatures from './pages/EnterpriseFeatures';
+import Security from './pages/Security';
+import DeveloperExperience from './pages/DeveloperExperience';
 
 import Guides from './pages/Guides';
 import Support from './pages/Support';
@@ -36,11 +42,12 @@ import Layout from './components/Layout';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
-          <Toaster position="top-right" />
-          <Routes>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <Toaster position="top-right" />
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/debug" element={<Debug />} />
@@ -58,6 +65,14 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/models" element={<Models />} />
+            <Route path="/product" element={<Product />} />
+            <Route path="/product/intelligent-routing" element={<IntelligentRouting />} />
+            <Route path="/product/cost-optimization" element={<CostOptimization />} />
+            <Route path="/product/enterprise-features" element={<EnterpriseFeatures />} />
+            <Route path="/product/orchestration" element={<Orchestration />} />
+            <Route path="/product/monitoring" element={<Monitoring />} />
+            <Route path="/product/security" element={<Security />} />
+            <Route path="/product/developer-experience" element={<DeveloperExperience />} />
             
             {/* Protected Dashboard Routes */}
             <Route
@@ -156,6 +171,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

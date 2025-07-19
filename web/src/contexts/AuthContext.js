@@ -1,7 +1,7 @@
 /**
  * Updated AuthContext to use enterprise authentication
  */
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Cookies from 'js-cookie';
 
@@ -20,14 +20,10 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
 
-  useEffect(() => {
-    initializeAuth();
-  }, []);
-
-  const initializeAuth = async () => {
+  const initializeAuth = useCallback(async () => {
     try {
       const token = Cookies.get('access_token');
-      console.log('AuthContext initializing, token:', token ? 'exists' : 'none');
+      // AuthContext initialization
       
       if (token) {
         console.log('Token found, checking authentication...');
@@ -44,7 +40,11 @@ export const AuthProvider = ({ children }) => {
       setInitialized(true);
       console.log('AuthContext initialization complete');
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
 
   const checkAuth = async () => {
     try {
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
       }
       
       const response = await api.get('/auth/me');
-      console.log('Auth check successful, user data:', response.data);
+      // Authentication successful
       setUser(response.data);
       return response.data;
     } catch (error) {
@@ -85,9 +85,19 @@ export const AuthProvider = ({ children }) => {
       
       const { access_token, refresh_token } = response.data;
       
-      console.log('Login successful, tokens received');
-      Cookies.set('access_token', access_token, { expires: 1 });
-      Cookies.set('refresh_token', refresh_token, { expires: 7 });
+      // Store tokens with secure flags
+      Cookies.set('access_token', access_token, { 
+        expires: 1, 
+        secure: true, 
+        sameSite: 'strict',
+        httpOnly: false  // Note: Frontend needs access, but this should ideally be httpOnly server-side
+      });
+      Cookies.set('refresh_token', refresh_token, { 
+        expires: 7, 
+        secure: true, 
+        sameSite: 'strict',
+        httpOnly: false  // Note: Frontend needs access, but this should ideally be httpOnly server-side
+      });
       
       console.log('Tokens stored, checking auth...');
       await checkAuth();

@@ -3,7 +3,7 @@
 
 models:
   enabled: true
-  total_count: 80+
+  total_count: 120+
   
 gateway:
   fallback_enabled: true
@@ -26,19 +26,67 @@ providers:
     base_url: "https://api.openai.com/v1"
     temperature: 0.1
     models:
-      # GPT-4o Series (Latest)
-      gpt-4o:
+      # GPT-4.1 Series (Latest 2025)
+      gpt-4.1:
+        cost_per_1k_tokens: 0.012
+        context_length: 200000
+        category: "large"
+        speed: "fast"
+        reasoning: "excellent"
+        capabilities: ["text", "vision", "function_calling", "json_mode"]
+        knowledge_cutoff: "2024-12"
+      gpt-4.1-mini:
+        cost_per_1k_tokens: 0.0001
+        context_length: 128000
+        category: "small"
+        speed: "fastest"
+        reasoning: "very_good"
+        capabilities: ["text", "vision", "function_calling", "json_mode"]
+        knowledge_cutoff: "2024-12"
+      gpt-4.1-nano:
+        cost_per_1k_tokens: 0.00005
+        context_length: 64000
+        category: "nano"
+        speed: "ultra_fast"
+        reasoning: "good"
+        capabilities: ["text", "function_calling"]
+        knowledge_cutoff: "2024-12"
+      
+      # O-Series Reasoning Models (2025)
+      o3:
+        cost_per_1k_tokens: 0.06
+        context_length: 128000
+        category: "reasoning"
+        speed: "slow"
+        reasoning: "exceptional"
+        capabilities: ["text", "advanced_reasoning", "mathematics", "coding"]
+        knowledge_cutoff: "2024-12"
+      o4-mini:
+        cost_per_1k_tokens: 0.003
+        context_length: 128000
+        category: "reasoning"
+        speed: "medium"
+        reasoning: "excellent"
+        capabilities: ["text", "reasoning", "mathematics", "coding"]
+        knowledge_cutoff: "2024-12"
+      
+      # GPT-4o Series (2024 - Still Available)
+      gpt-4o-2024-11-20:
         cost_per_1k_tokens: 0.015
         context_length: 128000
         category: "large"
         speed: "medium"
         reasoning: "excellent"
+        capabilities: ["text", "vision", "function_calling"]
+        knowledge_cutoff: "2024-04"
       gpt-4o-mini:
         cost_per_1k_tokens: 0.00015
         context_length: 128000
         category: "small"
         speed: "fastest"
         reasoning: "basic"
+        capabilities: ["text", "vision", "function_calling"]
+        knowledge_cutoff: "2024-04"
       
       # GPT-4 Turbo Series
       gpt-4-turbo:
@@ -137,13 +185,45 @@ providers:
     api_key: ${ANTHROPIC_API_KEY}
     temperature: 0.1
     models:
-      # Claude 3.5 Series (Latest)
+      # Claude 4 Series (Latest 2025)
+      claude-4-opus:
+        cost_per_1k_tokens: 0.008
+        context_length: 500000
+        category: "flagship"
+        speed: "medium"
+        reasoning: "exceptional"
+        capabilities: ["text", "vision", "code", "analysis", "tool_use"]
+        knowledge_cutoff: "2024-12"
+        multimodal: true
+      claude-4-sonnet:
+        cost_per_1k_tokens: 0.0025
+        context_length: 400000
+        category: "large"
+        speed: "fast"
+        reasoning: "superior"
+        capabilities: ["text", "vision", "code", "analysis", "tool_use"]
+        knowledge_cutoff: "2024-12"
+        multimodal: true
+      claude-4-haiku:
+        cost_per_1k_tokens: 0.0003
+        context_length: 200000
+        category: "small"
+        speed: "fastest"
+        reasoning: "excellent"
+        capabilities: ["text", "vision", "code", "tool_use"]
+        knowledge_cutoff: "2024-12"
+        multimodal: true
+      
+      # Claude 3.5 Series (2024 - Still Available)
       claude-3-5-sonnet-20241022:
         cost_per_1k_tokens: 0.003
         context_length: 200000
         category: "large"
         speed: "medium"
         reasoning: "superior"
+        capabilities: ["text", "vision", "code", "analysis", "tool_use"]
+        knowledge_cutoff: "2024-04"
+        multimodal: true
       
       # Claude 3 Series
       claude-3-opus-20240229:
@@ -200,7 +280,36 @@ providers:
     api_key: ${GOOGLE_API_KEY}
     temperature: 0.1
     models:
-      # Gemini 1.5 Series (Latest)
+      # Gemini 2.0 Series (Latest 2025)
+      gemini-2.0-flash-exp:
+        cost_per_1k_tokens: 0.002
+        context_length: 2000000
+        category: "large"
+        speed: "fastest"
+        reasoning: "excellent"
+        capabilities: ["text", "vision", "multimodal", "reasoning", "function_calling"]
+        knowledge_cutoff: "2024-12"
+        multimodal: true
+      gemini-2.0-pro-exp:
+        cost_per_1k_tokens: 0.004
+        context_length: 2000000
+        category: "flagship"
+        speed: "medium"
+        reasoning: "exceptional"
+        capabilities: ["text", "vision", "multimodal", "reasoning", "function_calling"]
+        knowledge_cutoff: "2024-12"
+        multimodal: true
+      gemini-2.0-flash-lite:
+        cost_per_1k_tokens: 0.0005
+        context_length: 1000000
+        category: "small"
+        speed: "ultra_fast"
+        reasoning: "good"
+        capabilities: ["text", "vision", "multimodal", "function_calling"]
+        knowledge_cutoff: "2024-12"
+        multimodal: true
+      
+      # Gemini 1.5 Series (Stable)
       gemini-1.5-pro:
         cost_per_1k_tokens: 0.0035
         context_length: 2000000
@@ -553,12 +662,13 @@ providers:
 
 # === SMART MODEL ALIASES ===
 model_aliases:
-  # Speed-optimized routing
+  # Speed-optimized routing (2025)
   fastest:
     - {provider: groq, model_id: llama3-8b-8192, priority: 1}
-    - {provider: ollama, model_id: phi3:mini, priority: 2}
-    - {provider: google, model_id: gemini-1.5-flash, priority: 3}
-    - {provider: openai, model_id: gpt-4o-mini, priority: 4}
+    - {provider: openai, model_id: gpt-4.1-nano, priority: 2}
+    - {provider: anthropic, model_id: claude-4-haiku, priority: 3}
+    - {provider: google, model_id: gemini-2.0-flash-exp, priority: 4}
+    - {provider: ollama, model_id: phi3:mini, priority: 5}
 
   # Cost-optimized routing
   cheapest:
@@ -568,12 +678,13 @@ model_aliases:
     - {provider: together, model_id: llama-3-8b-chat, priority: 4}
     - {provider: openai, model_id: gpt-4o-mini, priority: 5}
 
-  # Quality-optimized routing
+  # Quality-optimized routing (2025)
   best:
-    - {provider: anthropic, model_id: claude-3-opus, priority: 1}
-    - {provider: anthropic, model_id: claude-3.5-sonnet, priority: 2}
-    - {provider: openai, model_id: gpt-4-turbo, priority: 3}
-    - {provider: google, model_id: gemini-1.5-pro, priority: 4}
+    - {provider: anthropic, model_id: claude-4-opus, priority: 1}
+    - {provider: openai, model_id: o3, priority: 2}
+    - {provider: anthropic, model_id: claude-4-sonnet, priority: 3}
+    - {provider: google, model_id: gemini-2.0-pro-exp, priority: 4}
+    - {provider: openai, model_id: gpt-4.1, priority: 5}
 
   # Balanced routing
   balanced:
