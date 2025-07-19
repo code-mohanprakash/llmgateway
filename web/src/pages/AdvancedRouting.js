@@ -203,9 +203,9 @@ const AdvancedRouting = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'healthy': return 'text-green-600 bg-green-100';
-      case 'degraded': return 'text-yellow-600 bg-yellow-100';
-      case 'unhealthy': return 'text-red-600 bg-red-100';
+      case 'healthy': return 'text-gray-600 bg-gray-100';
+      case 'degraded': return 'text-gray-600 bg-gray-100';
+      case 'unhealthy': return 'text-gray-600 bg-gray-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };
@@ -240,7 +240,7 @@ const AdvancedRouting = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <CogIcon className="h-8 w-8 text-blue-600" />
+              <CogIcon className="h-8 w-8 text-gray-700" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Load Balancer</p>
@@ -254,7 +254,7 @@ const AdvancedRouting = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <SignalIcon className="h-8 w-8 text-green-600" />
+              <SignalIcon className="h-8 w-8 text-gray-700" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Available Providers</p>
@@ -268,7 +268,7 @@ const AdvancedRouting = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <ClockIcon className="h-8 w-8 text-purple-600" />
+              <ClockIcon className="h-8 w-8 text-gray-700" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Avg Response Time</p>
@@ -282,7 +282,7 @@ const AdvancedRouting = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <ChartBarIcon className="h-8 w-8 text-orange-600" />
+              <ChartBarIcon className="h-8 w-8 text-gray-700" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Availability</p>
@@ -387,7 +387,7 @@ const AdvancedRouting = () => {
               <div key={provider} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-gray-900 capitalize">{provider}</h4>
-                  <span className="text-lg font-semibold text-blue-600">
+                  <span className="text-lg font-semibold text-gray-700">
                     {weight.current_weight?.toFixed(2) || '0.00'}
                   </span>
                 </div>
@@ -438,7 +438,7 @@ const AdvancedRouting = () => {
                 <div className="mt-2">
                   <div className="bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      className="bg-gray-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${(pool.utilization || 0) * 100}%` }}
                     ></div>
                   </div>
@@ -462,7 +462,7 @@ const AdvancedRouting = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <BeakerIcon className="w-8 h-8 text-purple-600" />
+                <BeakerIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">ML Models</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -471,7 +471,7 @@ const AdvancedRouting = () => {
             </div>
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <SparklesIcon className="w-8 h-8 text-green-600" />
+                <SparklesIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">Training Data</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -480,7 +480,7 @@ const AdvancedRouting = () => {
             </div>
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <LightBulbIcon className="w-8 h-8 text-orange-600" />
+                <LightBulbIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">Patterns</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -489,7 +489,7 @@ const AdvancedRouting = () => {
             </div>
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <EyeIcon className="w-8 h-8 text-blue-600" />
+                <EyeIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">Avg Confidence</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -530,7 +530,7 @@ const AdvancedRouting = () => {
                 <div className="mt-2">
                   <div className="bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      className="bg-gray-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${pattern.confidence_score * 100}%` }}
                     ></div>
                   </div>
@@ -613,7 +613,7 @@ const AdvancedRouting = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <ChartBarIcon className="w-8 h-8 text-blue-600" />
+                <ChartBarIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">Total Adjustments</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -622,7 +622,7 @@ const AdvancedRouting = () => {
             </div>
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <ClockIcon className="w-8 h-8 text-green-600" />
+                <ClockIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">Recent Adjustments</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -631,7 +631,7 @@ const AdvancedRouting = () => {
             </div>
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <CogIcon className="w-8 h-8 text-purple-600" />
+                <CogIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">Active Providers</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -640,7 +640,7 @@ const AdvancedRouting = () => {
             </div>
             <div className="text-center">
               <div className="flex justify-center mb-2">
-                <SignalIcon className="w-8 h-8 text-orange-600" />
+                <SignalIcon className="w-8 h-8 text-gray-700" />
               </div>
               <div className="text-sm text-gray-500">Avg Performance</div>
               <div className="text-2xl font-semibold text-gray-900">
@@ -664,7 +664,7 @@ const AdvancedRouting = () => {
               <div key={provider} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-medium text-gray-900 capitalize">{provider}</h4>
-                  <span className="text-lg font-semibold text-blue-600">
+                  <span className="text-lg font-semibold text-gray-700">
                     {stats.current_weight?.toFixed(2) || '0.00'}
                   </span>
                 </div>
@@ -675,7 +675,7 @@ const AdvancedRouting = () => {
                   </div>
                   <div className="bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      className="bg-gray-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${stats.performance_score * 100}%` }}
                     ></div>
                   </div>
@@ -858,7 +858,7 @@ const AdvancedRouting = () => {
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-gray-900 capitalize">{trigger.replace(/_/g, ' ')}</h4>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    config.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    config.enabled ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
                   }`}>
                     {config.enabled ? 'Enabled' : 'Disabled'}
                   </span>
@@ -887,7 +887,7 @@ const AdvancedRouting = () => {
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-gray-900">Status</h4>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  geoData?.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  geoData?.enabled ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
                 }`}>
                   {geoData?.enabled ? 'Enabled' : 'Disabled'}
                 </span>
@@ -898,7 +898,7 @@ const AdvancedRouting = () => {
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-gray-900">GeoIP Database</h4>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  geoData?.analytics?.geoip_available ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  geoData?.analytics?.geoip_available ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
                 }`}>
                   {geoData?.analytics?.geoip_available ? 'Available' : 'Fallback'}
                 </span>
@@ -909,7 +909,7 @@ const AdvancedRouting = () => {
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-gray-900">Latency Monitor</h4>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  geoData?.analytics?.latency_monitor_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  geoData?.analytics?.latency_monitor_active ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
                 }`}>
                   {geoData?.analytics?.latency_monitor_active ? 'Active' : 'Inactive'}
                 </span>
@@ -932,7 +932,7 @@ const AdvancedRouting = () => {
                 <h4 className="font-medium text-gray-900 capitalize mb-2">{provider}</h4>
                 <div className="space-y-1">
                   {regions.map((region) => (
-                    <span key={region} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-2 mb-1">
+                    <span key={region} className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded mr-2 mb-1">
                       {region}
                     </span>
                   ))}
@@ -993,7 +993,7 @@ const AdvancedRouting = () => {
                   <div className="flex items-center">
                     <h4 className="font-medium text-gray-900">{rule.name}</h4>
                     <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      rule.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      rule.enabled ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
                     }`}>
                       {rule.enabled ? 'Enabled' : 'Disabled'}
                     </span>
@@ -1035,7 +1035,7 @@ const AdvancedRouting = () => {
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">Providers:</span>
                     {decision.selected_providers.map((provider) => (
-                      <span key={provider} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                      <span key={provider} className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
                         {provider}
                       </span>
                     ))}
@@ -1068,7 +1068,7 @@ const AdvancedRouting = () => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-700 hover:bg-gray-800 disabled:opacity-50"
           >
             <ArrowPathIcon className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
@@ -1083,7 +1083,7 @@ const AdvancedRouting = () => {
             onClick={() => setActiveTab('overview')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'overview'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-gray-500 text-gray-700'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
@@ -1093,7 +1093,7 @@ const AdvancedRouting = () => {
             onClick={() => setActiveTab('load-balancer')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'load-balancer'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-gray-500 text-gray-700'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
@@ -1103,7 +1103,7 @@ const AdvancedRouting = () => {
             onClick={() => setActiveTab('predictive')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'predictive'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-gray-500 text-gray-700'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
@@ -1113,7 +1113,7 @@ const AdvancedRouting = () => {
             onClick={() => setActiveTab('weight-management')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'weight-management'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-gray-500 text-gray-700'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
@@ -1123,7 +1123,7 @@ const AdvancedRouting = () => {
             onClick={() => setActiveTab('geographic-routing')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'geographic-routing'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-gray-500 text-gray-700'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
